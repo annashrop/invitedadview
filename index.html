@@ -123,12 +123,14 @@
         fetch(fileURL)
           .then(response => response.text())
           .then(csvText => {
-            Papa.parse(csvText, {
+            Papa.parse(file, {
               skipEmptyLines: true,
+              header: true,
               complete: function(results) {
-                processCSV(results);
-              }
+                processCSV({ data: [Object.keys(results.data[0]), ...results.data.map(Object.values)] });
+               }
             });
+
           });
       }
     });
