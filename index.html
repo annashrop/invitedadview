@@ -68,6 +68,12 @@
 <body>
   <h1>Interactive Ad Approval Portal</h1>
 
+<!-- 👇 Add these lines directly under the H1 -->
+<div style="text-align: center; margin-bottom: 20px;">
+  <input type="file" id="csvFile" accept=".csv" />
+  <button id="uploadBtn">Upload CSV</button>
+</div>
+
   <div id="club-link-list" style="margin-bottom: 30px;"></div>
   <div style="margin-bottom: 20px;">
     <button id="filter-approved" style="margin-right: 10px; padding: 10px 15px; background-color: #2ecc71; color: white; border: none; border-radius: 6px; cursor: pointer;">View All Approved Ads</button>
@@ -143,6 +149,22 @@
           });
       }
     });
+document.getElementById('uploadBtn').addEventListener('click', function () {
+  const fileInput = document.getElementById('csvFile');
+  const file = fileInput.files[0];
+  if (!file) {
+    alert("Please select a CSV file first.");
+    return;
+  }
+
+  Papa.parse(file, {
+    skipEmptyLines: true,
+    header: true,
+    complete: function(results) {
+      processCSV(results);
+    }
+  });
+});
 
 
     function processCSV(results) {
