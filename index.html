@@ -244,11 +244,12 @@
         card.innerHTML = `
           <div class="card-body">
             <div style="border-bottom: 1px solid #ccc; padding-bottom: 6px; margin-bottom: 10px;">
-              <div class="meta"><strong>Club:</strong> ${rowData['Club'] || 'N/A'} &nbsp; | &nbsp; <strong>Category:</strong> ${rowData['Category'] || 'N/A'}</div>
-              <div class="meta"><strong>Ad Name:</strong> ${row[2] || 'N/A'}</div>
+             <div class="Region">${rowData['Region'] || ''}</div>
+              <div class="meta"><strong>Club:</strong> ${rowData['Club'] || 'Club'} &nbsp; | &nbsp; <strong>Category:</strong> ${rowData['Category'] || 'N/A'}</div>
+              <div class="meta"><strong>Ad Name:</strong> ${row[2] || 'Ad_Name'}</div>
             </div>
             <div class="headline">${rowData['Headline'] || ''}</div>
-            <div class="primary-text">${rowData['Primary Text'] || ''}</div>
+            <div class="primary-text">${rowData['Primary_Text'] || ''}</div>
             <div class="approval">
               <label>Ad Text Approval Status:</label>
               <select class="text-approval">
