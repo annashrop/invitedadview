@@ -67,23 +67,83 @@
 </head>
 <body>
   <h1>Interactive Ad Approval Portal</h1>
-  <input type="file" id="upload" accept=".csv" />
+  <input type="file" id="upload" accept=".csv" style="display: none;" />
+  <div id="club-link-list" style="margin-bottom: 30px;"></div>
+  <div style="margin-bottom: 20px;">
+    <button id="filter-approved" style="margin-right: 10px; padding: 10px 15px; background-color: #2ecc71; color: white; border: none; border-radius: 6px; cursor: pointer;">View All Approved Ads</button>
+    <button id="filter-drafts" style="padding: 10px 15px; background-color: #f39c12; color: white; border: none; border-radius: 6px; cursor: pointer;">View All Ad Drafts</button>
+  </div>
   <div id="preview-container"></div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
   <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const isReviewer = urlParams.get('review') === 'true';
+    const fileURL = urlParams.get('file');
+
+    if (!isReviewer) {
+      document.getElementById('upload').style.display = 'block';
+    }
+
+    if (fileURL) {
+      fetch(fileURL)
+        .then(response => response.text())
+        .then(csvText => {
+          Papa.parse(csvText, {
+            skipEmptyLines: true,
+            complete: function(results) {
+              processCSV(results);
+            }
+          });
+        });
+    }
+
     document.getElementById('upload').addEventListener('change', function(e) {
       const file = e.target.files[0];
       if (!file) return;
 
       Papa.parse(file, {
-        header: true,
         skipEmptyLines: true,
         complete: function(results) {
-          renderCards(results.data);
+          processCSV(results);
         }
       });
     });
+
+    document.getElementById('filter-approved').addEventListener('click', () => {
+      window.onlyApproved = true;
+      window.onlyDrafts = false;
+      if (fileURL) {
+        fetch(fileURL)
+          .then(response => response.text())
+          .then(csvText => {
+            Papa.parse(csvText, {
+              skipEmptyLines: true,
+              complete: function(results) {
+                processCSV(results);
+              }
+            });
+          });
+      }
+    });
+
+    document.getElementById('filter-drafts').addEventListener('click', () => {
+      window.onlyApproved = false;
+      window.onlyDrafts = true;
+      if (fileURL) {
+        fetch(fileURL)
+          .then(response => response.text())
+          .then(csvText => {
+            Papa.parse(csvText, {
+              skipEmptyLines: true,
+              complete: function(results) {
+                processCSV(results);
+              }
+            });
+          });
+      }
+    });
+
 
     function processCSV(results) {
       const data = results.data;
