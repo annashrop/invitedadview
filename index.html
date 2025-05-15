@@ -13,11 +13,6 @@
       text-align: center;
       color: #22326e;
     }
-    #upload {
-      display: block;
-      margin: 20px auto;
-      padding: 10px;
-    }
     #preview-container {
       display: flex;
       flex-wrap: wrap;
@@ -68,11 +63,11 @@
 <body>
   <h1>Interactive Ad Approval Portal</h1>
 
-<!-- 👇 Add these lines directly under the H1 -->
-<div style="text-align: center; margin-bottom: 20px;">
-  <input type="file" id="csvFile" accept=".csv" />
-  <button id="uploadBtn">Upload CSV</button>
-</div>
+  <!-- ✅ ADDED: Upload Input + Button -->
+  <div style="text-align: center; margin-bottom: 20px;">
+    <input type="file" id="csvFile" accept=".csv" />
+    <button id="uploadBtn">Upload CSV</button>
+  </div>
 
   <div id="club-link-list" style="margin-bottom: 30px;"></div>
   <div style="margin-bottom: 20px;">
@@ -87,10 +82,6 @@
     const isReviewer = urlParams.get('review') === 'true';
     const fileURL = urlParams.get('file');
 
-    if (!isReviewer) {
-      document.getElementById('upload').style.display = 'block';
-    }
-
     if (fileURL) {
       fetch(fileURL)
         .then(response => response.text())
@@ -104,18 +95,6 @@
         });
     }
 
-    document.getElementById('upload').addEventListener('change', function(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-
-      Papa.parse(file, {
-        skipEmptyLines: true,
-        complete: function(results) {
-          processCSV(results);
-        }
-      });
-    });
-
     document.getElementById('filter-approved').addEventListener('click', () => {
       window.onlyApproved = true;
       window.onlyDrafts = false;
@@ -123,14 +102,12 @@
         fetch(fileURL)
           .then(response => response.text())
           .then(csvText => {
-            Papa.parse(file, {
+            Papa.parse(csvText, {
               skipEmptyLines: true,
-              header: true,
               complete: function(results) {
-                processCSV({ data: [Object.keys(results.data[0]), ...results.data.map(Object.values)] });
-               }
+                processCSV(results);
+              }
             });
-
           });
       }
     });
@@ -151,23 +128,27 @@
           });
       }
     });
-document.getElementById('uploadBtn').addEventListener('click', function () {
-  const fileInput = document.getElementById('csvFile');
-  const file = fileInput.files[0];
-  if (!file) {
-    alert("Please select a CSV file first.");
-    return;
-  }
 
-  Papa.parse(file, {
-    skipEmptyLines: true,
-    header: true,
-    complete: function(results) {
-      processCSV(results);
-    }
-  });
-});
+    // ✅ ADDED: Upload button handler
+    document.getElementById('uploadBtn').addEventListener('click', function () {
+      const fileInput = document.getElementById('csvFile');
+      const file = fileInput.files[0];
+      if (!file) {
+        alert("Please select a CSV file first.");
+        return;
+      }
 
+      Papa.parse(file, {
+        header: true,
+        skipEmptyLines: true,
+        complete: function(results) {
+          const data = results.data;
+          const headers = Object.keys(data[0]);
+          const rows = data.map(row => headers.map(h => row[h]));
+          processCSV({ data: [headers, ...rows] });
+        }
+      });
+    });
 
     function processCSV(results) {
       const data = results.data;
@@ -178,7 +159,6 @@ document.getElementById('uploadBtn').addEventListener('click', function () {
       container.innerHTML = '';
 
       const selectedClub = urlParams.get('club');
-
       const clubListContainer = document.getElementById('club-link-list');
       clubListContainer.innerHTML = '';
 
@@ -255,7 +235,7 @@ document.getElementById('uploadBtn').addEventListener('click', function () {
         card.innerHTML = `
           <div class="card-body">
             <div style="border-bottom: 1px solid #ccc; padding-bottom: 6px; margin-bottom: 10px;">
-             <div class="Region">${rowData['Region'] || ''}</div>
+              <div class="Region">${rowData['Region'] || ''}</div>
               <div class="meta"><strong>Club:</strong> ${rowData['Club'] || 'Club'} &nbsp; | &nbsp; <strong>Category:</strong> ${rowData['Category'] || 'N/A'}</div>
               <div class="meta"><strong>Ad Name:</strong> ${row[2] || 'Ad_Name'}</div>
             </div>
