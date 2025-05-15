@@ -85,43 +85,133 @@
       });
     });
 
-    function renderCards(data) {
+    function processCSV(results) {
+      const data = results.data;
+      const headers = data[0];
+      const rows = data.slice(1);
+
       const container = document.getElementById('preview-container');
       container.innerHTML = '';
 
-      data.forEach((row, index) => {
+      const selectedClub = urlParams.get('club');
+
+      const clubListContainer = document.getElementById('club-link-list');
+      clubListContainer.innerHTML = '';
+
+      const uniqueClubs = [...new Set(rows.map(row => row[headers.indexOf('Club')]).filter(Boolean))];
+      const listHTML = ['<h3>Preview Links:</h3>', '<ul>'];
+      listHTML.push(`<li><a href="?review=true">All Clubs (Regional View)</a></li>`);
+      uniqueClubs.forEach(club => {
+        const encodedClub = encodeURIComponent(club);
+        listHTML.push(`<li><a href="?review=true&club=${encodedClub}&file=${encodeURIComponent(fileURL)}">${club}</a></li>`);
+      });
+      listHTML.push('</ul>');
+      clubListContainer.innerHTML = listHTML.join('\n');
+
+      rows.forEach((row, index) => {
+        if (window.onlyApproved) {
+          const statusText = row[headers.indexOf('Ad Text Approval Status')] || 'Pending';
+          const imgStatus1 = row[headers.indexOf('Image 1 Approval Status')] || 'Pending';
+          const imgStatus2 = row[headers.indexOf('Image 2 Approval Status')] || 'Pending';
+          const imgStatus3 = row[headers.indexOf('Image 3 Approval Status')] || 'Pending';
+          const allApproved = [statusText, imgStatus1, imgStatus2, imgStatus3].every(val => val === 'Approved');
+          if (!allApproved) return;
+        }
+        if (window.onlyDrafts) {
+          const statusText = row[headers.indexOf('Ad Text Approval Status')] || 'Pending';
+          const imgStatus1 = row[headers.indexOf('Image 1 Approval Status')] || 'Pending';
+          const imgStatus2 = row[headers.indexOf('Image 2 Approval Status')] || 'Pending';
+          const imgStatus3 = row[headers.indexOf('Image 3 Approval Status')] || 'Pending';
+          const anyDraft = [statusText, imgStatus1, imgStatus2, imgStatus3].some(val => val !== 'Approved');
+          if (!anyDraft) return;
+        }
+        if (selectedClub && row[headers.indexOf('Club')] !== selectedClub) return;
+        if (row.every(cell => !cell || cell.trim() === '')) return;
+
+        const rowData = {};
+        headers.forEach((header, i) => rowData[header] = row[i]);
+
         const card = document.createElement('div');
         card.className = 'preview-card';
 
-        const imageHTML = ['Image_URL_1', 'Image_URL_2', 'Image_URL_3'].map((key, i) => {
-          const url = row[key];
-          if (!url || url === '/') return '';
+        const globalCommentId = `global-comment-${index}`;
 
-          const idMatch = url.match(/I[0-9A-Za-z_.]+/) ||
-                          url.match(/img-get2\/([^/]+)/) ||
-                          url.match(/\/(I[0-9A-Za-z_.]+)\//) ||
-                          url.match(/\/(G[0-9A-Za-z_]+)\//) ||
-                          url.match(/\/(C[0-9A-Za-z_]+)\//);
-          const imageId = idMatch && (idMatch[1] || idMatch[0]);
-          const imgSrc = imageId
-            ? `https://cdn.photoshelter.com/img-get2/${imageId}/fit=1000x750`
-            : 'https://via.placeholder.com/600x400?text=Image+Unavailable';
+        const imageTags = ['Image_URL_1', 'Image_URL_2', 'Image_URL_3'].map((key, imgIndex) => {
+          const url = rowData[key];
+          if (url && url !== '/') {
+            const isTif = url.toLowerCase().endsWith('.tif');
+            const idMatch = url.match(/I[0-9A-Za-z_.]+/) ||
+              url.match(/img-get2\/([^/]+)/) ||
+              url.match(/\/(I[0-9A-Za-z_.]+)\//) ||
+              url.match(/\/(G[0-9A-Za-z_]+)\//) ||
+              url.match(/\/(C[0-9A-Za-z_]+)\//);
+            const imageId = idMatch && (idMatch[1] || idMatch[0]);
+            const imgSrc = (!isTif && imageId)
+              ? `https://cdn.photoshelter.com/img-get2/${imageId}/fit=1000x750`
+              : 'https://st4.depositphotos.com/14953852/22772/v/450/depositphotos_227725020-stock-illustration-image-available-icon-flat-vector.jpg';
 
-          return `
-            <div class="image-wrapper">
-              <img src="${imgSrc}" class="card-image" alt="Ad image" />
-              <div class="view-link">
-                <a href="${url}" target="_blank">View Full Image ${i + 1}</a>
+            return `
+              <div class="image-wrapper">
+                <img class="card-image" src="${imgSrc}" alt="Ad image" />
+                <div class="view-link">
+                  <a href="#" onclick="window.open('${url}', 'ImagePopup', 'width=800,height=600'); return false;">View Full Image ${imgIndex + 1}</a>
+                  <label>Image Approval Status:</label>
+                  <select class="image-approval">
+                    <option value="Pending">Pending</option>
+                    <option value="Approved">Approved</option>
+                    <option value="Needs Edit">Needs Edit</option>
+                  </select>
+                </div>
               </div>
-            </div>
-          `;
+            `;
+          }
+          return '';
         }).join('');
 
         card.innerHTML = `
-          <div class="headline">${row['Headline'] || ''}</div>
-          <div class="primary-text">${row['Primary Text'] || ''}</div>
-          ${imageHTML}
+          <div class="card-body">
+            <div style="border-bottom: 1px solid #ccc; padding-bottom: 6px; margin-bottom: 10px;">
+              <div class="meta"><strong>Club:</strong> ${rowData['Club'] || 'N/A'} &nbsp; | &nbsp; <strong>Category:</strong> ${rowData['Category'] || 'N/A'}</div>
+              <div class="meta"><strong>Ad Name:</strong> ${row[2] || 'N/A'}</div>
+            </div>
+            <div class="headline">${rowData['Headline'] || ''}</div>
+            <div class="primary-text">${rowData['Primary Text'] || ''}</div>
+            <div class="approval">
+              <label>Ad Text Approval Status:</label>
+              <select class="text-approval">
+                <option value="Pending">Pending</option>
+                <option value="Approved">Approved</option>
+                <option value="Needs Edit">Needs Edit</option>
+              </select>
+            </div>
+            <div style="margin-top: 20px;"></div>
+            <div class="image-set">${imageTags}</div>
+            <div class="approval">
+              <label for="${globalCommentId}">Reviewer Comments:</label>
+              <textarea id="${globalCommentId}" placeholder="Enter comments here..."></textarea>
+            </div>
+          </div>
         `;
+
+        function updateCardStatus() {
+          const imageStatuses = card.querySelectorAll('.image-approval');
+          const textStatus = card.querySelector('.text-approval').value;
+          const imageValues = Array.from(imageStatuses).map(sel => sel.value);
+
+          if (imageValues.includes('Needs Edit') || textStatus === 'Needs Edit') {
+            card.style.border = '2px solid #e74c3c';
+            card.style.backgroundColor = '#ffe6e6';
+          } else if (imageValues.every(v => v === 'Approved') && textStatus === 'Approved') {
+            card.style.border = '2px solid #2ecc71';
+            card.style.backgroundColor = '#e8f6f0';
+          } else {
+            card.style.border = '2px solid #f1c40f';
+            card.style.backgroundColor = '#fffbe6';
+          }
+        }
+
+        card.querySelectorAll('select').forEach(sel => sel.addEventListener('change', updateCardStatus));
+        updateCardStatus();
 
         container.appendChild(card);
       });
