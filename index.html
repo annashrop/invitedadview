@@ -67,19 +67,6 @@
 </head>
 <body>
   <h1>Interactive Ad Approval Portal</h1>
-  document.getElementById('uploadBtn').addEventListener('click', function () {
-  const fileInput = document.getElementById('csvFile');
-  const file = fileInput.files[0];
-  if (!file) return alert("Please select a CSV file first.");
-
-  Papa.parse(file, {
-    header: true,
-    skipEmptyLines: true,
-    complete: function(results) {
-      renderCards(results.data);
-    }
-  });
-});
 
   <div id="club-link-list" style="margin-bottom: 30px;"></div>
   <div style="margin-bottom: 20px;">
