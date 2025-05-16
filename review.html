@@ -80,25 +80,28 @@
 
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
-  <script>
-    const urlParams = new URLSearchParams(window.location.search);
-    const isReviewer = urlParams.get('review') === 'true';
-  
+<script>
+  const urlParams = new URLSearchParams(window.location.search);
+  const fileURL = urlParams.get("file");
+  const isReviewer = urlParams.get("review") === "true";
 
-if (fileURL) {
-  fetch(fileURL)
-    .then(res => res.text())
-    .then(csvText => {
-      Papa.parse(csvText, {
-        skipEmptyLines: true,
-        complete: function(results) {
-          processCSV(results);
-        }
+  if (fileURL) {
+    fetch(fileURL)
+      .then(res => res.text())
+      .then(csvText => {
+        Papa.parse(csvText, {
+          skipEmptyLines: true,
+          complete: function(results) {
+            processCSV(results);
+          }
+        });
       });
-    });
-} else {
-  document.getElementById('preview-container').innerHTML = "<p style='color: red;'>No file specified. Please use the link generator to load a valid Dropbox file.</p>";
-}
+  } else {
+    document.getElementById("preview-container").innerHTML =
+      "<p style='color: red;'>No file specified. Please use the link generator to load a valid Dropbox file.</p>";
+  }
+</script>
+
 
     
 
