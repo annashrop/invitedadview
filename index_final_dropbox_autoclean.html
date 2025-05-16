@@ -1,0 +1,156 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Ad Preview Link Generator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 40px;
+      max-width: 1000px;
+      margin: auto;
+      background-color: #f9f9f9;
+    }
+    textarea {
+      width: 100%;
+      height: 200px;
+      padding: 10px;
+      font-family: monospace;
+      font-size: 14px;
+    }
+    button {
+      padding: 10px 20px;
+      margin-top: 15px;
+      background-color: #22326e;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    #result {
+      margin-top: 25px;
+      background: #fff;
+      padding: 15px;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+      white-space: pre-wrap;
+      font-family: monospace;
+      font-size: 14px;
+    }
+    .preview-card {
+      border: 2px solid #e74c3c;
+      border-radius: 8px;
+      padding: 20px;
+      margin-top: 20px;
+      background-color: #fff;
+    }
+    .card-image {
+      width: 100%;
+      max-height: 300px;
+      object-fit: cover;
+      border-radius: 6px;
+      margin-bottom: 10px;
+    }
+    #attention-section {
+      margin-top: 60px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Ad Preview Link Generator</h1>
+
+  <label for="dropbox">Paste Dropbox Links (one per line):</label><br>
+  <textarea id="dropbox" placeholder="https://www.dropbox.com/s/abc123/file.csv?dl=0"></textarea><br>
+  <button id="generate">Generate Preview Links</button>
+  <button id="copyBtn">Copy All</button>
+
+  <div id="result"></div>
+
+  <div id="attention-section">
+    <h2>Ads That Need Your Attention (<span id="editCount">0</span>)</h2>
+    <div id="preview-container"></div>
+    <button id="downloadEditsBtn">Download CSV of Edits</button>
+  </div>
+
+  <script>
+    // Dropbox link cleaner
+    function cleanDropboxLink(link) {
+      let noQuery = link.replace(/\?.*$/, '');
+      return noQuery.replace("www.dropbox.com", "dl.dropboxusercontent.com");
+    }
+
+    document.getElementById('generate').addEventListener('click', function () {
+      const input = document.getElementById('dropbox').value.trim();
+      const lines = input.split('\n').filter(l => l.includes('dropbox.com'));
+
+      const output = lines.map(link => {
+        const cleaned = cleanDropboxLink(link);
+        const encoded = encodeURIComponent(cleaned);
+        return `https://annashrop.github.io/invitedadview/review.html?file=${encoded}`;
+      });
+
+      document.getElementById('result').textContent = output.join('\n');
+    });
+
+    document.getElementById('copyBtn').addEventListener('click', function () {
+      const resultText = document.getElementById('result').textContent;
+      navigator.clipboard.writeText(resultText).then(() => {
+        alert('Preview links copied to clipboard!');
+      }).catch(err => {
+        alert('Failed to copy text: ' + err);
+      });
+    });
+
+    // Needs edit cards
+    const previewContainer = document.getElementById('preview-container');
+    const flaggedAds = JSON.parse(localStorage.getItem('adsNeedingEdits')) || [];
+
+    document.getElementById('editCount').textContent = flaggedAds.length;
+
+    flaggedAds.forEach(html => {
+      const wrapper = document.createElement('div');
+      wrapper.innerHTML = html;
+      const card = wrapper.querySelector('.preview-card');
+      previewContainer.appendChild(card);
+    });
+
+    // Download CSV of edits
+    document.getElementById('downloadEditsBtn').addEventListener('click', () => {
+      const rows = [["Region", "Club Info", "Ad Name", "Headline", "Primary Text", "Reviewer Comments", "Image 1 URL", "Image 2 URL", "Image 3 URL"]];
+      
+      flaggedAds.forEach(html => {
+        const temp = document.createElement('div');
+        temp.innerHTML = html;
+
+        const region = temp.querySelector('.Region')?.textContent.trim() || '';
+        const clubMeta = temp.querySelector('.meta')?.textContent.trim() || '';
+        const headline = temp.querySelector('.headline')?.textContent.trim() || '';
+        const primary = temp.querySelector('.primary-text')?.textContent.trim() || '';
+        const comment = temp.querySelector('textarea')?.value.trim() || '';
+        const adNameMatch = clubMeta.match(/Ad Name:\s*(.*)/i);
+        const adName = adNameMatch ? adNameMatch[1] : '';
+
+        const imageNodes = Array.from(temp.querySelectorAll('img.card-image'));
+        const image1 = imageNodes[0]?.src || '';
+        const image2 = imageNodes[1]?.src || '';
+        const image3 = imageNodes[2]?.src || '';
+
+        rows.push([region, clubMeta, adName, headline, primary, comment, image1, image2, image3]);
+      });
+
+      let csvContent = "data:text/csv;charset=utf-8," + rows.map(e => e.map(val => `"${val.replace(/"/g, '""')}"`).join(",")).join("\n");
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", "ads_needing_edits.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      localStorage.removeItem('adsNeedingEdits');
+      location.reload();
+    });
+  </script>
+</body>
+</html>
