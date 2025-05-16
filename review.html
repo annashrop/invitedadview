@@ -142,9 +142,11 @@ if (fileURL) {
             Papa.parse(csvText, {
               skipEmptyLines: true,
               complete: function(results) {
+                console.log("Parsed CSV results:", results);
                 processCSV(results);
               }
             });
+
           });
       }
     });
