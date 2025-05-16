@@ -1,0 +1,107 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Club Ad Review</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 40px;
+      background-color: #f9f9f9;
+    }
+    .preview-card {
+      width: 100%;
+      max-width: 700px;
+      margin: 20px auto;
+      padding: 20px;
+      background: #fff;
+      border: 2px solid #f1c40f;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .card-image {
+      width: 100%;
+      max-height: 300px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+    select, textarea {
+      width: 100%;
+      margin-top: 8px;
+      margin-bottom: 12px;
+    }
+    .btn-container {
+      text-align: center;
+      margin-top: 30px;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #22326e;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      margin: 0 10px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1 style="text-align: center;">Club Review Page</h1>
+  <div id="preview-container"></div>
+
+  <div class="btn-container">
+    <button id="sendToAgencyBtn">Send Final Approvals to Agency</button>
+    <button id="sendClubEditsBtn">Send Edits Back to Ads Team</button>
+  </div>
+
+  <script>
+    const container = document.getElementById('preview-container');
+    const ads = JSON.parse(localStorage.getItem('clubApprovedAds')) || [];
+
+    ads.forEach((html, index) => {
+      const wrapper = document.createElement('div');
+      wrapper.innerHTML = html;
+
+      // Enable dropdowns and textareas to simulate editable review
+      const card = wrapper.querySelector('.preview-card');
+
+      card.querySelectorAll('select').forEach(sel => sel.disabled = false);
+      card.querySelectorAll('textarea').forEach(txt => txt.disabled = false);
+
+      container.appendChild(card);
+    });
+
+    document.getElementById('sendToAgencyBtn').addEventListener('click', () => {
+      const approved = [];
+      document.querySelectorAll('.preview-card').forEach(card => {
+        const textStatus = card.querySelector('.text-approval')?.value;
+        const imageStatuses = card.querySelectorAll('.image-approval');
+        const allApproved = Array.from(imageStatuses).every(sel => sel.value === 'Approved');
+
+        if (textStatus === 'Approved' && allApproved) {
+          approved.push(card.outerHTML);
+        }
+      });
+      localStorage.setItem('agencyFinalAds', JSON.stringify(approved));
+      window.location.href = 'agency.html';
+    });
+
+    document.getElementById('sendClubEditsBtn').addEventListener('click', () => {
+      const needsEdit = [];
+      document.querySelectorAll('.preview-card').forEach(card => {
+        const textStatus = card.querySelector('.text-approval')?.value;
+        const imageStatuses = card.querySelectorAll('.image-approval');
+        const anyEdit = textStatus === 'Needs Edit' || Array.from(imageStatuses).some(sel => sel.value === 'Needs Edit');
+
+        if (anyEdit) {
+          needsEdit.push(card.outerHTML);
+        }
+      });
+      localStorage.setItem('adsNeedingEdits', JSON.stringify(needsEdit));
+      window.location.href = 'ads-department.html';
+    });
+  </script>
+</body>
+</html>
