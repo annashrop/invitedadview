@@ -101,20 +101,6 @@ if (fileURL) {
   document.getElementById('preview-container').innerHTML = "<p style='color: red;'>No file specified. Please use the link generator to load a valid Dropbox file.</p>";
 }
 
-
-    if (fileURL) {
-      fetch(fileURL)
-        .then(response => response.text())
-        .then(csvText => {
-          Papa.parse(csvText, {
-            skipEmptyLines: true,
-            complete: function(results) {
-              processCSV(results);
-            }
-          });
-        });
-    }
-
     document.getElementById('filter-approved').addEventListener('click', () => {
       window.onlyApproved = true;
       window.onlyDrafts = false;
