@@ -76,9 +76,20 @@
   <script>
     // Dropbox link cleaner
     function cleanDropboxLink(link) {
-      let noQuery = link.replace(/\?.*$/, '');
-      return noQuery.replace("www.dropbox.com", "dl.dropboxusercontent.com");
-    }
+  try {
+    const url = new URL(link.trim());
+
+    // Replace the domain
+    url.hostname = "dl.dropboxusercontent.com";
+
+    // Force direct download
+    url.searchParams.set("dl", "1");
+
+    return url.toString();
+  } catch (e) {
+    return ""; // Fallback if the URL is malformed
+  }
+}
 
     document.getElementById('generate').addEventListener('click', function () {
   const input = document.getElementById('dropbox').value.trim();
