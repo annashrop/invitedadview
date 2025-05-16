@@ -220,32 +220,37 @@ if (fileURL) {
         }).join('');
 
         card.innerHTML = `
-          card.innerHTML = `
-            <div class="card-body">
-            <div style="border-bottom: 1px solid #ccc; padding-bottom: 6px; margin-bottom: 10px;">
-            <div class="meta"><strong>Region:</strong> ${rowData['Region'] || 'N/A'}</div>
-            <div class="meta"><strong>Club:</strong> ${rowData['Club'] || 'N/A'} &nbsp; | &nbsp; <strong>Category:</strong> ${rowData['Category'] || 'N/A'}</div>
-            <div class="meta"><strong>Ad Name:</strong> ${rowData['Ad_Name'] || 'N/A'}</div>
-        </div>
+  <div class="card-body">
+    <div style="border-bottom: 1px solid #ccc; padding-bottom: 6px; margin-bottom: 10px;">
+      <div class="meta"><strong>Region:</strong> ${rowData['Region'] || 'N/A'}</div>
+      <div class="meta"><strong>Club:</strong> ${rowData['Club'] || 'N/A'} &nbsp; | &nbsp; <strong>Category:</strong> ${rowData['Category'] || 'N/A'}</div>
+      <div class="meta"><strong>Ad Name:</strong> ${rowData['Ad Name'] || 'N/A'}</div>
+    </div>
 
-            <div class="headline">${rowData['Headline'] || ''}</div>
-            <div class="primary-text">${rowData['Primary Text'] || ''}</div>
-            <div class="approval">
-              <label>Ad Text Approval Status:</label>
-              <select class="text-approval">
-                <option value="Pending">Pending</option>
-                <option value="Approved">Approved</option>
-                <option value="Needs Edit">Needs Edit</option>
-              </select>
-            </div>
-            <div style="margin-top: 20px;"></div>
-            <div class="image-set">${imageTags}</div>
-            <div class="approval">
-              <label for="${globalCommentId}">Reviewer Comments:</label>
-              <textarea id="${globalCommentId}" placeholder="Enter comments here..."></textarea>
-            </div>
-          </div>
-        `;
+    <div class="headline">${rowData['Headline'] || ''}</div>
+    <div class="primary-text">${rowData['Primary Text'] || ''}</div>
+
+    <div class="approval">
+      <label>Ad Text Approval Status:</label>
+      <select class="text-approval">
+        <option value="Pending">Pending</option>
+        <option value="Approved">Approved</option>
+        <option value="Needs Edit">Needs Edit</option>
+      </select>
+    </div>
+
+    <div style="margin-top: 20px;"></div>
+    <div class="image-set">
+      ${imageTags}
+    </div>
+
+    <div class="approval">
+      <label for="${globalCommentId}">Reviewer Comments:</label>
+      <textarea id="${globalCommentId}" placeholder="Enter comments here..."></textarea>
+    </div>
+  </div>
+`;
+
 
         function updateCardStatus() {
           const imageStatuses = card.querySelectorAll('.image-approval');
