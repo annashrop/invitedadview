@@ -220,12 +220,14 @@ if (fileURL) {
         }).join('');
 
         card.innerHTML = `
-          <div class="card-body">
+          card.innerHTML = `
+            <div class="card-body">
             <div style="border-bottom: 1px solid #ccc; padding-bottom: 6px; margin-bottom: 10px;">
-              <div class="Region">${rowData['Region'] || ''}</div>
-              <div class="meta"><strong>Club:</strong> ${rowData['Club'] || 'Club'} &nbsp; | &nbsp; <strong>Category:</strong> ${rowData['Category'] || 'N/A'}</div>
-              <div class="meta"><strong>Ad Name:</strong> ${row[Data] || 'Ad_Name'}</div>
-            </div>
+            <div class="meta"><strong>Region:</strong> ${rowData['Region'] || 'N/A'}</div>
+            <div class="meta"><strong>Club:</strong> ${rowData['Club'] || 'N/A'} &nbsp; | &nbsp; <strong>Category:</strong> ${rowData['Category'] || 'N/A'}</div>
+            <div class="meta"><strong>Ad Name:</strong> ${rowData['Ad_Name'] || 'N/A'}</div>
+        </div>
+
             <div class="headline">${rowData['Headline'] || ''}</div>
             <div class="primary-text">${rowData['Primary Text'] || ''}</div>
             <div class="approval">
