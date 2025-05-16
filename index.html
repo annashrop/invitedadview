@@ -81,17 +81,19 @@
     }
 
     document.getElementById('generate').addEventListener('click', function () {
-      const input = document.getElementById('dropbox').value.trim();
-      const lines = input.split('\n').filter(l => l.includes('dropbox.com'));
+  const input = document.getElementById('dropbox').value.trim();
+  const lines = input.split('\n').filter(l => l.includes('dropbox.com'));
 
-      const output = lines.map(link => {
-        const cleaned = cleanDropboxLink(link);
-        const encoded = encodeURIComponent(cleaned);
-        return `https://annashrop.github.io/invitedadview/review.html?file=${encoded}`;
-      });
+  const output = lines.map(link => {
+    const cleaned = cleanDropboxLink(link);
+    return `https://annashrop.github.io/invitedadview/review.html?file=${cleaned}`;
+  });
 
-      document.getElementById('result').textContent = output.join('\n');
-    });
+  document.getElementById('result').innerHTML = `
+    <textarea readonly style="width:100%; height:100px;">${output.join('\n')}</textarea>
+  `;
+});
+
 
     document.getElementById('copyBtn').addEventListener('click', function () {
       const resultText = document.getElementById('result').textContent;
