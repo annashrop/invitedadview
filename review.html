@@ -103,8 +103,7 @@
         listHTML.push(`<li><a href="?review=true&club=${encodedClub}&file=${encodedFile}">${club}</a></li>`);
       });
       listHTML.push('</ul>');
-      clubListContainer.innerHTML = listHTML.join('
-');
+      clubListContainer.innerHTML = listHTML.join('\n');
 
       const selectedClub = new URLSearchParams(window.location.search).get("club");
 
