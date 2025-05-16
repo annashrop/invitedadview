@@ -47,7 +47,15 @@ const
     box-shadow: 0 4px 12px rgba(0,0,0,0.12);
     transition: box-shadow 0.2s;
   }
+   
+.header-wrapper {
+  margin-bottom: 40px; /* Adds the blue space between buttons and white cards */
+  text-align: center;
+}
 
+.top-buttons button {
+  margin: 0 10px;
+}
   .preview-card:hover {
     box-shadow: 0 6px 18px rgba(0,0,0,0.18);
   }
@@ -145,10 +153,11 @@ const
     <h1>Interactive Ad Approval Portal</h1>
 
   <div id="club-link-list" style="margin-bottom: 30px;"></div>
-  <div class="top-buttons">
+<div class="header-wrapper">
+    <div class="top-buttons">
     <button style="background-color: #2ecc71; color: white; padding: 10px; border: none; border-radius: 6px;">Send Approved Ads to Club</button>
     <button style="background-color: #e67e22; color: white; padding: 10px; border: none; border-radius: 6px;">Send Feedback to Ads Team</button>
-
+</div>
   <div id="preview-container"></div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
