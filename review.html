@@ -83,8 +83,7 @@
   <script>
     const urlParams = new URLSearchParams(window.location.search);
     const isReviewer = urlParams.get('review') === 'true';
-    
-const fileURL = new URLSearchParams(window.location.search).get('file');
+  
 
 if (fileURL) {
   fetch(fileURL)
