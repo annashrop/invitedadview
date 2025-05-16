@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Interactive Ad Approval Portal</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f4f4f4;
+    }
+    h1 {
+      text-align: center;
+      color: #22326e;
+    }
+    #preview-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: space-between;
+    }
+    .preview-card {
+      width: calc(50% - 20px);
+      border: 2px solid #f1c40f;
+      background-color: #fffbe6;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      box-sizing: border-box;
+    }
+    .card-image {
+      width: 100%;
+      max-height: 300px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+    .headline {
+      font-weight: bold;
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+    .primary-text {
+      font-size: 14px;
+      color: #333;
+      margin-bottom: 12px;
+    }
+    .image-wrapper {
+      margin-top: 10px;
+    }
+    .view-link a {
+      padding: 6px 10px;
+      background-color: #007bff;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      font-size: 13px;
+      display: inline-block;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Interactive Ad Approval Portal</h1>
+
+  <!-- ✅ ADDED: Upload Input + Button -->
+  <div style="text-align: center; margin-bottom: 20px;">
+    
+    
+  </div>
+
+  <div id="club-link-list" style="margin-bottom: 30px;"></div>
+  <div style="margin-bottom: 20px;">
+  </div>
+  <div id="preview-container"></div>
+<div style="margin-top: 30px; text-align: center;">
+  <button id="sendToClubBtn" style="padding: 10px 20px; background-color: #2ecc71; color: white; border: none; border-radius: 5px;">Send Approved Ads to Club</button>
+  <button id="sendFeedbackBtn" style="padding: 10px 20px; background-color: #e67e22; color: white; border: none; border-radius: 5px; margin-left: 10px;">Send Feedback to Ads Team</button>
+</div>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js">
+
+function processCSV(results) {
+      const data = results.data;
+      const headers = data[0];
+      const rows = data.slice(1);
+
+      const container = document.getElementById('preview-container');
+      container.innerHTML = '';
+
+      const selectedClub = urlParams.get('club');
+      const clubListContainer = document.getElementById('club-link-list');
+      clubListContainer.innerHTML = '';
+
+      const uniqueClubs = [...new Set(rows.map(row => row[headers.indexOf('Club')]).filter(Boolean))];
+      const listHTML = ['<h3>Preview Links:</h3>', '<ul>'];
+      listHTML.push(`<li><a href="?review=true">All Clubs (Regional View)</a></li>`);
+      uniqueClubs.forEach(club => {
+        const encodedClub = encodeURIComponent(club);
+        listHTML.push(`<li><a href="?review=true&club=${encodedClub}&file=${encodeURIComponent(fileURL)}">${club}</a></li>`);
+      });
+      listHTML.push('</ul>');
+      clubListContainer.innerHTML = listHTML.join('\n');
+
+      rows.forEach((row, index) => {
+        if (window.onlyApproved) {
+          const statusText = row[headers.indexOf('Ad Text Approval Status')] || 'Pending';
+          const imgStatus1 = row[headers.indexOf('Image 1 Approval Status')] || 'Pending';
+          const imgStatus2 = row[headers.indexOf('Image 2 Approval Status')] || 'Pending';
+          const imgStatus3 = row[headers.indexOf('Image 3 Approval Status')] || 'Pending';
+          const allApproved = [statusText, imgStatus1, imgStatus2, imgStatus3].every(val => val === 'Approved');
+          if (!allApproved) return;
+        }
+        if (window.onlyDrafts) {
+          const statusText = row[headers.indexOf('Ad Text Approval Status')] || 'Pending';
+          const imgStatus1 = row[headers.indexOf('Image 1 Approval Status')] || 'Pending';
+          const imgStatus2 = row[headers.indexOf('Image 2 Approval Status')] || 'Pending';
+          const imgStatus3 = row[headers.indexOf('Image 3 Approval Status')] || 'Pending';
+          const anyDraft = [statusText, imgStatus1, imgStatus2, imgStatus3].some(val => val !== 'Approved');
+          if (!anyDraft) return;
+        }
+        if (selectedClub && row[headers.indexOf('Club')] !== selectedClub) return;
+        if (row.every(cell => !cell || cell.trim() === '')) return;
+
+        const rowData = {};
+        headers.forEach((header, i) => rowData[header] = row[i]);
+
+        const card = document.createElement('div');
+        card.className = 'preview-card';
+
+        const globalCommentId = `global-comment-${index}`;
+
+        const imageTags = ['Image_URL_1', 'Image_URL_2', 'Image_URL_3'].map((key, imgIndex) => {
+          const url = rowData[key];
+          if (url && url !== '/') {
+            const isTif = url.toLowerCase().endsWith('.tif');
+            const idMatch = url.match(/I[0-9A-Za-z_.]+/) ||
+              url.match(/img-get2\/([^/]+)/) ||
+              url.match(/\/(I[0-9A-Za-z_.]+)\//) ||
+              url.match(/\/(G[0-9A-Za-z_]+)\//) ||
+              url.match(/\/(C[0-9A-Za-z_]+)\//);
+            const imageId = idMatch && (idMatch[1] || idMatch[0]);
+            const imgSrc = (!isTif && imageId)
+              ? `https://cdn.photoshelter.com/img-get2/${imageId}/fit=1000x750`
+              : 'https://st4.depositphotos.com/14953852/22772/v/450/depositphotos_227725020-stock-illustration-image-available-icon-flat-vector.jpg';
+
+            return `
+              <div class="image-wrapper">
+                <img class="card-image" src="${imgSrc}" alt="Ad image" />
+                <div class="view-link">
+                  <a href="#" onclick="window.open('${url}', 'ImagePopup', 'width=800,height=600'); return false;">View Full Image ${imgIndex + 1}</a>
+                  <label>Image Approval Status:</label>
+                  <select class="image-approval">
+                    <option value="Pending">Pending</option>
+                    <option value="Approved">Approved</option>
+                    <option value="Needs Edit">Needs Edit</option>
+                  </select>
+                </div>
+              </div>
+            `;
+          }
+          return '';
+        }).join('');
+
+        card.innerHTML = `
+  <div class="card-body">
+    <div style="border-bottom: 1px solid #ccc; padding-bottom: 6px; margin-bottom: 10px;">
+      <div class="meta"><strong>Region:</strong> ${rowData['Region'] || 'N/A'}</div>
+      <div class="meta"><strong>Club:</strong> ${rowData['Club'] || 'N/A'} &nbsp; | &nbsp; <strong>Category:</strong> ${rowData['Category'] || 'N/A'}</div>
+      <div class="meta"><strong>Ad Name:</strong> ${rowData['Ad Name'] || 'N/A'}</div>
+    </div>
+
+    <div class="headline">${rowData['Headline'] || ''}</div>
+    <div class="primary-text">${rowData['Primary Text'] || ''}</div>
+
+    <div class="approval">
+      <label>Ad Text Approval Status:</label>
+      <select class="text-approval">
+        <option value="Pending">Pending</option>
+        <option value="Approved">Approved</option>
+        <option value="Needs Edit">Needs Edit</option>
+      </select>
+    </div>
+
+    <div style="margin-top: 20px;"></div>
+    <div class="image-set">
+      ${imageTags}
+    </div>
+
+    <div class="approval">
+      <label for="${globalCommentId}">Reviewer Comments:</label>
+      <textarea id="${globalCommentId}" placeholder="Enter comments here..."></textarea>
+    </div>
+  </div>
+`;
+
+
+        function updateCardStatus() {
+          const imageStatuses = card.querySelectorAll('.image-approval');
+          const textStatus = card.querySelector('.text-approval').value;
+          const imageValues = Array.from(imageStatuses).map(sel => sel.value);
+
+          if (imageValues.includes('Needs Edit') || textStatus === 'Needs Edit') {
+            card.style.border = '2px solid #e74c3c';
+            card.style.backgroundColor = '#ffe6e6';
+          } else if (imageValues.every(v => v === 'Approved') && textStatus === 'Approved') {
+            card.style.border = '2px solid #2ecc71';
+            card.style.backgroundColor = '#e8f6f0';
+          } else {
+            card.style.border = '2px solid #f1c40f';
+            card.style.backgroundColor = '#fffbe6';
+          }
+        }
+
+        card.querySelectorAll('select').forEach(sel => sel.addEventListener('change', updateCardStatus));
+        updateCardStatus();
+
+        container.appendChild(card);
+      });
+    }
+  </script>
+
+<script>
+document.getElementById('sendToClubBtn').addEventListener('click', () => {
+  const cards = document.querySelectorAll('.preview-card');
+  const approvedAds = [];
+
+  cards.forEach(card => {
+    const textStatus = card.querySelector('.text-approval')?.value;
+    const imageStatuses = card.querySelectorAll('.image-approval');
+    const allApproved = Array.from(imageStatuses).every(sel => sel.value === 'Approved');
+
+    if (textStatus === 'Approved' && allApproved) {
+      approvedAds.push(card.outerHTML);
+    }
+  });
+
+  localStorage.setItem('clubApprovedAds', JSON.stringify(approvedAds));
+  window.location.href = 'club.html';
+});
+
+document.getElementById('sendFeedbackBtn').addEventListener('click', () => {
+  const cards = document.querySelectorAll('.preview-card');
+  const needsEditAds = [];
+
+  cards.forEach(card => {
+    const textStatus = card.querySelector('.text-approval')?.value;
+    const imageStatuses = card.querySelectorAll('.image-approval');
+    const anyNeedsEdit = textStatus === 'Needs Edit' || Array.from(imageStatuses).some(sel => sel.value === 'Needs Edit');
+
+    if (anyNeedsEdit) {
+      needsEditAds.push(card.outerHTML);
+    }
+  });
+
+  localStorage.setItem('adsNeedingEdits', JSON.stringify(needsEditAds));
+  window.location.href = 'ads-department.html';
+});
+</script>
+
+</body>
+</html>
+</script>
+
+<script>
+  const urlParams = new URLSearchParams(window.location.search);
+  const fileURL = urlParams.get("file");
+  const isReviewer = urlParams.get("review") === "true";
+
+  if (fileURL) {
+    fetch(fileURL)
+      .then(res => res.text())
+      .then(csvText => {
+        Papa.parse(csvText, {
+          skipEmptyLines: true,
+          complete: function(results) {
+            processCSV(results);
+          }
+        });
+      });
+  } else {
+    document.getElementById("preview-container").innerHTML =
+      "<p style='color: red;'>No file specified. Please use the link generator to load a valid Dropbox file.</p>";
+  }
+</script>
+
+
+    
+
+    function processCSV(results) {
+      const data = results.data;
+      const headers = data[0];
+      const rows = data.slice(1);
+
+      const container = document.getElementById('preview-container');
+      container.innerHTML = '';
+
+      const selectedClub = urlParams.get('club');
+      const clubListContainer = document.getElementById('club-link-list');
+      clubListContainer.innerHTML = '';
+
+      const uniqueClubs = [...new Set(rows.map(row => row[headers.indexOf('Club')]).filter(Boolean))];
+      const listHTML = ['<h3>Preview Links:</h3>', '<ul>'];
+      listHTML.push(`<li><a href="?review=true">All Clubs (Regional View)</a></li>`);
+      uniqueClubs.forEach(club => {
+        const encodedClub = encodeURIComponent(club);
+        listHTML.push(`<li><a href="?review=true&club=${encodedClub}&file=${encodeURIComponent(fileURL)}">${club}</a></li>`);
+      });
+      listHTML.push('</ul>');
+      clubListContainer.innerHTML = listHTML.join('\n');
+
+      rows.forEach((row, index) => {
+        if (window.onlyApproved) {
+          const statusText = row[headers.indexOf('Ad Text Approval Status')] || 'Pending';
+          const imgStatus1 = row[headers.indexOf('Image 1 Approval Status')] || 'Pending';
+          const imgStatus2 = row[headers.indexOf('Image 2 Approval Status')] || 'Pending';
+          const imgStatus3 = row[headers.indexOf('Image 3 Approval Status')] || 'Pending';
+          const allApproved = [statusText, imgStatus1, imgStatus2, imgStatus3].every(val => val === 'Approved');
+          if (!allApproved) return;
+        }
+        if (window.onlyDrafts) {
+          const statusText = row[headers.indexOf('Ad Text Approval Status')] || 'Pending';
+          const imgStatus1 = row[headers.indexOf('Image 1 Approval Status')] || 'Pending';
+          const imgStatus2 = row[headers.indexOf('Image 2 Approval Status')] || 'Pending';
+          const imgStatus3 = row[headers.indexOf('Image 3 Approval Status')] || 'Pending';
+          const anyDraft = [statusText, imgStatus1, imgStatus2, imgStatus3].some(val => val !== 'Approved');
+          if (!anyDraft) return;
+        }
+        if (selectedClub && row[headers.indexOf('Club')] !== selectedClub) return;
+        if (row.every(cell => !cell || cell.trim() === '')) return;
+
+        const rowData = {};
+        headers.forEach((header, i) => rowData[header] = row[i]);
+
+        const card = document.createElement('div');
+        card.className = 'preview-card';
+
+        const globalCommentId = `global-comment-${index}`;
+
+        const imageTags = ['Image_URL_1', 'Image_URL_2', 'Image_URL_3'].map((key, imgIndex) => {
+          const url = rowData[key];
+          if (url && url !== '/') {
+            const isTif = url.toLowerCase().endsWith('.tif');
+            const idMatch = url.match(/I[0-9A-Za-z_.]+/) ||
+              url.match(/img-get2\/([^/]+)/) ||
+              url.match(/\/(I[0-9A-Za-z_.]+)\//) ||
+              url.match(/\/(G[0-9A-Za-z_]+)\//) ||
+              url.match(/\/(C[0-9A-Za-z_]+)\//);
+            const imageId = idMatch && (idMatch[1] || idMatch[0]);
+            const imgSrc = (!isTif && imageId)
+              ? `https://cdn.photoshelter.com/img-get2/${imageId}/fit=1000x750`
+              : 'https://st4.depositphotos.com/14953852/22772/v/450/depositphotos_227725020-stock-illustration-image-available-icon-flat-vector.jpg';
+
+            return `
+              <div class="image-wrapper">
+                <img class="card-image" src="${imgSrc}" alt="Ad image" />
+                <div class="view-link">
+                  <a href="#" onclick="window.open('${url}', 'ImagePopup', 'width=800,height=600'); return false;">View Full Image ${imgIndex + 1}</a>
+                  <label>Image Approval Status:</label>
+                  <select class="image-approval">
+                    <option value="Pending">Pending</option>
+                    <option value="Approved">Approved</option>
+                    <option value="Needs Edit">Needs Edit</option>
+                  </select>
+                </div>
+              </div>
+            `;
+          }
+          return '';
+        }).join('');
+
+        card.innerHTML = `
+  <div class="card-body">
+    <div style="border-bottom: 1px solid #ccc; padding-bottom: 6px; margin-bottom: 10px;">
+      <div class="meta"><strong>Region:</strong> ${rowData['Region'] || 'N/A'}</div>
+      <div class="meta"><strong>Club:</strong> ${rowData['Club'] || 'N/A'} &nbsp; | &nbsp; <strong>Category:</strong> ${rowData['Category'] || 'N/A'}</div>
+      <div class="meta"><strong>Ad Name:</strong> ${rowData['Ad Name'] || 'N/A'}</div>
+    </div>
+
+    <div class="headline">${rowData['Headline'] || ''}</div>
+    <div class="primary-text">${rowData['Primary Text'] || ''}</div>
+
+    <div class="approval">
+      <label>Ad Text Approval Status:</label>
+      <select class="text-approval">
+        <option value="Pending">Pending</option>
+        <option value="Approved">Approved</option>
+        <option value="Needs Edit">Needs Edit</option>
+      </select>
+    </div>
+
+    <div style="margin-top: 20px;"></div>
+    <div class="image-set">
+      ${imageTags}
+    </div>
+
+    <div class="approval">
+      <label for="${globalCommentId}">Reviewer Comments:</label>
+      <textarea id="${globalCommentId}" placeholder="Enter comments here..."></textarea>
+    </div>
+  </div>
+`;
+
+
+        function updateCardStatus() {
+          const imageStatuses = card.querySelectorAll('.image-approval');
+          const textStatus = card.querySelector('.text-approval').value;
+          const imageValues = Array.from(imageStatuses).map(sel => sel.value);
+
+          if (imageValues.includes('Needs Edit') || textStatus === 'Needs Edit') {
+            card.style.border = '2px solid #e74c3c';
+            card.style.backgroundColor = '#ffe6e6';
+          } else if (imageValues.every(v => v === 'Approved') && textStatus === 'Approved') {
+            card.style.border = '2px solid #2ecc71';
+            card.style.backgroundColor = '#e8f6f0';
+          } else {
+            card.style.border = '2px solid #f1c40f';
+            card.style.backgroundColor = '#fffbe6';
+          }
+        }
+
+        card.querySelectorAll('select').forEach(sel => sel.addEventListener('change', updateCardStatus));
+        updateCardStatus();
+
+        container.appendChild(card);
+      });
+    }
+  </script>
+
+<script>
+document.getElementById('sendToClubBtn').addEventListener('click', () => {
+  const cards = document.querySelectorAll('.preview-card');
+  const approvedAds = [];
+
+  cards.forEach(card => {
+    const textStatus = card.querySelector('.text-approval')?.value;
+    const imageStatuses = card.querySelectorAll('.image-approval');
+    const allApproved = Array.from(imageStatuses).every(sel => sel.value === 'Approved');
+
+    if (textStatus === 'Approved' && allApproved) {
+      approvedAds.push(card.outerHTML);
+    }
+  });
+
+  localStorage.setItem('clubApprovedAds', JSON.stringify(approvedAds));
+  window.location.href = 'club.html';
+});
+
+document.getElementById('sendFeedbackBtn').addEventListener('click', () => {
+  const cards = document.querySelectorAll('.preview-card');
+  const needsEditAds = [];
+
+  cards.forEach(card => {
+    const textStatus = card.querySelector('.text-approval')?.value;
+    const imageStatuses = card.querySelectorAll('.image-approval');
+    const anyNeedsEdit = textStatus === 'Needs Edit' || Array.from(imageStatuses).some(sel => sel.value === 'Needs Edit');
+
+    if (anyNeedsEdit) {
+      needsEditAds.push(card.outerHTML);
+    }
+  });
+
+  localStorage.setItem('adsNeedingEdits', JSON.stringify(needsEditAds));
+  window.location.href = 'ads-department.html';
+});
+</script>
+
+</body>
+</html>
