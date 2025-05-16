@@ -29,8 +29,8 @@
       box-sizing: border-box;
     }
     .card-image {
-      width: 100%;
-      max-height: 300px;
+      width: 240px;
+      height: 1800px;
       object-fit: cover;
       border-radius: 8px;
       margin-bottom: 10px;
@@ -237,7 +237,8 @@
             <div style="border-bottom: 1px solid #ccc; padding-bottom: 6px; margin-bottom: 10px;">
               <div class="Region">${rowData['Region'] || ''}</div>
               <div class="meta"><strong>Club:</strong> ${rowData['Club'] || 'Club'} &nbsp; | &nbsp; <strong>Category:</strong> ${rowData['Category'] || 'N/A'}</div>
-              <div class="meta"><strong>Ad Name:</strong> ${row[2] || 'Ad_Name'}</div>
+              <div class="meta"><strong>Ad Name:</strong> ${rowData['Ad_Name'] || 'Ad_Name'}</div>
+
             </div>
             <div class="headline">${rowData['Headline'] || ''}</div>
             <div class="primary-text">${rowData['Primary_Text'] || ''}</div>
