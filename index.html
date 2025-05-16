@@ -86,7 +86,7 @@
 
   const output = lines.map(link => {
     const cleaned = cleanDropboxLink(link);
-    const encoded = encodeURIComponent(cleaned); // <-- this is the missing step
+    const encoded = encodeURIComponent(cleaned); // <- fixes the issue
     return `https://annashrop.github.io/invitedadview/review.html?file=${encoded}`;
   });
 
@@ -94,7 +94,6 @@
     <textarea readonly style="width:100%; height:100px;">${output.join('\n')}</textarea>
   `;
 });
-
 
 
     document.getElementById('copyBtn').addEventListener('click', function () {
