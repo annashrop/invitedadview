@@ -232,9 +232,24 @@ textarea {
   .approval label {
     font-size: 13px;
     font-weight: 500;
-    display: block;
+    display: inline-block;
     margin-top: 10px;
   }
+   .approval-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+  margin-bottom: 10px;
+}
+
+.approval-row label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  white-space: nowrap;
+}
+
 </style>
 
 </head>
@@ -319,12 +334,14 @@ textarea {
         <img class="card-image" src="${imgSrc}" alt="Ad image" />
         <div class="view-link">
           <a href="#" class="view-image-button" onclick="window.open('${url}', 'ImagePopup', 'width=800,height=600'); return false;">View Full Image ${imgIndex + 1}</a>
+          <div class="approval-row">
           <label>Image Approval Status:</label>
           <select class="image-approval">
             <option value="Pending">Pending</option>
             <option value="Approved">Approved</option>
             <option value="Needs Edit">Needs Edit</option>
           </select>
+          </div>
         </div>
       </div>
     `;
