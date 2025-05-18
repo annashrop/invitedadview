@@ -361,14 +361,15 @@ textarea {
             <div class="headline">${row['Headline'] || ''}</div>
             <div class="primary-text">${row['Primary Text'] || ''}</div>
             <div class="image-set">${imageTags}</div>
-            <div class="approval">
-              <label>Ad Text Approval Status:</label>
-                  <select class="text-approval">
+            <div class="approval-row">
+                <label>Ad Text Approval Status:</label>
+                <select class="text-approval">
                   <option value="Pending">Pending</option>
                   <option value="Approved">Approved</option>
                   <option value="Needs Edit">Needs Edit</option>
-                  </select>
+                </select>
             </div>
+
             <div class="approval">
               <label>Reviewer Comments:</label>
               <textarea placeholder="Enter comments here..."></textarea>
