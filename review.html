@@ -184,6 +184,23 @@ textarea {
 .top-buttons button {
   margin: 0 10px;
   }
+.view-image-button {
+  display: inline-block;
+  background-color: #22326e;
+  color: white;
+  padding: 6px 12px;
+  margin-bottom: 6px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.view-image-button:hover {
+  background-color: #1a244f;
+}
 
   .approval label {
     font-size: 13px;
@@ -274,7 +291,7 @@ textarea {
       <div class="image-wrapper">
         <img class="card-image" src="${imgSrc}" alt="Ad image" />
         <div class="view-link">
-          <a href="#" onclick="window.open('${url}', 'ImagePopup', 'width=800,height=600'); return false;">View Full Image ${imgIndex + 1}</a>
+          <a href="#" class="view-image-button" onclick="window.open('${url}', 'ImagePopup', 'width=800,height=600'); return false;">View Full Image ${imgIndex + 1}</a>
           <label>Image Approval Status:</label>
           <select class="image-approval">
             <option value="Pending">Pending</option>
