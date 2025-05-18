@@ -103,6 +103,33 @@ textarea {
 .top-buttons button {
   margin: 0 10px;
 }
+#club-link-list ul {
+  list-style: none;
+  padding-left: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+#club-link-list li {
+  margin: 0;
+}
+
+.preview-link-button {
+  display: inline-block;
+  padding: 6px 14px;
+  background-color: #22326e;
+  color: white;
+  text-decoration: none;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.preview-link-button:hover {
+  background-color: #1a244f;
+}
   .preview-card:hover {
     box-shadow: 0 6px 18px rgba(0,0,0,0.18);
   }
@@ -256,11 +283,11 @@ textarea {
 
       const uniqueClubs = [...new Set(data.map(row => row['Club']).filter(Boolean))];
       const listHTML = ['<strong>Preview Links:</strong>', '<ul>'];
-      listHTML.push(`<li><a href="?review=true">All Clubs (Regional View)</a></li>`);
+      listHTML.push(`<li><a class="preview-link-button" href="?review=true">All Clubs (Regional View)</a></li>`);
       uniqueClubs.forEach(club => {
         const encodedClub = encodeURIComponent(club);
         const encodedFile = encodeURIComponent(fileURL);
-        listHTML.push(`<li><a href="?review=true&club=${encodedClub}&file=${encodedFile}">${club}</a></li>`);
+      listHTML.push(`<li><a class="preview-link-button" href="?review=true&club=${encodedClub}&file=${encodedFile}">${club}</a></li>`);
       });
       listHTML.push('</ul>');
       clubListContainer.innerHTML = listHTML.join('\n');
