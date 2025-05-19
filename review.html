@@ -396,7 +396,46 @@ textarea {
 
         container.appendChild(card);
       });
+    } 
+
+document.getElementById('sendToClubBtn').addEventListener('click', function () {
+  const approvedData = [];
+  const cards = document.querySelectorAll('.preview-card');
+
+  cards.forEach(card => {
+    const textStatus = card.querySelector('.text-approval')?.value;
+    const imageStatuses = Array.from(card.querySelectorAll('.image-approval')).map(sel => sel.value);
+    const allApproved = textStatus === 'Approved' && imageStatuses.every(v => v === 'Approved');
+
+    if (allApproved) {
+      const region = card.querySelector('.meta:nth-child(1)')?.innerText.replace('Region:', '').trim();
+      const club = card.querySelector('.meta:nth-child(2)')?.innerText.split('|')[0].replace('Club:', '').trim();
+      const category = card.querySelector('.meta:nth-child(2)')?.innerText.split('|')[1].replace('Category:', '').trim();
+      const adName = card.querySelector('.ad-name')?.innerText.replace('Ad Name:', '').trim();
+      const headline = card.querySelector('.headline')?.innerText.trim();
+      const primaryText = card.querySelector('.primary-text')?.innerText.trim();
+      const imageUrls = Array.from(card.querySelectorAll('.card-image')).map(img => img.src);
+      const comment = card.querySelector('textarea')?.value.trim();
+
+      approvedData.push({
+        Region: region,
+        Club: club,
+        Category: category,
+        "Ad Name": adName,
+        Headline: headline,
+        "Primary Text": primaryText,
+        "Image URL 1": imageUrls[0] || '',
+        "Image URL 2": imageUrls[1] || '',
+        "Image URL 3": imageUrls[2] || '',
+        "Reviewer Comments": comment
+      });
     }
+  });
+
+  localStorage.setItem('approvedAds', JSON.stringify(approvedData));
+  window.location.href = 'club.html';
+});
+
   </script>
 </body>
 </html>
