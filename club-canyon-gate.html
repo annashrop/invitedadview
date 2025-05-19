@@ -72,19 +72,7 @@
 
   <script>
     const container = document.getElementById('preview-container');
-    const allClubAds = JSON.parse(localStorage.getItem("clubLevelApprovedAds") || "{}");
-    const canyonGateAds = allClubAds["Canyon Gate"] || [];
-
-    if (canyonGateAds.length > 0) {
-      canyonGateAds.forEach(html => {
-        const wrapper = document.createElement('div');
-        wrapper.innerHTML = html;
-        const card = wrapper.firstElementChild;
-        container.appendChild(card);
-      });
-    } else {
-      container.innerHTML = '<p style="color:white; text-align:center;">No ads available for Canyon Gate.</p>';
-    }
+    
 
     document.getElementById("sendToAgencyBtn").addEventListener("click", () => {
       const approvedAds = [];
