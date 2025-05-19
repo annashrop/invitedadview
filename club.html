@@ -5,47 +5,265 @@
   <meta charset="UTF-8">
   <title>Club Ad Review</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 40px;
-      background-color: #f9f9f9;
-    }
-    .preview-card {
-      width: 100%;
-      max-width: 700px;
-      margin: 20px auto;
-      padding: 20px;
-      background: #fff;
-      border: 2px solid #f1c40f;
-      border-radius: 10px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    .card-image {
-      width: 100%;
-      max-height: 300px;
-      object-fit: cover;
-      border-radius: 8px;
-      margin-bottom: 10px;
-    }
-    select, textarea {
-      width: 100%;
-      margin-top: 8px;
-      margin-bottom: 12px;
-    }
-    .btn-container {
-      text-align: center;
-      margin-top: 30px;
-    }
-    button {
-      padding: 10px 20px;
-      background-color: #22326e;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      margin: 0 10px;
-      cursor: pointer;
-    }
-  </style>
+   .top-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #22326e;
+  padding: 10px 20px;
+  border-bottom: 1px solid #1b264f;
+}
+
+.nav-logo {
+  height: 36px;
+  margin-right: 15px;
+}
+
+.nav-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: white;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background-color: #22326e;
+    color: #ffffff;
+    margin: 0;
+    padding: 0;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+  }
+
+  header {
+    background-color: #22326e;
+    padding: 20px 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  header img {
+    max-height: 40px;
+  }
+
+  h1 {
+    text-align: center;
+    font-size: 26px;
+    margin: 30px 0 10px;
+    color: #ffffff;
+  }
+
+ .preview-card {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 20px;
+  gap: 30px
+  width: 100%;
+  max-width: 550px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.preview-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+select,
+textarea {
+  background-color: #f5f5f5;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 8px;
+  font-size: 14px;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 6px;
+}
+
+textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+.preview-card {
+  color: #222222;
+}
+   
+.header-wrapper {
+  margin-bottom: 40px; /* Adds the blue space between buttons and white cards */
+  text-align: center;
+}
+
+.top-buttons button {
+  margin: 0 10px;
+}
+#club-link-list ul {
+  list-style: none;
+  padding-left: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+#club-link-list li {
+  margin: 0;
+}
+
+.preview-link-button {
+  display: inline-block;
+  padding: 6px 14px;
+  background-color: #009cbd;
+  color: white;
+  text-decoration: none;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.preview-link-button:hover {
+  background-color: #FFFFFF;
+}
+  .preview-card:hover {
+    box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+  }
+.ad-name {
+  font-size: 10px;
+  color: #666;
+  font-weight: 500;
+}
+
+  #preview-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    gap: 24px;
+  }
+   .meta-section {
+  background-color: #ececec;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+
+  .meta, .headline, .primary-text {
+    margin-bottom: 10px;
+  }
+
+  .headline {
+    font-weight: bold;
+    font-size: 18px;
+    color: #22326e;
+  }
+
+.meta-divider {
+  border-top: 1px solid #ddd;
+  margin: 12px 0;
+}
+
+  .primary-text {
+    font-size: 15px;
+  }
+
+  .image-wrapper {
+    margin-top: 20px;
+  }
+
+  .card-image {
+    width: 100%;
+    max-height: 300px;
+    object-fit: cover;
+    border-radius: 6px;
+    margin-bottom: 10px;
+  }
+
+  button {
+    background-color: #ff6f3c;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    margin-top: 15px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+
+  button:hover {
+    background-color: #e45a26;
+  }
+
+  select, textarea {
+    width: 100%;
+    margin-top: 5px;
+    padding: 6px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+
+  .club-link-list ul {
+    list-style: none;
+    padding-left: 0;
+  }
+
+  .club-link-list li a {
+    color: #ffffff;
+    text-decoration: underline;
+    font-size: 14px;
+  }
+
+   .top-buttons {
+  text-align: center;
+  margin-bottom: 30px;
+  }
+.top-buttons button {
+  margin: 0 10px;
+  }
+.view-image-button {
+  display: inline-block;
+  background-color: #22326e;
+  color: white;
+  padding: 6px 12px;
+  margin-bottom: 6px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.view-image-button:hover {
+  background-color: #1a244f;
+}
+
+  .approval label {
+    font-size: 13px;
+    font-weight: 500;
+    display: inline-block;
+    margin-top: 10px;
+  }
+   .approval-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+  margin-bottom: 10px;
+}
+
+.approval-row label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  white-space: nowrap;
+}
+
+</style>
 </head>
 <body>
   <h1 style="text-align: center;">Club Review Page</h1>
