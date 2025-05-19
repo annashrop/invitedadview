@@ -30,6 +30,13 @@
       gap: 20px;
       margin-bottom: 40px;
     }
+    .card-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 30px; /* creates horizontal and vertical spacing */
+}
+
     .top-buttons button {
       padding: 12px 20px;
       font-size: 14px;
@@ -53,13 +60,14 @@
       padding: 20px;
       margin: 30px auto;
       width: 100%;
-      max-width: 550px;
+      max-width: none;
       transition: transform 0.2s ease, box-shadow 0.2s ease;
       color: #333;
     }
   </style>
 </head>
 <body>
+  <div id="preview-container" class="card-wrapper">
   <div class="container">
     <h1>Canyon Gate Ad Approvals</h1>
     <div class="top-buttons">
