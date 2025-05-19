@@ -108,6 +108,62 @@
       localStorage.setItem("adsNeedingEdits", JSON.stringify(editAds));
       window.location.href = "index.html";
     });
+    <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const clubKey = window.location.pathname
+      .split("/")
+      .pop()
+      .replace(".html", "")
+      .replace("club-", "clubApprovedAds_");
+
+    const adsData = localStorage.getItem(clubKey);
+    const container = document.getElementById("preview-container");
+
+    if (!adsData) {
+      container.innerHTML = `<p style="color: white; text-align: center;">No ads available for this club.</p>`;
+      return;
+    }
+
+    const ads = JSON.parse(adsData);
+
+    ads.forEach(ad => {
+      const card = document.createElement("div");
+      card.className = "preview-card";
+
+      card.innerHTML = `
+        <div class="meta-section">
+          <div class="meta"><strong>Region:</strong> ${ad.Region}</div>
+          <div class="meta"><strong>Club:</strong> ${ad.Club} | <strong>Category:</strong> ${ad.Category}</div>
+          <div class="meta ad-name"><strong>Ad Name:</strong> ${ad["Ad Name"]}</div>
+        </div>
+        <div class="meta-divider"></div>
+        <div class="headline">${ad.Headline}</div>
+        <div class="primary-text">${ad["Primary Text"]}</div>
+        ${[1, 2, 3].map(i =>
+          ad[`Image URL ${i}`] ? `
+            <div class="image-wrapper">
+              <img class="card-image" src="${ad[`Image URL ${i}`]}" />
+            </div>
+          ` : '').join('')}
+        <div class="approval-row">
+          <label>Ad Text Approval Status:</label>
+          <select class="text-approval">
+            <option value="Pending">Pending</option>
+            <option value="Approved" selected>Approved</option>
+            <option value="Needs Edit">Needs Edit</option>
+          </select>
+        </div>
+        <div class="approval-row">
+          <label>Reviewer Comments:</label>
+          <textarea>${ad["Reviewer Comments"] || ""}</textarea>
+        </div>
+      `;
+
+      container.appendChild(card);
+    });
+  });
+</script>
+
   </script>
 </body>
 </html>
