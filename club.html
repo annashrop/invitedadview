@@ -255,6 +255,12 @@ textarea {
   margin-top: 8px;
   margin-bottom: 10px;
 }
+.meta-section {
+  background-color: #f8f8f8;
+  padding: 10px 15px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
 
 .approval-row label {
   font-size: 14px;
@@ -281,49 +287,73 @@ textarea {
   <script>
     const container = document.getElementById('preview-container');
     const ads = JSON.parse(localStorage.getItem('clubApprovedAds')) || [];
-const container = document.getElementById('preview-container');
 
 ads.forEach((ad, index) => {
   const card = document.createElement('div');
   card.className = 'preview-card';
 
   card.innerHTML = `
+  <div class="meta-section">
     <div class="meta"><strong>Region:</strong> ${ad.Region}</div>
     <div class="meta"><strong>Club:</strong> ${ad.Club} | <strong>Category:</strong> ${ad.Category}</div>
     <div class="meta"><strong>Ad Name:</strong> ${ad["Ad Name"]}</div>
-    <div class="headline">${ad.Headline}</div>
-    <div class="primary-text">${ad["Primary Text"]}</div>
+  </div>
+  <div class="headline">${ad.Headline}</div>
+  <div class="primary-text">${ad["Primary Text"]}</div>
 
-    ${[1, 2, 3].map(i => ad[`Image URL ${i}`] ? `
-      <div class="image-wrapper">
-        <img class="card-image" src="${ad[`Image URL ${i}`]}" />
-        <div class="approval-row">
-          <label>Image Approval Status:</label>
-          <select class="image-approval">
-            <option value="Pending">Pending</option>
-            <option value="Approved">Approved</option>
-            <option value="Needs Edit">Needs Edit</option>
-          </select>
-        </div>
-      </div>` : '').join('')}
+  ${[1, 2, 3].map(i => ad[`Image URL ${i}`] ? `
+    <div class="image-wrapper">
+      <img class="card-image" src="${ad[`Image URL ${i}`]}" />
+      <div class="approval-row">
+        <label>Image Approval Status:</label>
+        <select class="image-approval">
+          <option value="Pending">Pending</option>
+          <option value="Approved">Approved</option>
+          <option value="Needs Edit">Needs Edit</option>
+        </select>
+      </div>
+    </div>` : '').join('')}
 
-    <div class="approval-row">
-      <label>Ad Text Approval Status:</label>
-      <select class="text-approval">
-        <option value="Pending">Pending</option>
-        <option value="Approved">Approved</option>
-        <option value="Needs Edit">Needs Edit</option>
-      </select>
-    </div>
+  <div class="approval-row">
+    <label>Ad Text Approval Status:</label>
+    <select class="text-approval">
+      <option value="Pending">Pending</option>
+      <option value="Approved">Approved</option>
+      <option value="Needs Edit">Needs Edit</option>
+    </select>
+  </div>
 
-    <div class="approval-row">
-      <label>Reviewer Comments:</label>
-      <textarea>${ad["Reviewer Comments"] || ''}</textarea>
-    </div>
-  `;
+  <div class="approval-row">
+    <label>Reviewer Comments:</label>
+    <textarea>${ad["Reviewer Comments"] || ''}</textarea>
+  </div>
+`;
 
-  container.appendChild(card);
-});
+// 🔁 Add visual logic for approval state
+function updateCardStatus() {
+  const textStatus = card.querySelector('.text-approval')?.value;
+  const imageStatuses = card.querySelectorAll('.image-approval');
+  const imageValues = Array.from(imageStatuses).map(sel => sel.value);
+
+  if (imageValues.includes('Needs Edit') || textStatus === 'Needs Edit') {
+    card.style.border = '2px solid #e74c3c';
+    card.style.backgroundColor = '#ffe6e6';
+  } else if (imageValues.every(v => v === 'Approved') && textStatus === 'Approved') {
+    card.style.border = '2px solid #2ecc71';
+    card.style.backgroundColor = '#e8f6f0';
+  } else {
+    card.style.border = '2px solid #f1c40f';
+    card.style.backgroundColor = '#fffbe6';
+  }
+}
+
+card.querySelectorAll('select').forEach(sel =>
+  sel.addEventListener('change', updateCardStatus)
+);
+
+updateCardStatus();
+container.appendChild(card);
+
 
 
     document.getElementById('sendToAgencyBtn').addEventListener('click', () => {
