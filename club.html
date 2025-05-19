@@ -241,6 +241,16 @@ textarea {
 .view-image-button:hover {
   background-color: #1a244f;
 }
+    .send-final-btn {
+  background-color: #7baa65; /* teal green or whatever you like */
+  color: white;
+  font-weight: 600;
+}
+
+.send-final-btn:hover {
+  background-color: #00a376; /* darker shade for hover */
+}
+
 
   .approval label {
     font-size: 13px;
@@ -280,6 +290,8 @@ textarea {
   <div id="preview-container"></div>
 
   <div class="btn-container">
+    <button id="sendToAgencyBtn" class="send-final-btn">Send Final Approvals</button>
+
     <button id="sendToAgencyBtn">Send Final Approvals</button>
     <button id="sendClubEditsBtn">Send Edits Back to Ads Team</button>
   </div>
