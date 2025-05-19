@@ -134,7 +134,9 @@ textarea {
     box-shadow: 0 6px 18px rgba(0,0,0,0.18);
   }
 .ad-name {
-  font-size: 13px; /* Adjust this number depending on your base font size */
+  font-size: 13px;
+  color: #666;
+  font-weight: 500;
 }
 
   #preview-container {
@@ -142,6 +144,13 @@ textarea {
     grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
     gap: 24px;
   }
+   .meta-section {
+  background-color: #f9f9f9;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
 
   .meta, .headline, .primary-text {
     margin-bottom: 10px;
@@ -355,9 +364,11 @@ textarea {
 
         card.innerHTML = `
           <div class="card-body">
-            <div class="meta"><strong>Region:</strong> ${row['Region'] || 'N/A'}</div>
-            <div class="meta"><strong>Club:</strong> ${row['Club'] || 'N/A'} &nbsp; | &nbsp; <strong>Category:</strong> ${row['Category'] || 'N/A'}</div>
-            <div class="meta ad-name"><strong>Ad Name:</strong> ${row['Ad Name'] || 'N/A'}</div>
+            <div class="meta-section">
+              <div class="meta"><strong>Region:</strong> ${row['Region'] || 'N/A'}</div>
+              <div class="meta"><strong>Club:</strong> ${row['Club'] || 'N/A'} &nbsp; | &nbsp; <strong>Category:</strong> ${row['Category'] || 'N/A'}</div>
+              <div class="meta ad-name"><strong>Ad Name:</strong> ${row['Ad Name'] || 'N/A'}</div>
+            </div>
             <div class="headline">${row['Headline'] || ''}</div>
             <div class="primary-text">${row['Primary Text'] || ''}</div>
             <div class="image-set">${imageTags}</div>
