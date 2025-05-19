@@ -162,6 +162,11 @@ textarea {
     color: #22326e;
   }
 
+.meta-divider {
+  border-top: 1px solid #ddd;
+  margin: 12px 0;
+}
+
   .primary-text {
     font-size: 15px;
   }
@@ -369,6 +374,7 @@ textarea {
               <div class="meta"><strong>Club:</strong> ${row['Club'] || 'N/A'} &nbsp; | &nbsp; <strong>Category:</strong> ${row['Category'] || 'N/A'}</div>
               <div class="meta ad-name"><strong>Ad Name:</strong> ${row['Ad Name'] || 'N/A'}</div>
             </div>
+            <div class="meta-divider"></div>
             <div class="headline">${row['Headline'] || ''}</div>
             <div class="primary-text">${row['Primary Text'] || ''}</div>
             <div class="image-set">${imageTags}</div>
