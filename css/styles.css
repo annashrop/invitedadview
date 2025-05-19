@@ -75,8 +75,10 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 30px; /* <- this creates the blue space between cards */
+  gap: 30px; /* This creates both horizontal AND vertical spacing */
+  padding: 20px;
 }
+
 
 select,
 textarea {
