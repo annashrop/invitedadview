@@ -59,19 +59,50 @@
   <script>
     const container = document.getElementById('preview-container');
     const ads = JSON.parse(localStorage.getItem('clubApprovedAds')) || [];
+const container = document.getElementById('preview-container');
 
-    ads.forEach((html, index) => {
-      const wrapper = document.createElement('div');
-      wrapper.innerHTML = html;
+ads.forEach((ad, index) => {
+  const card = document.createElement('div');
+  card.className = 'preview-card';
 
-      // Enable dropdowns and textareas to simulate editable review
-      const card = wrapper.querySelector('.preview-card');
+  card.innerHTML = `
+    <div class="meta"><strong>Region:</strong> ${ad.Region}</div>
+    <div class="meta"><strong>Club:</strong> ${ad.Club} | <strong>Category:</strong> ${ad.Category}</div>
+    <div class="meta"><strong>Ad Name:</strong> ${ad["Ad Name"]}</div>
+    <div class="headline">${ad.Headline}</div>
+    <div class="primary-text">${ad["Primary Text"]}</div>
 
-      card.querySelectorAll('select').forEach(sel => sel.disabled = false);
-      card.querySelectorAll('textarea').forEach(txt => txt.disabled = false);
+    ${[1, 2, 3].map(i => ad[`Image URL ${i}`] ? `
+      <div class="image-wrapper">
+        <img class="card-image" src="${ad[`Image URL ${i}`]}" />
+        <div class="approval-row">
+          <label>Image Approval Status:</label>
+          <select class="image-approval">
+            <option value="Pending">Pending</option>
+            <option value="Approved">Approved</option>
+            <option value="Needs Edit">Needs Edit</option>
+          </select>
+        </div>
+      </div>` : '').join('')}
 
-      container.appendChild(card);
-    });
+    <div class="approval-row">
+      <label>Ad Text Approval Status:</label>
+      <select class="text-approval">
+        <option value="Pending">Pending</option>
+        <option value="Approved">Approved</option>
+        <option value="Needs Edit">Needs Edit</option>
+      </select>
+    </div>
+
+    <div class="approval-row">
+      <label>Reviewer Comments:</label>
+      <textarea>${ad["Reviewer Comments"] || ''}</textarea>
+    </div>
+  `;
+
+  container.appendChild(card);
+});
+
 
     document.getElementById('sendToAgencyBtn').addEventListener('click', () => {
       const approved = [];
