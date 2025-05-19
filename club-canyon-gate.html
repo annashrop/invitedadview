@@ -60,6 +60,7 @@
   </style>
 </head>
 <body>
+<div id="preview-container">
   <div class="container">
     <h1>Canyon Gate Ad Approvals</h1>
     <div class="top-buttons">
@@ -70,9 +71,9 @@
       <!-- Cards will be injected here -->
     </div>
   </div>
-
+</div>
   <script>
-  const container = document.getElementById('preview-container');
+ const container = document.getElementById('card-container');
 
   document.getElementById("sendToAgencyBtn").addEventListener("click", () => {
     const approvedAds = [];
