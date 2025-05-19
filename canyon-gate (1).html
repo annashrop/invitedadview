@@ -1,0 +1,113 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Canyon Gate - Club Review</title>
+  <style>
+    body {
+      background-color: #22326e;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      color: white;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 26px;
+      font-weight: 600;
+    }
+    .top-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+    .top-buttons button {
+      padding: 12px 20px;
+      font-size: 14px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    #sendToAgencyBtn {
+      background-color: #7baa65;
+      color: white;
+    }
+    #sendEdits {
+      background-color: #e35207;
+      color: white;
+    }
+    .preview-card {
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      padding: 20px;
+      margin: 30px auto;
+      width: 100%;
+      max-width: 550px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Canyon Gate Ad Approvals</h1>
+    <div class="top-buttons">
+      <button id="sendToAgencyBtn">Send Final Approvals</button>
+      <button id="sendEdits">Send Edits to Ads Department</button>
+    </div>
+    <div id="preview-container">
+      <!-- Cards will be injected here -->
+    </div>
+  </div>
+
+  <script>
+    const container = document.getElementById('preview-container');
+    const allClubAds = JSON.parse(localStorage.getItem("clubLevelApprovedAds") || "{}");
+    const canyonGateAds = allClubAds["Canyon Gate"] || [];
+
+    if (canyonGateAds.length > 0) {
+      canyonGateAds.forEach(html => {
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = html;
+        const card = wrapper.firstElementChild;
+        container.appendChild(card);
+      });
+    } else {
+      container.innerHTML = '<p style="color:white; text-align:center;">No ads available for Canyon Gate.</p>';
+    }
+
+    document.getElementById("sendToAgencyBtn").addEventListener("click", () => {
+      const approvedAds = [];
+      document.querySelectorAll(".preview-card").forEach(card => {
+        const allApproved = [...card.querySelectorAll("select")].every(sel => sel.value === "Approved");
+        if (allApproved) approvedAds.push(card.outerHTML);
+      });
+      localStorage.setItem("agencyApprovedAds", JSON.stringify(approvedAds));
+      window.location.href = "agency.html";
+    });
+
+    document.getElementById("sendEdits").addEventListener("click", () => {
+      const editAds = [];
+      document.querySelectorAll(".preview-card").forEach(card => {
+        const hasEdit = [...card.querySelectorAll("select")].some(sel => sel.value === "Needs Edit");
+        if (hasEdit) {
+          const comments = card.querySelector("textarea")?.value || '';
+          editAds.push({ html: card.outerHTML, comment: comments });
+        }
+      });
+      localStorage.setItem("adsNeedingEdits", JSON.stringify(editAds));
+      window.location.href = "index.html";
+    });
+  </script>
+</body>
+</html>
