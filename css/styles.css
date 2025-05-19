@@ -78,7 +78,11 @@
   gap: 30px; /* This creates both horizontal AND vertical spacing */
   padding: 20px;
 }
-
+ .card-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 30px; /* creates horizontal and vertical spacing */
 
 select,
 textarea {
