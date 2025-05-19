@@ -105,12 +105,6 @@
       .replace("club-", "clubApprovedAds_");
 
     const adsData = localStorage.getItem(clubKey);
-    const container = document.getElementById("preview-container");
-
-    if (!adsData) {
-      container.innerHTML = `<p style="color: white; text-align: center;">No ads available for this club.</p>`;
-      return;
-    }
 
     const ads = JSON.parse(adsData);
 
