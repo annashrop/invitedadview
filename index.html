@@ -175,13 +175,15 @@
   const storedEdits = JSON.parse(localStorage.getItem("adsNeedingEdits") || "[]");
 
   if (storedEdits.length > 0) {
-    storedEdits.forEach((item, index) => {
+    storedEdits.forEach(({ html }) => {
       const wrapper = document.createElement("div");
-      wrapper.innerHTML = item.html;
+      wrapper.innerHTML = html;
       editSection.appendChild(wrapper);
     });
 
     document.getElementById("downloadEditsBtn").style.display = "inline-block";
+    document.getElementById("clearEditCountBtn").style.display = "inline-block";
+    document.getElementById("clearEditCSVBtn").style.display = "inline-block";
   }
 });
 document.getElementById("downloadEditsBtn").addEventListener("click", () => {
