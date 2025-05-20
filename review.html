@@ -434,7 +434,10 @@ function sendApprovedAdsToClub() {
     if (imageStatus === 'Approved' && textStatus === 'Approved') {
       const adData = extractAdData(card); // Reuse your existing function
       approvedAds.push(adData);
-      card.remove(); // Remove the card from the DOM
+      card.style.transition = "opacity 0.4s ease";
+      card.style.opacity = 0;
+      setTimeout(() => card.remove(), 400);
+
     }
   });
 
@@ -458,7 +461,10 @@ function sendEditsToAdsTeam() {
       const adData = extractAdData(card); // Reuse your existing function
       adData.comments = card.querySelector('.comment-box')?.value || '';
       editAds.push(adData);
-      card.remove(); // Remove the card from the DOM
+      card.style.transition = "opacity 0.4s ease";
+      card.style.opacity = 0;
+      setTimeout(() => card.remove(), 400);
+
     }
   });
 checkIfNoAdsLeft();
@@ -490,10 +496,6 @@ function showToast(message) {
   document.body.appendChild(toast);
   setTimeout(() => toast.remove(), 3000);
 }
-card.style.transition = "opacity 0.4s ease";
-card.style.opacity = 0;
-setTimeout(() => card.remove(), 400);
-
 
   </script>
 </body>
