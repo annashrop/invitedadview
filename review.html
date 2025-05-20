@@ -476,9 +476,9 @@ function sendEditsToAdsTeam() {
 
     if (imageStatus === 'Needs Edit' || textStatus === 'Needs Edit' || 
         imageStatus === 'Declined' || textStatus === 'Declined') {
-      const adData = extractAdData(card); // Reuse your existing function
-      adData.comments = card.querySelector('.comment-box')?.value || '';
-      editAds.push(adData);
+      const comments = card.querySelector('textarea')?.value || '';
+      editAds.push({ html: card.outerHTML, comment: comments });
+
       card.style.transition = "opacity 0.4s ease";
       card.style.opacity = 0;
       setTimeout(() => card.remove(), 400);
@@ -488,7 +488,9 @@ function sendEditsToAdsTeam() {
 checkIfNoAdsLeft();
 
   if (editAds.length > 0) {
-    saveToAdsDepartment(editAds); // Reuse your function
+    localStorage.setItem("adsNeedingEdits", JSON.stringify(editAds));
+    window.location.href = "index.html";
+
     showToast("Ads sent to Ads Team for edits.");
   }
 }
