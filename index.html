@@ -120,19 +120,6 @@
       });
     });
 
-    // Needs edit cards
-    const previewContainer = document.getElementById('preview-container');
-    const flaggedAds = JSON.parse(localStorage.getItem('adsNeedingEdits')) || [];
-
-    document.getElementById('editCount').textContent = flaggedAds.length;
-
-    flaggedAds.forEach(html => {
-      const wrapper = document.createElement('div');
-      wrapper.innerHTML = html;
-      const card = wrapper.querySelector('.preview-card');
-      previewContainer.appendChild(card);
-    });
-
     // Download CSV of edits
     document.getElementById('downloadEditsBtn').addEventListener('click', () => {
       const rows = [["Region", "Club Info", "Ad Name", "Headline", "Primary Text", "Reviewer Comments", "Image 1 URL", "Image 2 URL", "Image 3 URL"]];
