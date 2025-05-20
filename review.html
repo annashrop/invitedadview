@@ -538,6 +538,9 @@ function showToast(message) {
   document.body.appendChild(toast);
   setTimeout(() => toast.remove(), 3000);
 }
+card.style.transition = "opacity 0.4s ease";
+card.style.opacity = 0;
+setTimeout(() => card.remove(), 400);
 
 
   </script>
