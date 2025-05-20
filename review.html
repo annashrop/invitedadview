@@ -469,6 +469,65 @@ document.getElementById('sendToClubBtn').addEventListener('click', function () {
 
   alert('Approved ads sent to club pages successfully.');
 });
+function sendApprovedAdsToClub() {
+  const adCards = document.querySelectorAll('.ad-card');
+  let approvedAds = [];
+
+  adCards.forEach(card => {
+    const imageStatus = card.querySelector('.image-status')?.value;
+    const textStatus = card.querySelector('.text-status')?.value;
+
+    if (imageStatus === 'Approved' && textStatus === 'Approved') {
+      const adData = extractAdData(card); // Reuse your existing function
+      approvedAds.push(adData);
+      card.remove(); // Remove the card from the DOM
+    }
+  });
+
+  if (approvedAds.length > 0) {
+    saveToClubPage(approvedAds); // Reuse your function
+    showToast("Approved ads sent to club!");
+  }
+}
+
+function sendEditsToAdsTeam() {
+  const adCards = document.querySelectorAll('.ad-card');
+  let editAds = [];
+
+  adCards.forEach(card => {
+    const imageStatus = card.querySelector('.image-status')?.value;
+    const textStatus = card.querySelector('.text-status')?.value;
+
+    if (imageStatus === 'Needs Edit' || textStatus === 'Needs Edit' || 
+        imageStatus === 'Declined' || textStatus === 'Declined') {
+      const adData = extractAdData(card); // Reuse your existing function
+      adData.comments = card.querySelector('.comment-box')?.value || '';
+      editAds.push(adData);
+      card.remove(); // Remove the card from the DOM
+    }
+  });
+
+  if (editAds.length > 0) {
+    saveToAdsDepartment(editAds); // Reuse your function
+    showToast("Ads sent to Ads Team for edits.");
+  }
+}
+
+function showToast(message) {
+  const toast = document.createElement('div');
+  toast.textContent = message;
+  toast.style.position = 'fixed';
+  toast.style.bottom = '20px';
+  toast.style.right = '20px';
+  toast.style.backgroundColor = '#4CAF50';
+  toast.style.color = 'white';
+  toast.style.padding = '12px 20px';
+  toast.style.borderRadius = '5px';
+  toast.style.boxShadow = '0 2px 6px rgba(0,0,0,0.2)';
+  toast.style.zIndex = 1000;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+}
 
   </script>
 </body>
