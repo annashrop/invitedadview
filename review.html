@@ -471,8 +471,9 @@ function sendEditsToAdsTeam() {
   let editAds = [];
 
   adCards.forEach(card => {
-    const imageStatus = card.querySelector('.image-status')?.value;
-    const textStatus = card.querySelector('.text-status')?.value;
+    const imageStatus = card.querySelector('.image-approval')?.value;
+    const textStatus = card.querySelector('.text-approval')?.value;
+
 
     if (imageStatus === 'Needs Edit' || textStatus === 'Needs Edit' || 
         imageStatus === 'Declined' || textStatus === 'Declined') {
