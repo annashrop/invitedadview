@@ -1,110 +1,150 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Agency View</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      padding: 40px;
+      font-family: 'Segoe UI', sans-serif;
       background-color: #f4f4f4;
-    }
-    .preview-card {
-      width: 100%;
-      max-width: 700px;
-      margin: 20px auto;
       padding: 20px;
-      background: #ffffff;
-      border: 2px solid #2ecc71;
-      border-radius: 10px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
-    .card-image {
-      width: 100%;
-      max-height: 300px;
-      object-fit: cover;
+    h1 {
+      color: #22326e;
+    }
+    .batch {
+      background-color: #ffffff;
+      border: 1px solid #ddd;
       border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    .batch-header {
+      font-weight: bold;
       margin-bottom: 10px;
+      color: #22326e;
     }
-    select, textarea {
-      display: none;
-    }
-    #exportBtn {
-      display: block;
-      margin: 0 auto 30px auto;
-      padding: 10px 20px;
-      background-color: #22326e;
+    button.export-btn {
+      background-color: #007bff;
       color: white;
       border: none;
-      border-radius: 5px;
+      padding: 8px 14px;
+      border-radius: 4px;
       cursor: pointer;
+      margin-right: 10px;
+    }
+    .checkbox-row {
+      margin-top: 10px;
+    }
+    .checkbox-row label {
+      margin-right: 15px;
     }
   </style>
 </head>
 <body>
-  <button id="exportBtn">Export to CSV</button>
-  <h1 style="text-align: center;">Final Agency View</h1>
-  <div id="preview-container"></div>
+  <h1>Agency View – Approved Ads</h1>
+  <div id="batches"></div>
 
   <script>
-    const container = document.getElementById('preview-container');
-    const ads = JSON.parse(localStorage.getItem('agencyFinalAds')) || [];
+    const batchesContainer = document.getElementById("batches");
+    const allBatches = JSON.parse(localStorage.getItem("agencyFinalApproved") || "[]");
 
-    function extractText(html) {
-      const temp = document.createElement('div');
-      temp.innerHTML = html;
+    function createBatchElement(batch, index) {
+      const batchDiv = document.createElement("div");
+      batchDiv.className = "batch";
 
-      const clubMeta = temp.querySelector('.meta')?.textContent || '';
-      const region = temp.querySelector('.Region')?.textContent || '';
-      const headline = temp.querySelector('.headline')?.textContent || '';
-      const primary = temp.querySelector('.primary-text')?.textContent || '';
-      const adNameMatch = clubMeta.match(/Ad Name:\s*(.*)/i);
-      const adName = adNameMatch ? adNameMatch[1] : '';
-      const imageNodes = Array.from(temp.querySelectorAll('img.card-image'));
-      const image1 = imageNodes[0]?.src || '';
-      const image2 = imageNodes[1]?.src || '';
-      const image3 = imageNodes[2]?.src || '';
+      const header = document.createElement("div");
+      header.className = "batch-header";
+      header.textContent = `${batch.clubName} – ${batch.timestamp}`;
 
-      return {
-        region: region.trim(),
-        clubMeta: clubMeta.trim(),
-        adName: adName.trim(),
-        headline: headline.trim(),
-        primary: primary.trim(),
-        image1,
-        image2,
-        image3
-      };
+      const exportBtn = document.createElement("button");
+      exportBtn.className = "export-btn";
+      exportBtn.textContent = "Export to CSV";
+      exportBtn.onclick = () => exportToCSV(batch.ads, batch.clubName, batch.timestamp);
+
+      const checkboxDiv = document.createElement("div");
+      checkboxDiv.className = "checkbox-row";
+
+      const downloadedCheckbox = document.createElement("input");
+      downloadedCheckbox.type = "checkbox";
+      downloadedCheckbox.id = `downloaded-${index}`;
+      const downloadedLabel = document.createElement("label");
+      downloadedLabel.htmlFor = downloadedCheckbox.id;
+      downloadedLabel.textContent = "Downloaded";
+
+      const liveCheckbox = document.createElement("input");
+      liveCheckbox.type = "checkbox";
+      liveCheckbox.id = `live-${index}`;
+      const liveLabel = document.createElement("label");
+      liveLabel.htmlFor = liveCheckbox.id;
+      liveLabel.textContent = "Ads Live";
+
+      checkboxDiv.appendChild(downloadedCheckbox);
+      checkboxDiv.appendChild(downloadedLabel);
+      checkboxDiv.appendChild(liveCheckbox);
+      checkboxDiv.appendChild(liveLabel);
+
+      batchDiv.appendChild(header);
+      batchDiv.appendChild(exportBtn);
+      batchDiv.appendChild(checkboxDiv);
+      batchesContainer.appendChild(batchDiv);
     }
 
-    document.getElementById('exportBtn').addEventListener('click', () => {
-      const rows = [["Region", "Club Info", "Ad Name", "Headline", "Primary Text", "Image 1 URL", "Image 2 URL", "Image 3 URL"]];
-      ads.forEach(html => {
-        const { region, clubMeta, adName, headline, primary, image1, image2, image3 } = extractText(html);
-        rows.push([region, clubMeta, adName, headline, primary, image1, image2, image3]);
+    function exportToCSV(ads, clubName, timestamp) {
+      const tempDiv = document.createElement("div");
+      tempDiv.innerHTML = ads.join("");
+      const cards = tempDiv.querySelectorAll(".preview-card");
+
+      const headers = [
+        "Region",
+        "Club",
+        "Category",
+        "Ad Name",
+        "Headline",
+        "Primary Text",
+        "Image URL 1",
+        "Image URL 2",
+        "Image URL 3",
+        "Ad Text Approval Status",
+        "Image 1 Approval Status",
+        "Image 2 Approval Status",
+        "Image 3 Approval Status",
+        "Reviewer Comments"
+      ];
+
+      const rows = Array.from(cards).map(card => {
+        const getText = sel => card.querySelector(sel)?.textContent.replace(/^.*:\s*/, "") || "";
+        const getValue = sel => card.querySelector(sel)?.value || "";
+
+        return [
+          getText(".meta:nth-child(1)"), // Region
+          getText(".meta:nth-child(2)").split("|")[0].trim(), // Club
+          getText(".meta:nth-child(2)").split("|")[1]?.replace("Category:", "").trim() || "", // Category
+          getText(".ad-name"),
+          card.querySelector(".headline")?.textContent || "",
+          card.querySelector(".primary-text")?.textContent || "",
+          card.querySelectorAll(".card-image")[0]?.src || "",
+          card.querySelectorAll(".card-image")[1]?.src || "",
+          card.querySelectorAll(".card-image")[2]?.src || "",
+          getValue(".text-approval"),
+          getValue(".image-approval:nth-of-type(1)"),
+          getValue(".image-approval:nth-of-type(2)"),
+          getValue(".image-approval:nth-of-type(3)"),
+          card.querySelector("textarea")?.value || ""
+        ];
       });
 
-      let csvContent = "data:text/csv;charset=utf-8," + rows.map(e => e.map(val => `"${val.replace(/"/g, '""')}"`).join(",")).join("\n");
-      const encodedUri = encodeURI(csvContent);
+      let csvContent = headers.join(",") + "\n" + rows.map(r => r.map(v => `"${v}"`).join(",")).join("\n");
+
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
       const link = document.createElement("a");
-      link.setAttribute("href", encodedUri);
-      link.setAttribute("download", "final_approved_ads.csv");
-      document.body.appendChild(link);
+      link.href = URL.createObjectURL(blob);
+      link.download = `${clubName.replace(/\s+/g, "_")}_${timestamp.replace(/[^\w]/g, "_")}.csv`;
       link.click();
-      document.body.removeChild(link);
-    });
+    }
 
-    ads.forEach(html => {
-      const wrapper = document.createElement('div');
-      wrapper.innerHTML = html;
-
-      const card = wrapper.querySelector('.preview-card');
-      card.querySelectorAll('select').forEach(sel => sel.style.display = 'none');
-      card.querySelectorAll('textarea').forEach(txt => txt.style.display = 'none');
-
-      container.appendChild(card);
-    });
+    allBatches.forEach(createBatchElement);
   </script>
 </body>
 </html>
