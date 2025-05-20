@@ -489,11 +489,11 @@ function sendEditsToAdsTeam() {
 checkIfNoAdsLeft();
 
   if (editAds.length > 0) {
-    localStorage.setItem("adsNeedingEdits", JSON.stringify(editAds));
-    window.location.href = "index.html";
-
-    showToast("Ads sent to Ads Team for edits.");
-  }
+  localStorage.setItem("adsNeedingEdits", JSON.stringify(editAds));
+  showToast("Ads sent to Ads Team for edits.");
+} else {
+  showToast("No ads marked for edits.");
+}
 }
 function checkIfNoAdsLeft() {
   const remainingAds = document.querySelectorAll('.preview-card');
