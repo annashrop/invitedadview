@@ -70,8 +70,8 @@
   <div id="attention-section">
     <h2>Ads That Need Your Attention (<span id="editCount">0</span>)</h2>
     <div id="preview-container"></div>
-    <button id="downloadEditsBtn">Download CSV of Edits</button>
-  </div>
+<button id="downloadEditsBtn" style="display:none;">Download CSV</button>
+<div id="ads-needing-edits"></div>
 
   <script>
     // Dropbox link cleaner
@@ -165,6 +165,53 @@
       localStorage.removeItem('adsNeedingEdits');
       location.reload();
     });
+
+    document.addEventListener("DOMContentLoaded", () => {
+  const editSection = document.getElementById("ads-needing-edits");
+  const storedEdits = JSON.parse(localStorage.getItem("adsNeedingEdits") || "[]");
+
+  if (storedEdits.length > 0) {
+    storedEdits.forEach((item, index) => {
+      const wrapper = document.createElement("div");
+      wrapper.innerHTML = item.html;
+      editSection.appendChild(wrapper);
+    });
+
+    document.getElementById("downloadEditsBtn").style.display = "inline-block";
+  }
+});
+document.getElementById("downloadEditsBtn").addEventListener("click", () => {
+  const storedEdits = JSON.parse(localStorage.getItem("adsNeedingEdits") || "[]");
+
+  if (!storedEdits.length) return;
+
+  const csvRows = [["Region", "Club", "Ad Name", "Headline", "Primary Text", "Reviewer Comments"]];
+  
+  storedEdits.forEach(({ html, comment }) => {
+    const tempDiv = document.createElement("div");
+    tempDiv.innerHTML = html;
+
+    const region = tempDiv.querySelector(".meta-section")?.innerText.match(/Region:\s*(.*)/)?.[1] || "";
+    const club = tempDiv.querySelector(".meta-section")?.innerText.match(/Club:\s*(.*)\s+\|/)?.[1] || "";
+    const adName = tempDiv.querySelector(".ad-name")?.innerText.replace("Ad Name:", "").trim() || "";
+    const headline = tempDiv.querySelector(".headline")?.innerText || "";
+    const primaryText = tempDiv.querySelector(".primary-text")?.innerText || "";
+
+    csvRows.push([region, club, adName, headline, primaryText, comment]);
+  });
+
+  const csvContent = csvRows.map(r => r.map(val => `"${val}"`).join(",")).join("\n");
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+  link.setAttribute("href", url);
+  link.setAttribute("download", "ads_needing_edits.csv");
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+});
+
   </script>
 </body>
 </html>
