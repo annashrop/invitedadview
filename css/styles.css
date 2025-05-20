@@ -75,7 +75,7 @@
   padding: 20px;
   margin: 30px; /* <- ensures spacing between cards */
   width: 100%;
-  max-width: 350px;
+  max-width: 320px;
    box-sizing: border-box;
    flex: 1 1 calc(33% - 40px);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
