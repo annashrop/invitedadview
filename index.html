@@ -173,6 +173,22 @@
     document.getElementById("clearEditCSVBtn").style.display = "inline-block";
   }
 });
+    document.getElementById("clearEditCountBtn").addEventListener("click", () => {
+  localStorage.removeItem("adsNeedingEdits");
+  document.getElementById("ads-needing-edits").innerHTML = '';
+  document.getElementById("downloadEditsBtn").style.display = "none";
+  document.getElementById("clearEditCountBtn").style.display = "none";
+  document.getElementById("clearEditCSVBtn").style.display = "none";
+});
+
+document.getElementById("clearEditCSVBtn").addEventListener("click", () => {
+  localStorage.removeItem("adsNeedingEdits");
+  document.getElementById("ads-needing-edits").innerHTML = '';
+  document.getElementById("downloadEditsBtn").style.display = "none";
+  document.getElementById("clearEditCountBtn").style.display = "none";
+  document.getElementById("clearEditCSVBtn").style.display = "none";
+});
+
 document.getElementById("downloadEditsBtn").addEventListener("click", () => {
   const storedEdits = JSON.parse(localStorage.getItem("adsNeedingEdits") || "[]");
 
