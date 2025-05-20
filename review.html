@@ -489,7 +489,8 @@ function sendApprovedAdsToClub() {
     showToast("Approved ads sent to club!");
   }
 }
-
+checkIfNoAdsLeft();
+    
 function sendEditsToAdsTeam() {
   const adCards = document.querySelectorAll('.ad-card');
   let editAds = [];
