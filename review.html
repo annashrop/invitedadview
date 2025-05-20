@@ -506,6 +506,7 @@ function sendEditsToAdsTeam() {
       card.remove(); // Remove the card from the DOM
     }
   });
+checkIfNoAdsLeft();
 
   if (editAds.length > 0) {
     saveToAdsDepartment(editAds); // Reuse your function
