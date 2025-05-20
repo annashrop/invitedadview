@@ -113,20 +113,25 @@
   });
 
   if (approvedAds.length > 0) {
-    const now = new Date();
-    const timestamp = now.toLocaleString('en-US', {
+    const existing = JSON.parse(localStorage.getItem("agencyFinalApproved") || "[]");
+
+    const timestamp = new Date().toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
       year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
+      hour: 'numeric',
       minute: '2-digit',
       hour12: true
-    }).replace(/[/, ]/g, '-').replace(/:/g, '');
+    });
 
-    const clubName = "Canyon Gate";
-    const key = `agencyBatch_${clubName}_${timestamp}`;
-    localStorage.setItem(key, JSON.stringify(approvedAds));
-    alert("Approved ads sent to agency.");
+    existing.push({
+      clubName: "Canyon Gate",
+      timestamp: timestamp,
+      ads: approvedAds
+    });
+
+    localStorage.setItem("agencyFinalApproved", JSON.stringify(existing));
+    alert("Approved ads sent to Agency View.");
   } else {
     alert("No fully approved ads to send.");
   }
