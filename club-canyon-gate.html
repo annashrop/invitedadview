@@ -106,14 +106,31 @@
   const container = document.getElementById('preview-container');
 
   document.getElementById("sendToAgencyBtn").addEventListener("click", () => {
-    const approvedAds = [];
-    document.querySelectorAll(".preview-card").forEach(card => {
-      const allApproved = [...card.querySelectorAll("select")].every(sel => sel.value === "Approved");
-      if (allApproved) approvedAds.push(card.outerHTML);
-    });
-    localStorage.setItem("agencyApprovedAds", JSON.stringify(approvedAds));
-    window.location.href = "agency.html";
+  const approvedAds = [];
+  document.querySelectorAll(".preview-card").forEach(card => {
+    const allApproved = [...card.querySelectorAll("select")].every(sel => sel.value === "Approved");
+    if (allApproved) {
+      approvedAds.push(card.outerHTML);
+    }
   });
+
+  if (approvedAds.length > 0) {
+    const timestamp = new Date().toLocaleString('en-US', {
+      month: 'long',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    });
+    const clubName = "Canyon Gate";
+    const key = `agencyBatch_${clubName}_${timestamp}`;
+    localStorage.setItem(key, JSON.stringify(approvedAds));
+    alert("Approved ads sent to agency!");
+  } else {
+    alert("No fully approved ads to send.");
+  }
+});
+
 
   document.getElementById("sendEdits").addEventListener("click", () => {
     const editAds = [];
