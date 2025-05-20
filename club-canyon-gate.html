@@ -137,10 +137,25 @@
         <div class="primary-text">${ad["Primary Text"]}</div>
         ${[1, 2, 3].map(i =>
           ad[`Image URL ${i}`] ? `
-            <div class="image-wrapper">
-              <img class="card-image" src="${ad[`Image URL ${i}`]}" />
-            </div>
-          ` : '').join('')}
+             <div class="image-wrapper">
+        <img class="card-image" src="${imgSrc}" alt="Ad image" />
+        <div class="view-link">
+          <a href="#" class="view-image-button" onclick="window.open('${url}', 'ImagePopup', 'width=800,height=600'); return false;">View Full Image ${imgIndex + 1}</a>
+          <div class="approval-row">
+          <label>Image Approval Status:</label>
+          <select class="image-approval">
+            <option value="Pending">Pending</option>
+            <option value="Approved">Approved</option>
+            <option value="Needs Edit">Needs Edit</option>
+          </select>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+  return '';
+}).join('');
+
         <div class="approval-row">
           <label>Ad Text Approval Status:</label>
           <select class="text-approval">
