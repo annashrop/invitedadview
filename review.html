@@ -428,12 +428,12 @@ function sendApprovedAdsToClub() {
   let approvedAds = [];
 
   adCards.forEach(card => {
-    const imageStatus = card.querySelector('.image-status')?.value;
-    const textStatus = card.querySelector('.text-status')?.value;
+    const imageStatus = card.querySelector('.image-approval')?.value;
+    const textStatus = card.querySelector('.text-approval')?.value;
+
 
     if (imageStatus === 'Approved' && textStatus === 'Approved') {
-      const adData = extractAdData(card); // Reuse your existing function
-      approvedAds.push(adData);
+      approvedAds.push(card.outerHTML);
       card.style.transition = "opacity 0.4s ease";
       card.style.opacity = 0;
       setTimeout(() => card.remove(), 400);
@@ -442,7 +442,25 @@ function sendApprovedAdsToClub() {
   });
 
   if (approvedAds.length > 0) {
-    saveToClubPage(approvedAds); // Reuse your function
+    const existing = JSON.parse(localStorage.getItem("agencyFinalApproved") || "[]");
+
+const timestamp = new Date().toLocaleString('en-US', {
+  month: 'short',
+  day: 'numeric',
+  year: 'numeric',
+  hour: 'numeric',
+  minute: '2-digit',
+  hour12: true
+});
+
+existing.push({
+  clubName: "Canyon Gate",
+  timestamp: timestamp,
+  ads: approvedAds
+});
+
+localStorage.setItem("agencyFinalApproved", JSON.stringify(existing));
+
     showToast("Approved ads sent to club!");
   }
 }
@@ -496,6 +514,8 @@ function showToast(message) {
   document.body.appendChild(toast);
   setTimeout(() => toast.remove(), 3000);
 }
+document.getElementById("sendToClubBtn").addEventListener("click", sendApprovedAdsToClub);
+document.getElementById("sendEdits").addEventListener("click", sendEditsToAdsTeam);
 
   </script>
 </body>
