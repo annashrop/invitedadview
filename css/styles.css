@@ -97,8 +97,11 @@
  .card-wrapper {
   display: flex;
   flex-wrap: wrap;
+  gap: 30px;
   justify-content: center;
-  gap: 30px; /* creates horizontal and vertical spacing */
+  margin-top: 30px;
+}
+
 
 select,
 textarea {
