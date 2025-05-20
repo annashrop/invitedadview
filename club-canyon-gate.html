@@ -112,12 +112,22 @@
   const approvedAds = [];
   document.querySelectorAll(".preview-card").forEach(card => {
     const allApproved = [...card.querySelectorAll("select")].every(sel => sel.value === "Approved");
-    if (allApproved) approvedAds.push(card.outerHTML);
+
+    if (allApproved) {
+      approvedAds.push(card.outerHTML);
+
+      // Fade out & remove card
+      card.style.transition = "opacity 0.4s ease";
+      card.style.opacity = 0;
+      setTimeout(() => {
+        card.remove();
+        checkIfNoAdsLeft();
+      }, 400);
+    }
   });
 
   if (approvedAds.length > 0) {
     const existing = JSON.parse(localStorage.getItem("agencyFinalApproved") || "[]");
-
     const timestamp = new Date().toLocaleString('en-US', {
       month: 'short',
       day: 'numeric',
@@ -134,11 +144,12 @@
     });
 
     localStorage.setItem("agencyFinalApproved", JSON.stringify(existing));
-    alert("Approved ads sent to Agency View.");
+    showToast("Approved ads sent to Agency View.");
   } else {
-    alert("No fully approved ads to send.");
+    showToast("No fully approved ads to send.");
   }
 });
+
 
 
 
