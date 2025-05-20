@@ -121,28 +121,66 @@
     });
 
     // Download CSV of edits
-    document.getElementById('downloadEditsBtn').addEventListener('click', () => {
-      const rows = [["Region", "Club Info", "Ad Name", "Headline", "Primary Text", "Reviewer Comments", "Image 1 URL", "Image 2 URL", "Image 3 URL"]];
-      
-      flaggedAds.forEach(html => {
-        const temp = document.createElement('div');
-        temp.innerHTML = html;
+    document.addEventListener("DOMContentLoaded", () => {
+  const editSection = document.getElementById("ads-needing-edits");
+  const storedEdits = JSON.parse(localStorage.getItem("adsNeedingEdits") || "[]");
 
-        const region = temp.querySelector('.Region')?.textContent.trim() || '';
-        const clubMeta = temp.querySelector('.meta')?.textContent.trim() || '';
-        const headline = temp.querySelector('.headline')?.textContent.trim() || '';
-        const primary = temp.querySelector('.primary-text')?.textContent.trim() || '';
-        const comment = temp.querySelector('textarea')?.value.trim() || '';
-        const adNameMatch = clubMeta.match(/Ad Name:\s*(.*)/i);
-        const adName = adNameMatch ? adNameMatch[1] : '';
+  if (storedEdits.length > 0) {
+    storedEdits.forEach(({ html }) => {
+      const wrapper = document.createElement("div");
+      wrapper.innerHTML = html;
+      editSection.appendChild(wrapper);
+    });
 
-        const imageNodes = Array.from(temp.querySelectorAll('img.card-image'));
-        const image1 = imageNodes[0]?.src || '';
-        const image2 = imageNodes[1]?.src || '';
-        const image3 = imageNodes[2]?.src || '';
+    document.getElementById("downloadEditsBtn").style.display = "inline-block";
+    document.getElementById("clearEditCountBtn").style.display = "inline-block";
+    document.getElementById("clearEditCSVBtn").style.display = "inline-block";
 
-        rows.push([region, clubMeta, adName, headline, primary, comment, image1, image2, image3]);
+    document.getElementById("downloadEditsBtn").addEventListener("click", () => {
+      const rows = [["Region", "Club", "Ad Name", "Headline", "Primary Text", "Reviewer Comments"]];
+
+      storedEdits.forEach(({ html }) => {
+        const tempDiv = document.createElement("div");
+        tempDiv.innerHTML = html;
+
+        const region = tempDiv.querySelector(".meta-section")?.innerText.match(/Region:\s*(.*)/)?.[1] || "";
+        const club = tempDiv.querySelector(".meta-section")?.innerText.match(/Club:\s*(.*)\s+\|/)?.[1] || "";
+        const adName = tempDiv.querySelector(".ad-name")?.innerText.replace("Ad Name:", "").trim() || "";
+        const headline = tempDiv.querySelector(".headline")?.innerText || "";
+        const primaryText = tempDiv.querySelector(".primary-text")?.innerText || "";
+        const comment = tempDiv.querySelector("textarea")?.value || "";
+
+        rows.push([region, club, adName, headline, primaryText, comment]);
       });
+
+      const csvContent = "data:text/csv;charset=utf-8," + rows.map(r => r.map(val => `"${val.replace(/"/g, '""')}"`).join(",")).join("\n");
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", "ads_needing_edits.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    });
+
+    document.getElementById("clearEditCountBtn").addEventListener("click", () => {
+      localStorage.removeItem("adsNeedingEdits");
+      document.getElementById("ads-needing-edits").innerHTML = '';
+      document.getElementById("downloadEditsBtn").style.display = "none";
+      document.getElementById("clearEditCountBtn").style.display = "none";
+      document.getElementById("clearEditCSVBtn").style.display = "none";
+    });
+
+    document.getElementById("clearEditCSVBtn").addEventListener("click", () => {
+      localStorage.removeItem("adsNeedingEdits");
+      document.getElementById("ads-needing-edits").innerHTML = '';
+      document.getElementById("downloadEditsBtn").style.display = "none";
+      document.getElementById("clearEditCountBtn").style.display = "none";
+      document.getElementById("clearEditCSVBtn").style.display = "none";
+    });
+  }
+});
+
 
       let csvContent = "data:text/csv;charset=utf-8," + rows.map(e => e.map(val => `"${val.replace(/"/g, '""')}"`).join(",")).join("\n");
       const encodedUri = encodeURI(csvContent);
@@ -159,68 +197,7 @@
 
    document.addEventListener("DOMContentLoaded", () => {
   const editSection = document.getElementById("ads-needing-edits");
-  const storedEdits = JSON.parse(localStorage.getItem("adsNeedingEdits") || "[]");
-
-  if (storedEdits.length > 0) {
-    storedEdits.forEach(({ html }) => {
-      const wrapper = document.createElement("div");
-      wrapper.innerHTML = html;
-      editSection.appendChild(wrapper);
-    });
-
-    document.getElementById("downloadEditsBtn").style.display = "inline-block";
-    document.getElementById("clearEditCountBtn").style.display = "inline-block";
-    document.getElementById("clearEditCSVBtn").style.display = "inline-block";
-  }
-
-  // ✅ Now that buttons exist, attach event listeners safely
-  document.getElementById("clearEditCountBtn").addEventListener("click", () => {
-    localStorage.removeItem("adsNeedingEdits");
-    document.getElementById("ads-needing-edits").innerHTML = '';
-    document.getElementById("downloadEditsBtn").style.display = "none";
-    document.getElementById("clearEditCountBtn").style.display = "none";
-    document.getElementById("clearEditCSVBtn").style.display = "none";
-  });
-
-  document.getElementById("clearEditCSVBtn").addEventListener("click", () => {
-    localStorage.removeItem("adsNeedingEdits");
-    document.getElementById("ads-needing-edits").innerHTML = '';
-    document.getElementById("downloadEditsBtn").style.display = "none";
-    document.getElementById("clearEditCountBtn").style.display = "none";
-    document.getElementById("clearEditCSVBtn").style.display = "none";
-  });
-});
-
-
-  const storedEdits = JSON.parse(localStorage.getItem("adsNeedingEdits") || "[]");
-
-  if (!storedEdits.length) return;
-
-  const csvRows = [["Region", "Club", "Ad Name", "Headline", "Primary Text", "Reviewer Comments"]];
   
-  storedEdits.forEach(({ html, comment }) => {
-    const tempDiv = document.createElement("div");
-    tempDiv.innerHTML = html;
-
-    const region = tempDiv.querySelector(".meta-section")?.innerText.match(/Region:\s*(.*)/)?.[1] || "";
-    const club = tempDiv.querySelector(".meta-section")?.innerText.match(/Club:\s*(.*)\s+\|/)?.[1] || "";
-    const adName = tempDiv.querySelector(".ad-name")?.innerText.replace("Ad Name:", "").trim() || "";
-    const headline = tempDiv.querySelector(".headline")?.innerText || "";
-    const primaryText = tempDiv.querySelector(".primary-text")?.innerText || "";
-
-    csvRows.push([region, club, adName, headline, primaryText, comment]);
-  });
-
-  const csvContent = csvRows.map(r => r.map(val => `"${val}"`).join(",")).join("\n");
-  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-
-  const link = document.createElement("a");
-  link.setAttribute("href", url);
-  link.setAttribute("download", "ads_needing_edits.csv");
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
 });
 
   </script>
