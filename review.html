@@ -512,6 +512,12 @@ function sendEditsToAdsTeam() {
     showToast("Ads sent to Ads Team for edits.");
   }
 }
+function checkIfNoAdsLeft() {
+  const remainingAds = document.querySelectorAll('.ad-card');
+  if (remainingAds.length === 0) {
+    document.getElementById('no-ads-message').style.display = 'block';
+  }
+}
 
 function showToast(message) {
   const toast = document.createElement('div');
