@@ -132,7 +132,68 @@
 
   <div class="main-content">
     <h1>Welcome to the Ad Department Homepage</h1>
+<!-- 🔽 Paste this where the upload form should appear -->
+<h2>Upload a CSV File</h2>
+<input type="file" id="csvFile" accept=".csv" />
+<br><br>
+<button onclick="uploadCSV()">Upload CSV to Firebase</button>
 
+<script>
+  function uploadCSV() {
+    const fileInput = document.getElementById('csvFile');
+    const file = fileInput.files[0];
+
+    if (!file) {
+      alert('Please select a CSV file first!');
+      return;
+    }
+
+    const filePath = `uploads/${Date.now()}-${file.name}`;
+    const storageRef = firebase.storage().ref(filePath);
+
+    const uploadTask = storageRef.put(file);
+
+    uploadTask.on(
+      'state_changed',
+      (snapshot) => {
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log(`Upload is ${progress.toFixed(1)}% done`);
+      },
+      (error) => {
+        console.error('Upload failed:', error);
+        alert('Upload failed. Check console for details.');
+      },
+      () => {
+        uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+          console.log('File uploaded successfully:', downloadURL);
+          alert('CSV uploaded to Firebase!');
+        });
+      }
+    );
+  }
+</script>
+
+<!-- 🔽 Your Firebase config should already be here below -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "YOUR_KEY",
+    authDomain: "YOUR_APP.firebaseapp.com",
+    projectId: "YOUR_APP",
+    storageBucket: "YOUR_APP.appspot.com",
+    messagingSenderId: "YOUR_ID",
+    appId: "YOUR_ID",
+    measurementId: "YOUR_ID"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const storage = firebase.storage();
+</script>
+</body>
+</html>
+
+    
     <label for="dropbox">Paste Dropbox Links Here to Generate Regional Approval Portals (one per line):</label><br>
     <textarea id="dropbox" placeholder="https://www.dropbox.com/s/abc123/file.csv?dl=0"></textarea><br>
     <button id="generate">Generate Preview Links</button>
