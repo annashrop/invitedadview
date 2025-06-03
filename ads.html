@@ -272,5 +272,24 @@
       }
     });
   </script>
+  <!-- Place this right before the closing </body> -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCLl4jDy3dfN8Ntgjnjt0IieVbPTQywPwE",
+    authDomain: "marketingapprovalportal.firebaseapp.com",
+    projectId: "marketingapprovalportal",
+    storageBucket: "marketingapprovalportal.appspot.com",
+    messagingSenderId: "324995086351",
+    appId: "1:324995086351:web:2e510d67bf824f2f32cb7a",
+    measurementId: "G-5TTFYS66EH"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const storage = firebase.storage();
+</script>
+
 </body>
 </html>
