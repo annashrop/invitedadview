@@ -331,11 +331,14 @@ textarea {
 
 .main-content {
   margin-left: 240px;
-  background-color: #f4f6fb;
+  flex-grow: 1;
+  /* background-color: #f4f6fb; */ /* remove or comment this out */
   padding: 40px;
   height: 100vh;
   overflow-y: auto;
+  transition: background-color 0.3s ease;
 }
+
 
 </style>
 
@@ -605,6 +608,22 @@ function showToast(message) {
 document.getElementById("sendToClubBtn").addEventListener("click", sendApprovedAdsToClub);
 document.getElementById("sendEdits").addEventListener("click", sendEditsToAdsTeam);
 
+  const mainContent = document.querySelector('.main-content');
+
+  document.getElementById('paid-ads-btn')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    mainContent.style.backgroundColor = '#83b573'; // green
+  });
+
+  document.getElementById('emails-btn')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    mainContent.style.backgroundColor = '#00a3cf'; // teal
+  });
+
+  document.getElementById('landing-btn')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    mainContent.style.backgroundColor = '#933b45'; // burgundy
+  });
   </script>
 </div>
 </body>
