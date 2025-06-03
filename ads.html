@@ -135,45 +135,6 @@
   <div class="main-content">
     <h1>Welcome to the Ad Department Homepage</h1>
 <!-- 🔽 Paste this where the upload form should appear -->
-<h2>Upload a CSV File</h2>
-<input type="file" id="csvFile" accept=".csv" />
-<br><br>
-<button onclick="uploadCSV()">Upload CSV to Firebase</button>
-
-<script>
-  function uploadCSV() {
-    const fileInput = document.getElementById('csvFile');
-    const file = fileInput.files[0];
-
-    if (!file) {
-      alert('Please select a CSV file first!');
-      return;
-    }
-
-    const filePath = `uploads/${Date.now()}-${file.name}`;
-    const storageRef = firebase.storage().ref(filePath);
-
-    const uploadTask = storageRef.put(file);
-
-    uploadTask.on(
-      'state_changed',
-      (snapshot) => {
-        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        console.log(`Upload is ${progress.toFixed(1)}% done`);
-      },
-      (error) => {
-        console.error('Upload failed:', error);
-        alert('Upload failed. Check console for details.');
-      },
-      () => {
-        uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-          console.log('File uploaded successfully:', downloadURL);
-          alert('CSV uploaded to Firebase!');
-        });
-      }
-    );
-  }
-</script>
 
 </body>
 </html>
