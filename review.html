@@ -271,12 +271,78 @@ textarea {
   color: #333;
   white-space: nowrap;
 }
+.sidebar {
+  width: 240px;
+  background-color: #22326e;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 100;
+}
+
+.sidebar h2 {
+  font-size: 22px;
+  margin-bottom: 30px;
+}
+
+.sidebar a {
+  color: white;
+  text-decoration: none;
+  margin-bottom: 16px;
+  font-size: 16px;
+  font-weight: 500;
+  transition: opacity 0.2s;
+}
+
+.sidebar a:hover {
+  opacity: 0.7;
+}
+
+.logout-button {
+  margin-top: auto;
+  background-color: #ff6f3c;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.logout-button:hover {
+  background-color: #e35205;
+}
+
+.main-content {
+  margin-left: 240px;
+  background-color: #f4f6fb;
+  padding: 40px;
+  height: 100vh;
+  overflow-y: auto;
+}
 
 </style>
 
 </head>
 <body>
 <body>
+  <div class="sidebar">
+  <h2>Regional Dashboard</h2>
+  <a href="ads.html">Paid Ads</a>
+  <a href="#">Emails</a>
+  <a href="#">Landing Pages</a>
+  <a href="#">[Coming Soon!]</a>
+  <a href="#">[Coming Soon!]</a>
+  <button class="logout-button" onclick="logout()">Logout</button>
+</div>
+
+<div class="main-content">
+
   <nav class="top-nav">
     <img src="https://www.invitedclubs.com/globalassets/.invited-corporate-site/_logos/invited-logo_500px-wide.png" alt="Invited Logo" class="nav-logo">
     <span class="nav-title">Regional Marketing Ad Approval Portal</span>
@@ -530,5 +596,6 @@ document.getElementById("sendToClubBtn").addEventListener("click", sendApprovedA
 document.getElementById("sendEdits").addEventListener("click", sendEditsToAdsTeam);
 
   </script>
+  </div> <!-- closes .main-content -->
 </body>
 </html>
