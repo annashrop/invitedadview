@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
   <meta charset="UTF-8">
   <title>Ad Department Homepage</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
@@ -176,13 +178,7 @@
 </body>
 </html>
 
-    
-    <label for="dropbox">Paste Dropbox Links Here to Generate Regional Approval Portals (one per line):</label><br>
-    <textarea id="dropbox" placeholder="https://www.dropbox.com/s/abc123/file.csv?dl=0"></textarea><br>
-    <button id="generate">Generate Preview Links</button>
-    <button id="copyBtn">Copy All</button>
-
-    <div id="result"></div>
+   
 
     <div class="container">
       <div id="attention-section">
@@ -223,39 +219,7 @@
       window.location.href = "login.html";
     }
 
-    function cleanDropboxLink(link) {
-      try {
-        const url = new URL(link.trim());
-        url.hostname = "dl.dropboxusercontent.com";
-        url.searchParams.set("dl", "1");
-        return url.toString();
-      } catch (e) {
-        return "";
-      }
-    }
-
-    document.getElementById('generate').addEventListener('click', function () {
-      const input = document.getElementById('dropbox').value.trim();
-      const lines = input.split('\n').filter(l => l.includes('dropbox.com'));
-      const output = lines.map(link => {
-        const cleaned = cleanDropboxLink(link);
-        const encoded = encodeURIComponent(cleaned);
-        return `https://annashrop.github.io/invitedadview/review.html?file=${encoded}`;
-      });
-      document.getElementById('result').innerHTML = `
-        <textarea readonly style="width:100%; height:100px;">${output.join('\n')}</textarea>
-      `;
-    });
-
-    document.getElementById('copyBtn').addEventListener('click', function () {
-      const resultText = document.getElementById('result').textContent;
-      navigator.clipboard.writeText(resultText).then(() => {
-        alert('Preview links copied to clipboard!');
-      }).catch(err => {
-        alert('Failed to copy text: ' + err);
-      });
-    });
-
+    
     document.addEventListener("DOMContentLoaded", () => {
       const editSection = document.getElementById("ads-needing-edits");
       const storedEdits = JSON.parse(localStorage.getItem("adsNeedingEdits") || "[]");
@@ -333,6 +297,51 @@
 
   firebase.initializeApp(firebaseConfig);
   const storage = firebase.storage();
+</script>
+
+<input type="file" id="csvUploadInput" accept=".csv" />
+
+<script>
+document.getElementById('csvUploadInput').addEventListener('change', function(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const csv = e.target.result;
+
+    Papa.parse(csv, {
+      header: true,
+      skipEmptyLines: true,
+      complete: function(results) {
+        const data = results.data;
+        const groupedByRegion = {};
+
+        data.forEach(row => {
+          const region = row["Region"]?.trim();
+          if (region) {
+            if (!groupedByRegion[region]) {
+              groupedByRegion[region] = [];
+            }
+            groupedByRegion[region].push(row);
+          }
+        });
+
+        Object.entries(groupedByRegion).forEach(([region, rows]) => {
+          const jsonBlob = new Blob([JSON.stringify(rows)], { type: 'application/json' });
+          const filePath = `regions/${region}/${Date.now()}-ads.json`;
+
+          firebase.storage().ref(filePath).put(jsonBlob).then(() => {
+            console.log(`✅ Uploaded to Firebase: ${filePath}`);
+          }).catch(error => {
+            console.error(`❌ Failed to upload ${filePath}`, error);
+          });
+        });
+      }
+    });
+  };
+  reader.readAsText(file);
+});
 </script>
 
 </body>
