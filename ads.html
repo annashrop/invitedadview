@@ -2,6 +2,28 @@
 <html lang="en">
 <head>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<!-- ✅ Firebase Core SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js"></script>
+
+<!-- ✅ PapaParse (already included, but for clarity) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
+<!-- ✅ Firebase Configuration -->
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCLl4jDy3dfN8Ntgjnjt0IieVbPTQywPwE",
+    authDomain: "marketingapprovalportal.firebaseapp.com",
+    projectId: "marketingapprovalportal",
+    storageBucket: "marketingapprovalportal.appspot.com",
+    messagingSenderId: "324995086351",
+    appId: "1:324995086351:web:2e510d67bf824f2f32cb7a",
+    measurementId: "G-5TTFYS66EH"
+  };
+
+  // ✅ Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+</script>
 
   <meta charset="UTF-8">
   <title>Ad Department Homepage</title>
