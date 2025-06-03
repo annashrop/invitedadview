@@ -2,6 +2,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script>
+  const user = localStorage.getItem("user");
+
+  if (!user) {
+    // User didn’t come through login
+    window.location.href = "login.html";
+  }
+</script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <meta charset="UTF-8">
   <title>Ad Department Homepage</title>
