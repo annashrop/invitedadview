@@ -1,40 +1,77 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <script>
-  const user = localStorage.getItem("user");
-
-  if (!user) {
-    // User didn’t come through login
-    window.location.href = "login.html";
-  }
-</script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <meta charset="UTF-8">
   <title>Ad Department Homepage</title>
- <style>
-   .top-nav {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #22326e;
-  padding: 10px 20px;
-  border-bottom: 1px solid #1b264f;
-}  
-.nav-logo {
-  height: 36px;
-  margin-right: 15px;
-}
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
 
-.nav-title {
-  font-size: 22px;
-  font-weight: 600;
-  color: white;
-  font-family: 'Segoe UI', sans-serif;
-}
+    .sidebar {
+      width: 240px;
+      background-color: #22326e;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+    }
 
-   textarea {
+    .sidebar h2 {
+      font-size: 22px;
+      margin-bottom: 30px;
+    }
+
+    .sidebar a {
+      color: white;
+      text-decoration: none;
+      margin-bottom: 16px;
+      font-size: 16px;
+      font-weight: 500;
+      transition: opacity 0.2s;
+    }
+
+    .sidebar a:hover {
+      opacity: 0.7;
+    }
+
+    .logout-button {
+      margin-top: auto;
+      background-color: #ff6f3c;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .logout-button:hover {
+      background-color: #e35205;
+    }
+
+    .main-content {
+      margin-left: 240px;
+      flex-grow: 1;
+      background-color: #f4f6fb;
+      padding: 40px;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    textarea {
       width: 100%;
       height: 200px;
       padding: 10px;
@@ -78,68 +115,82 @@
       margin-top: 60px;
     }
   </style>
-  <nav class="top-nav">
-    <img src="https://www.invitedclubs.com/globalassets/.invited-corporate-site/_logos/invited-logo_500px-wide.png" alt="Invited Logo" class="nav-logo">
-    <span class="nav-title">Ad Department Homepage</span>
-  </nav>  
 </head>
 <body>
+  <div class="sidebar" id="sidebar"></div>
 
-  
-  <h1>Welcome to the Ad Department Homepage</h1>
+  <div class="main-content">
+    <h1>Welcome to the Ad Department Homepage</h1>
 
-  <label for="dropbox">Paste Dropbox Links Here to Generate Regional Approval Portals (one per line):</label><br>
-  <textarea id="dropbox" placeholder="https://www.dropbox.com/s/abc123/file.csv?dl=0"></textarea><br>
-  <button id="generate">Generate Preview Links</button>
-  <button id="copyBtn">Copy All</button>
+    <label for="dropbox">Paste Dropbox Links Here to Generate Regional Approval Portals (one per line):</label><br>
+    <textarea id="dropbox" placeholder="https://www.dropbox.com/s/abc123/file.csv?dl=0"></textarea><br>
+    <button id="generate">Generate Preview Links</button>
+    <button id="copyBtn">Copy All</button>
 
-  <div id="result"></div>
-    
-  <div class="container">
+    <div id="result"></div>
 
-  <div id="attention-section">
-    <h2>Ads That Need Your Attention (<span id="editCount">0</span>)</h2>
-    <div id="preview-container"></div>
-    <div id="edit-controls" style="margin-top: 20px;">
-<button id="downloadEditsBtn" style="display:none;">Download CSV</button>
-<button id="clearEditCountBtn" style="background-color: #e35205; color: white; margin-left: 10px; display: none;">Clear Edit Count</button>
-<button id="clearEditCSVBtn" style="background-color: #999999; color: white; margin-left: 10px; display: none;">Clear CSV</button>   
-</div>
-<div id="ads-needing-edits"></div>
+    <div class="container">
+      <div id="attention-section">
+        <h2>Ads That Need Your Attention (<span id="editCount">0</span>)</h2>
+        <div id="preview-container"></div>
+        <div id="edit-controls" style="margin-top: 20px;">
+          <button id="downloadEditsBtn" style="display:none;">Download CSV</button>
+          <button id="clearEditCountBtn" style="background-color: #e35205; color: white; margin-left: 10px; display: none;">Clear Edit Count</button>
+          <button id="clearEditCSVBtn" style="background-color: #999999; color: white; margin-left: 10px; display: none;">Clear CSV</button>
+        </div>
+        <div id="ads-needing-edits"></div>
+      </div>
+    </div>
+  </div>
 
   <script>
-    // Dropbox link cleaner
+    const user = localStorage.getItem("user");
+    if (!user) {
+      window.location.href = "login.html";
+    }
+
+    const sidebar = document.getElementById("sidebar");
+    const sidebars = {
+      "ads-team": `
+        <h2>Invited Portal</h2>
+        <a href="#">Paid Ads</a>
+        <a href="#">Emails</a>
+        <a href="#">Landing Pages</a>
+        <a href="#">[Coming Soon!]</a>
+        <a href="#">[Coming Soon!]</a>
+        <button class="logout-button" onclick="logout()">Logout</button>
+      `
+    };
+    sidebar.innerHTML = sidebars[user] || "<p>Unauthorized</p>";
+
+    function logout() {
+      localStorage.removeItem("user");
+      window.location.href = "login.html";
+    }
+
     function cleanDropboxLink(link) {
-  try {
-    const url = new URL(link.trim());
-
-    // Replace the domain
-    url.hostname = "dl.dropboxusercontent.com";
-
-    // Force direct download
-    url.searchParams.set("dl", "1");
-
-    return url.toString();
-  } catch (e) {
-    return ""; // Fallback if the URL is malformed
-  }
-}
+      try {
+        const url = new URL(link.trim());
+        url.hostname = "dl.dropboxusercontent.com";
+        url.searchParams.set("dl", "1");
+        return url.toString();
+      } catch (e) {
+        return "";
+      }
+    }
 
     document.getElementById('generate').addEventListener('click', function () {
-  const input = document.getElementById('dropbox').value.trim();
-  const lines = input.split('\n').filter(l => l.includes('dropbox.com'));
-
-  const output = lines.map(link => {
-    const cleaned = cleanDropboxLink(link);
-    const encoded = encodeURIComponent(cleaned); // <- fixes the issue
-    return `https://annashrop.github.io/invitedadview/review.html?file=${encoded}`;
-  });
-
-  document.getElementById('result').innerHTML = `
-    <textarea readonly style="width:100%; height:100px;">${output.join('\n')}</textarea>
-  `;
-});
-
+      const input = document.getElementById('dropbox').value.trim();
+      const lines = input.split('\n').filter(l => l.includes('dropbox.com'));
+      const output = lines.map(link => {
+        const cleaned = cleanDropboxLink(link);
+        const encoded = encodeURIComponent(cleaned);
+        return `https://annashrop.github.io/invitedadview/review.html?file=${encoded}`;
+      });
+      document.getElementById('result').innerHTML = `
+        <textarea readonly style="width:100%; height:100px;">${output.join('\n')}</textarea>
+      `;
+    });
 
     document.getElementById('copyBtn').addEventListener('click', function () {
       const resultText = document.getElementById('result').textContent;
@@ -150,69 +201,65 @@
       });
     });
 
-    // Download CSV of edits
     document.addEventListener("DOMContentLoaded", () => {
-  const editSection = document.getElementById("ads-needing-edits");
-  const storedEdits = JSON.parse(localStorage.getItem("adsNeedingEdits") || "[]");
+      const editSection = document.getElementById("ads-needing-edits");
+      const storedEdits = JSON.parse(localStorage.getItem("adsNeedingEdits") || "[]");
 
-  if (storedEdits.length > 0) {
-    storedEdits.forEach(({ html }) => {
-      const wrapper = document.createElement("div");
-      wrapper.innerHTML = html;
-      editSection.appendChild(wrapper);
+      if (storedEdits.length > 0) {
+        storedEdits.forEach(({ html }) => {
+          const wrapper = document.createElement("div");
+          wrapper.innerHTML = html;
+          editSection.appendChild(wrapper);
+        });
+
+        document.getElementById("downloadEditsBtn").style.display = "inline-block";
+        document.getElementById("clearEditCountBtn").style.display = "inline-block";
+        document.getElementById("clearEditCSVBtn").style.display = "inline-block";
+
+        document.getElementById("downloadEditsBtn").addEventListener("click", () => {
+          const rows = [["Region", "Club", "Ad Name", "Headline", "Primary Text", "Reviewer Comments"]];
+
+          storedEdits.forEach(({ html }) => {
+            const tempDiv = document.createElement("div");
+            tempDiv.innerHTML = html;
+
+            const region = tempDiv.querySelector(".meta-section")?.innerText.match(/Region:\s*(.*)/)?.[1] || "";
+            const club = tempDiv.querySelector(".meta-section")?.innerText.match(/Club:\s*(.*)\s+\|/)?.[1] || "";
+            const adName = tempDiv.querySelector(".ad-name")?.innerText.replace("Ad Name:", "").trim() || "";
+            const headline = tempDiv.querySelector(".headline")?.innerText || "";
+            const primaryText = tempDiv.querySelector(".primary-text")?.innerText || "";
+            const comment = tempDiv.querySelector("textarea")?.value || "";
+
+            rows.push([region, club, adName, headline, primaryText, comment]);
+          });
+
+          const csvContent = "data:text/csv;charset=utf-8," + rows.map(r => r.map(val => `"${val.replace(/"/g, '""')}"`).join(",")).join("\n");
+          const encodedUri = encodeURI(csvContent);
+          const link = document.createElement("a");
+          link.setAttribute("href", encodedUri);
+          link.setAttribute("download", "ads_needing_edits.csv");
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        });
+
+        document.getElementById("clearEditCountBtn").addEventListener("click", () => {
+          localStorage.removeItem("adsNeedingEdits");
+          document.getElementById("ads-needing-edits").innerHTML = '';
+          document.getElementById("downloadEditsBtn").style.display = "none";
+          document.getElementById("clearEditCountBtn").style.display = "none";
+          document.getElementById("clearEditCSVBtn").style.display = "none";
+        });
+
+        document.getElementById("clearEditCSVBtn").addEventListener("click", () => {
+          localStorage.removeItem("adsNeedingEdits");
+          document.getElementById("ads-needing-edits").innerHTML = '';
+          document.getElementById("downloadEditsBtn").style.display = "none";
+          document.getElementById("clearEditCountBtn").style.display = "none";
+          document.getElementById("clearEditCSVBtn").style.display = "none";
+        });
+      }
     });
-
-    document.getElementById("downloadEditsBtn").style.display = "inline-block";
-    document.getElementById("clearEditCountBtn").style.display = "inline-block";
-    document.getElementById("clearEditCSVBtn").style.display = "inline-block";
-
-    document.getElementById("downloadEditsBtn").addEventListener("click", () => {
-      const rows = [["Region", "Club", "Ad Name", "Headline", "Primary Text", "Reviewer Comments"]];
-
-      storedEdits.forEach(({ html }) => {
-        const tempDiv = document.createElement("div");
-        tempDiv.innerHTML = html;
-
-        const region = tempDiv.querySelector(".meta-section")?.innerText.match(/Region:\s*(.*)/)?.[1] || "";
-        const club = tempDiv.querySelector(".meta-section")?.innerText.match(/Club:\s*(.*)\s+\|/)?.[1] || "";
-        const adName = tempDiv.querySelector(".ad-name")?.innerText.replace("Ad Name:", "").trim() || "";
-        const headline = tempDiv.querySelector(".headline")?.innerText || "";
-        const primaryText = tempDiv.querySelector(".primary-text")?.innerText || "";
-        const comment = tempDiv.querySelector("textarea")?.value || "";
-
-        rows.push([region, club, adName, headline, primaryText, comment]);
-      });
-
-      const csvContent = "data:text/csv;charset=utf-8," + rows.map(r => r.map(val => `"${val.replace(/"/g, '""')}"`).join(",")).join("\n");
-      const encodedUri = encodeURI(csvContent);
-      const link = document.createElement("a");
-      link.setAttribute("href", encodedUri);
-      link.setAttribute("download", "ads_needing_edits.csv");
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    });
-
-    document.getElementById("clearEditCountBtn").addEventListener("click", () => {
-      localStorage.removeItem("adsNeedingEdits");
-      document.getElementById("ads-needing-edits").innerHTML = '';
-      document.getElementById("downloadEditsBtn").style.display = "none";
-      document.getElementById("clearEditCountBtn").style.display = "none";
-      document.getElementById("clearEditCSVBtn").style.display = "none";
-    });
-
-    document.getElementById("clearEditCSVBtn").addEventListener("click", () => {
-      localStorage.removeItem("adsNeedingEdits");
-      document.getElementById("ads-needing-edits").innerHTML = '';
-      document.getElementById("downloadEditsBtn").style.display = "none";
-      document.getElementById("clearEditCountBtn").style.display = "none";
-      document.getElementById("clearEditCSVBtn").style.display = "none";
-    });
-  }
-});
-
-
-      
   </script>
 </body>
 </html>
