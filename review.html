@@ -338,6 +338,21 @@ textarea {
   overflow-y: auto;
   transition: background-color 0.3s ease;
 }
+.welcome-container {
+  text-align: center;
+  margin-top: 100px;
+  color: white;
+}
+
+.welcome-container h1 {
+  font-size: 36px;
+  margin-bottom: 10px;
+}
+
+.welcome-container p {
+  font-size: 18px;
+  opacity: 0.9;
+}
 
 
 </style>
@@ -355,6 +370,10 @@ textarea {
 </div>
 
 <div class="main-content">
+<div id="welcome-message" class="welcome-container">
+  <h1>Welcome to Your Dashboard</h1>
+  <p>Select a section from the sidebar to get started.</p>
+</div>
 
   <nav class="top-nav">
     <img src="https://www.invitedclubs.com/globalassets/.invited-corporate-site/_logos/invited-logo_500px-wide.png" alt="Invited Logo" class="nav-logo">
@@ -611,33 +630,47 @@ document.getElementById("sendEdits").addEventListener("click", sendEditsToAdsTea
   const mainContent = document.querySelector('.main-content');
 
 // Save selected section to localStorage and update background
+function hideWelcome() {
+  const welcomeEl = document.getElementById("welcome-message");
+  if (welcomeEl) welcomeEl.style.display = "none";
+}
+
 document.getElementById('paid-ads-btn')?.addEventListener('click', (e) => {
   e.preventDefault();
   localStorage.setItem("activeSection", "paid");
   mainContent.style.backgroundColor = '#83b573';
+  hideWelcome();
 });
 
 document.getElementById('emails-btn')?.addEventListener('click', (e) => {
   e.preventDefault();
   localStorage.setItem("activeSection", "emails");
   mainContent.style.backgroundColor = '#00a3cf';
+  hideWelcome();
 });
 
 document.getElementById('landing-btn')?.addEventListener('click', (e) => {
   e.preventDefault();
   localStorage.setItem("activeSection", "landing");
   mainContent.style.backgroundColor = '#933b45';
+  hideWelcome();
 });
 
-// Restore background color on page load based on last section clicked
+// On page load, show welcome OR restore section background
 window.addEventListener("DOMContentLoaded", () => {
   const active = localStorage.getItem("activeSection");
   if (active === "paid") {
     mainContent.style.backgroundColor = '#83b573';
+    hideWelcome();
   } else if (active === "emails") {
     mainContent.style.backgroundColor = '#00a3cf';
+    hideWelcome();
   } else if (active === "landing") {
     mainContent.style.backgroundColor = '#933b45';
+    hideWelcome();
+  } else {
+    // Default background
+    mainContent.style.backgroundColor = '#22326e';
   }
 });
 
