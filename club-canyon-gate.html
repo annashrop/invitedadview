@@ -155,10 +155,11 @@
 .main-content {
   margin-left: 240px;
   flex-grow: 1;
-  background-color: #f4f6fb;
-  padding: 40px 20px;
-  overflow-y: auto;
+  /* background-color: #f4f6fb; */ /* remove or comment this out */
+  padding: 40px;
   height: 100vh;
+  overflow-y: auto;
+  transition: background-color 0.3s ease;
 }
 
   </style>
@@ -166,9 +167,9 @@
 <body>
 <div class="sidebar">
   <h2>Club Dashboard</h2>
-  <a href="club-canyon-gate.html">Paid Ads</a>
-  <a href="#">Emails</a>
-  <a href="#">Landing Pages</a>
+  <a href="club-canyon-gate.html" id="paid-ads-btn">Paid Ads</a>
+  <a href="#" id="emails-btn">Emails</a>
+  <a href="#" id="landing-btn">Landing Pages</a>
   <a href="#">[Coming Soon!]</a>
   <a href="#">[Coming Soon!]</a>
   <button class="logout-button" onclick="logout()">Logout</button>
@@ -369,6 +370,22 @@
     localStorage.removeItem("user");
     window.location.href = "login.html";
   }
+    const mainContent = document.querySelector('.main-content');
+
+  document.getElementById('paid-ads-btn')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    mainContent.style.backgroundColor = '#83b573'; // green
+  });
+
+  document.getElementById('emails-btn')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    mainContent.style.backgroundColor = '#00a3cf'; // teal
+  });
+
+  document.getElementById('landing-btn')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    mainContent.style.backgroundColor = '#933b45'; // burgundy
+  });
 </script>
 
 </div>
