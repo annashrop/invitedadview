@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Invited Marketing Asset Approval Portal Login</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f6fb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .login-box {
+      background: white;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+    h2 {
+      text-align: center;
+      color: #22326e;
+      margin-bottom: 24px;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+    button {
+      width: 100%;
+      background-color: #22326e;
+      color: white;
+      border: none;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #1b264f;
+    }
+    .error {
+      color: red;
+      text-align: center;
+      margin-bottom: 10px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-box">
+    <h2>Invited Ad Portal Login</h2>
+    <div class="error" id="error">Invalid login. Please try again.</div>
+    <input type="text" id="username" placeholder="Username" />
+    <input type="password" id="password" placeholder="Password" />
+    <button onclick="login()">Login</button>
+  </div>
+
+  <script>
+    const users = {
+      "ads-team": {
+        password: "invitedads",
+        redirect: "ads.html"
+      },
+      "regional-northeast": {
+        password: "northeast123",
+        redirect: "review.html?region=northeast"
+      },
+      "club-canyon": {
+        password: "canyon123",
+        redirect: "club-canyon-gate.html"
+      }
+    };
+
+    function login() {
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const errorBox = document.getElementById("error");
+
+      if (users[username] && users[username].password === password) {
+        localStorage.setItem("user", username);
+        window.location.href = users[username].redirect;
+      } else {
+        errorBox.style.display = "block";
+      }
+    }
+  </script>
+</body>
+</html>
