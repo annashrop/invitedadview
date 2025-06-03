@@ -2,6 +2,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script>
+  const user = localStorage.getItem("user");
+
+  if (!user) {
+    // User didn’t come through login
+    window.location.href = "login.html";
+  }
+</script>
+
   <link rel="stylesheet" href="css/styles.css">
   <meta charset="UTF-8">
   <title>Canyon Gate - Club Review</title>
