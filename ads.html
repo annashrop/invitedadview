@@ -138,6 +138,13 @@
 
 </body>
 </html>
+<div class="upload-section" style="margin: 40px 0;">
+  <h2 style="color: #22326e;">Upload Ads CSV</h2>
+  <input type="file" id="csvUploadInput" accept=".csv" />
+  <button id="uploadButton" style="margin-left: 10px; padding: 8px 16px; background-color: #4CAF50; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">
+    Upload CSV
+  </button>
+</div>
 
    
 
@@ -303,6 +310,56 @@ document.getElementById('csvUploadInput').addEventListener('change', function(ev
   };
   reader.readAsText(file);
 });
+</script>
+<script>
+  document.getElementById('uploadButton').addEventListener('click', function () {
+    const fileInput = document.getElementById('csvUploadInput');
+    const file = fileInput.files[0];
+
+    if (!file) {
+      alert("Please select a file first.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const csv = e.target.result;
+
+      Papa.parse(csv, {
+        header: true,
+        skipEmptyLines: true,
+        complete: function (results) {
+          const data = results.data;
+          const groupedByRegion = {};
+
+          data.forEach(row => {
+            const region = row["Region"]?.trim();
+            if (region) {
+              if (!groupedByRegion[region]) {
+                groupedByRegion[region] = [];
+              }
+              groupedByRegion[region].push(row);
+            }
+          });
+
+          Object.entries(groupedByRegion).forEach(([region, rows]) => {
+            const jsonBlob = new Blob([JSON.stringify(rows)], { type: 'application/json' });
+            const filePath = `regions/${region}/${Date.now()}-ads.json`;
+
+            firebase.storage().ref(filePath).put(jsonBlob).then(() => {
+              console.log(`✅ Uploaded to Firebase: ${filePath}`);
+              alert(`CSV successfully routed to ${region}!`);
+            }).catch(error => {
+              console.error(`❌ Upload failed for ${region}`, error);
+              alert("Upload failed. Check console for details.");
+            });
+          });
+        }
+      });
+    };
+
+    reader.readAsText(file);
+  });
 </script>
 
 </body>
