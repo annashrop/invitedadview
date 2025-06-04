@@ -366,6 +366,37 @@ document.getElementById('csvUploadInput').addEventListener('change', function(ev
     reader.readAsText(file);
   });
 </script>
+<script>
+  // Auth: Sign in anonymously
+  firebase.auth().signInAnonymously().catch((error) => {
+    console.error("Auth error:", error.message);
+  });
+
+  // Upload logic
+  function uploadCSV() {
+    const fileInput = document.getElementById("csvFile");
+    const file = fileInput.files[0];
+
+    if (!file) {
+      alert("Please select a file to upload.");
+      return;
+    }
+
+    const timestamp = Date.now();
+    const storageRef = firebase.storage().ref();
+    const uploadRef = storageRef.child(`uploads/${timestamp}-${file.name}`);
+
+    uploadRef.put(file).then((snapshot) => {
+      snapshot.ref.getDownloadURL().then((downloadURL) => {
+        console.log("CSV uploaded! Access it at:", downloadURL);
+        alert("File uploaded successfully!");
+      });
+    }).catch((error) => {
+      console.error("Upload failed:", error.message);
+      alert("Upload failed — see console for details.");
+    });
+  }
+</script>
 
 </body>
 </html>
