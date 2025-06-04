@@ -274,48 +274,7 @@
 
 
 
-<script>
-document.getElementById('csvUploadInput').addEventListener('change', function(event) {
-  const file = event.target.files[0];
-  if (!file) return;
 
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    const csv = e.target.result;
-
-    Papa.parse(csv, {
-      header: true,
-      skipEmptyLines: true,
-      complete: function(results) {
-        const data = results.data;
-        const groupedByRegion = {};
-
-        data.forEach(row => {
-          const region = row["Region"]?.trim();
-          if (region) {
-            if (!groupedByRegion[region]) {
-              groupedByRegion[region] = [];
-            }
-            groupedByRegion[region].push(row);
-          }
-        });
-
-        Object.entries(groupedByRegion).forEach(([region, rows]) => {
-          const jsonBlob = new Blob([JSON.stringify(rows)], { type: 'application/json' });
-          const filePath = `regions/${region}/${Date.now()}-ads.json`;
-
-          firebase.storage().ref(filePath).put(jsonBlob).then(() => {
-            console.log(`✅ Uploaded to Firebase: ${filePath}`);
-          }).catch(error => {
-            console.error(`❌ Failed to upload ${filePath}`, error);
-          });
-        });
-      }
-    });
-  };
-  reader.readAsText(file);
-});
-</script>
 <script>
   document.getElementById('uploadButton').addEventListener('click', function () {
     const fileInput = document.getElementById('csvUploadInput');
@@ -372,30 +331,7 @@ document.getElementById('csvUploadInput').addEventListener('change', function(ev
     console.error("Auth error:", error.message);
   });
 
-  // Upload logic
-  function uploadCSV() {
-    const fileInput = document.getElementById("csvFile");
-    const file = fileInput.files[0];
-
-    if (!file) {
-      alert("Please select a file to upload.");
-      return;
-    }
-
-    const timestamp = Date.now();
-    const storageRef = firebase.storage().ref();
-    const uploadRef = storageRef.child(`uploads/${timestamp}-${file.name}`);
-
-    uploadRef.put(file).then((snapshot) => {
-      snapshot.ref.getDownloadURL().then((downloadURL) => {
-        console.log("CSV uploaded! Access it at:", downloadURL);
-        alert("File uploaded successfully!");
-      });
-    }).catch((error) => {
-      console.error("Upload failed:", error.message);
-      alert("Upload failed — see console for details.");
-    });
-  }
+  
 </script>
 
 </body>
