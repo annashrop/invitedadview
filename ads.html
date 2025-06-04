@@ -271,6 +271,37 @@
   </script>
   <!-- Place this right before the closing </body> -->
 
+<input type="file" id="csvFile" accept=".csv" />
+<button onclick="uploadCSV()">Upload CSV</button>
+
+<script>
+function uploadCSV() {
+  const fileInput = document.getElementById('csvFile');
+  const file = fileInput.files[0];
+
+  if (!file) {
+    alert("Please select a CSV file first.");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  fetch("https://us-central1-your-project-id.cloudfunctions.net/uploadCSV", {
+    method: "POST",
+    body: formData
+  })
+  .then(response => response.json())
+  .then(data => {
+    alert("Upload successful!");
+    console.log("Uploaded to:", data.path);
+  })
+  .catch(error => {
+    alert("Upload failed");
+    console.error(error);
+  });
+}
+</script>
 
 
 
