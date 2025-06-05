@@ -398,14 +398,34 @@ textarea {
   <!-- Firebase CSV load logic -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
   <script>
+  const region = "West";
+  const functionURL = `https://us-central1-marketingapprovalportal.cloudfunctions.net/getCsvByRegion?region=${region}`;
+
+  fetch(functionURL)
+    .then(res => res.text())
+    .then(csvText => {
+      Papa.parse(csvText, {
+        header: true,
+        skipEmptyLines: true,
+        complete: function(results) {
+          processCSV(results);
+        }
+      });
+    })
+    .catch(error => {
+      console.error("Error loading CSV:", error);
+      document.getElementById("no-ads-message").style.display = "block";
+    });
+</script>
+
+  <script>
     
   const fileName = new URLSearchParams(window.location.search).get("file");
 
 if (!fileName) {
   document.getElementById('preview-container').innerHTML = "<p style='color: red;'>No file specified. </p>";
 } else {
-  const firebaseURL = `https://firebasestorage.googleapis.com/v0/b/marketingapprovalportal.appspot.com/o/West%2Fuploads%2F${encodeURIComponent(fileName)}?alt=media`;
-
+  
   fetch(firebaseURL)
       .then(res => res.text())
       .then(csvText => {
@@ -418,12 +438,7 @@ if (!fileName) {
         });
       });
   </script>
-  <!-- Firebase SDKs -->
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 
-<script>
   // 1. Firebase config
   const firebaseConfig = {
     apiKey: "<!-- Firebase SDKs -->
