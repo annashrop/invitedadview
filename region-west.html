@@ -418,27 +418,6 @@ textarea {
     });
 </script>
 
-  <script>
-    
-  const fileName = new URLSearchParams(window.location.search).get("file");
-
-if (!fileName) {
-  document.getElementById('preview-container').innerHTML = "<p style='color: red;'>No file specified. </p>";
-} else {
-  
-  fetch(firebaseURL)
-      .then(res => res.text())
-      .then(csvText => {
-        Papa.parse(csvText, {
-          header: true,
-          skipEmptyLines: true,
-          complete: function(results) {
-            processCSV(results);
-          }
-        });
-      });
-  </script>
-
   // 1. Firebase config
   const firebaseConfig = {
     apiKey: "<!-- Firebase SDKs -->
