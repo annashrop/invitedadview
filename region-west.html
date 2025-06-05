@@ -425,7 +425,7 @@ textarea {
       listHTML.push(`<li><a class="preview-link-button" href="?review=true">All Clubs (Regional View)</a></li>`);
       uniqueClubs.forEach(club => {
         const encodedClub = encodeURIComponent(club);
-        const encodedFile = encodeURIComponent(fileURL);
+        const encodedFile = encodeURIComponent(firebaseURL);
       listHTML.push(`<li><a class="preview-link-button" href="?review=true&club=${encodedClub}&file=${encodedFile}">${club}</a></li>`);
       });
       listHTML.push('</ul>');
