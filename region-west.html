@@ -398,8 +398,8 @@ textarea {
   <!-- Firebase CSV load logic -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
   <script>
-    const firebaseURL = "https://firebasestorage.googleapis.com/v0/b/marketingapprovalportal.appspot.com/o/West%2Fuploads%2F1749074794462-April%20Test5%20(1).csv?alt=media";
-
+    
+  const fileURL = firebaseURL;
     fetch(firebaseURL)
       .then(res => res.text())
       .then(csvText => {
