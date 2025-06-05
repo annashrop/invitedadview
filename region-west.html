@@ -403,12 +403,8 @@ textarea {
   
   <script>
   const region = "West";
+  </script>
   
-
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
-
 <script>
   const firebaseConfig = {
     apiKey: "AIzaSyCLl4jDy3dfN8Ntgjnjt0IieVbPTQywPwE",
@@ -430,7 +426,9 @@ textarea {
       const items = res.items;
       if (items.length === 0) throw new Error("No files found.");
 
-      const latestRef = sorted[0];
+      const sorted = items.sort((a, b) => b.name.localeCompare(a.name));
+const latestRef = sorted[0];
+
 return latestRef.getDownloadURL();
 })
 .then((url) => {
