@@ -412,7 +412,7 @@ textarea {
         });
       });
   </script>
-
+<script>
     function processCSV(results) {
       const data = results.data;
       const container = document.getElementById('preview-container');
@@ -573,48 +573,7 @@ function sendApprovedAdsToClub() {
   }
   checkIfNoAdsLeft();
 }
-function sendApprovedAdsToClub() {
-  const adCards = document.querySelectorAll('.preview-card');
-  let approvedAds = [];
 
-  adCards.forEach(card => {
-    const imageStatus = card.querySelector('.image-approval')?.value;
-    const textStatus = card.querySelector('.text-approval')?.value;
-
-    if (imageStatus === 'Approved' && textStatus === 'Approved') {
-      approvedAds.push(card.outerHTML);
-
-      card.style.transition = "opacity 0.4s ease";
-      card.style.opacity = 0;
-      setTimeout(() => card.remove(), 400);
-    }
-  });
-
-  if (approvedAds.length > 0) {
-    const existing = JSON.parse(localStorage.getItem("agencyFinalApproved") || "[]");
-
-    const timestamp = new Date().toLocaleString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true
-    });
-
-    const clubName = new URLSearchParams(window.location.search).get("club") || "All Clubs";
-
-    existing.push({
-      clubName,
-      timestamp,
-      ads: approvedAds
-    });
-
-    localStorage.setItem("agencyFinalApproved", JSON.stringify(existing));
-    showToast("Approved ads sent to club!");
-  }
-  checkIfNoAdsLeft();
-}
 
     
 function sendEditsToAdsTeam() {
