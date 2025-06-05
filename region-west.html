@@ -411,14 +411,15 @@ textarea {
     })
     .then(res => res.text())
     .then(csvText => {
-      Papa.parse(csvText, {
-        header: true,
-        skipEmptyLines: true,
-        complete: function(results) {
-          processCSV(results);
-        }
-      });
-    })
+  Papa.parse(csvText, {
+    header: true,
+    skipEmptyLines: true,
+    complete: function(results) {
+      processCSV(results, firebaseURL); // ✅ pass firebaseURL here
+    }
+  });
+})
+
     .catch(error => {
       console.error("Error loading CSV:", error);
       document.getElementById("no-ads-message").style.display = "block";
