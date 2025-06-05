@@ -421,6 +421,7 @@ textarea {
   // 1. Firebase config
   const firebaseConfig = {
     apiKey: "<!-- Firebase SDKs -->
+<!-- Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
@@ -445,18 +446,14 @@ textarea {
 
   storage.ref(folderPath).listAll()
     .then((res) => {
-      // Find the most recently uploaded file
       const items = res.items;
       if (items.length === 0) throw new Error("No files found.");
 
-      // Sort by name (timestamp prefix), descending
       const sorted = items.sort((a, b) => b.name.localeCompare(a.name));
       const latestRef = sorted[0];
-
       return latestRef.getDownloadURL();
     })
     .then((downloadURL) => {
-      // 4. Fetch and parse CSV
       fetch(downloadURL)
         .then(res => res.text())
         .then(csvText => {
@@ -474,6 +471,7 @@ textarea {
       document.getElementById("preview-container").innerHTML = "<p style='color:red;'>Failed to load CSV.</p>";
     });
 </script>
+
 
 <script>
     function processCSV(results) {
