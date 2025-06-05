@@ -468,7 +468,7 @@ return latestRef.getDownloadURL();
 </script>
 
 <script>
-    function processCSV(results) {
+    function processCSV(results, firebaseURL) {
       const data = results.data;
       const container = document.getElementById('preview-container');
       const clubListContainer = document.getElementById('club-link-list');
