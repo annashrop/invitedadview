@@ -4,18 +4,16 @@
 <head>
   <script>
     const region = "West";
-
-  const user = localStorage.getItem("user");
-
-  if (!user) {
-    // User didn’t come through login
-    window.location.href = "login.html";
-  }
-</script>
+    const user = localStorage.getItem("user");
+    if (!user) {
+      window.location.href = "login.html";
+    }
+  </script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <meta charset="UTF-8">
   <title>Regional Marketing Ad Approval Portal</title>
- <style>
+  <style>
+
    .top-nav {
   display: flex;
   align-items: center;
@@ -362,56 +360,58 @@ textarea {
 </head>
 <body>
   <div class="sidebar">
-  <h2>Regional Dashboard</h2>
-  <a href="ads.html" id="paid-ads-btn">Paid Ads</a>
-  <a href="#" id="emails-btn">Emails</a>
-  <a href="#" id="landing-btn">Landing Pages</a>
-  <a href="#">[Coming Soon!]</a>
-  <a href="#">[Coming Soon!]</a>
-  <button class="logout-button" onclick="logout()">Logout</button>
-</div>
+    <h2>Regional Dashboard</h2>
+    <a href="ads.html" id="paid-ads-btn">Paid Ads</a>
+    <a href="#" id="emails-btn">Emails</a>
+    <a href="#" id="landing-btn">Landing Pages</a>
+    <a href="#">[Coming Soon!]</a>
+    <a href="#">[Coming Soon!]</a>
+    <button class="logout-button" onclick="logout()">Logout</button>
+  </div>
 
-<div class="main-content">
-<div id="welcome-message" class="welcome-container">
-  <h1>Welcome to Your Dashboard</h1>
-  <p>Select a section from the sidebar to get started.</p>
-</div>
+  <div class="main-content">
+    <div id="welcome-message" class="welcome-container">
+      <h1>Welcome to Your Dashboard</h1>
+      <p>Select a section from the sidebar to get started.</p>
+    </div>
 
-  <nav class="top-nav">
-    <img src="https://www.invitedclubs.com/globalassets/.invited-corporate-site/_logos/invited-logo_500px-wide.png" alt="Invited Logo" class="nav-logo">
-    <span class="nav-title">Regional Marketing Ad Approval Portal</span>
-  </nav>
-  <div class="container">
+    <nav class="top-nav">
+      <img src="https://www.invitedclubs.com/globalassets/.invited-corporate-site/_logos/invited-logo_500px-wide.png" alt="Invited Logo" class="nav-logo">
+      <span class="nav-title">Regional Marketing Ad Approval Portal</span>
+    </nav>
 
-  <div id="club-link-list" style="margin-bottom: 30px;"></div>
-<div class="header-wrapper">
-    <div class="top-buttons">
-    <button id="sendToClubBtn" style="background-color: #7baa65; color: white; padding: 10px; border: none; border-radius: 6px;">Send Approved Ads to Club</button>
-    <button id="sendEdits" style="background-color: #e35205; color: white; padding: 10px; border: none; border-radius: 6px;">Send Feedback to Ads Team</button>
-</div>
-  <div id="preview-container"></div>
-<div id="no-ads-message" style="display: none; text-align: center; margin-top: 40px; font-size: 1.2em; color: #ccc;">
-  No ads left to review.
-</div>
+    <div class="container">
+      <div id="club-link-list" style="margin-bottom: 30px;"></div>
+      <div class="header-wrapper">
+        <div class="top-buttons">
+          <button id="sendToClubBtn" style="background-color: #7baa65; color: white; padding: 10px; border: none; border-radius: 6px;">Send Approved Ads to Club</button>
+          <button id="sendEdits" style="background-color: #e35205; color: white; padding: 10px; border: none; border-radius: 6px;">Send Feedback to Ads Team</button>
+        </div>
+      </div>
+      <div id="preview-container"></div>
+      <div id="no-ads-message" style="display: none; text-align: center; margin-top: 40px; font-size: 1.2em; color: #ccc;">
+        No ads left to review.
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase CSV load logic -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
   <script>
-    const fileURL = new URLSearchParams(window.location.search).get("file");
+    const firebaseURL = "https://firebasestorage.googleapis.com/v0/b/marketingapprovalportal.appspot.com/o/West%2Fuploads%2F1749074794462-April%20Test5%20(1).csv?alt=media";
 
-    if (fileURL) {
-      fetch(fileURL)
-        .then(res => res.text())
-        .then(csvText => {
-          Papa.parse(csvText, {
-            header: true,
-            skipEmptyLines: true,
-            complete: function(results) {
-              processCSV(results);
-            }
-          });
+    fetch(firebaseURL)
+      .then(res => res.text())
+      .then(csvText => {
+        Papa.parse(csvText, {
+          header: true,
+          skipEmptyLines: true,
+          complete: function(results) {
+            processCSV(results);
+          }
         });
-    } else {
-     document.getElementById('preview-container').innerHTML = "<p style='color: red;'>No file specified. Please go to <a href='ads.html' style='color: #ffffff; text-decoration: underline;'>the Ads Department page</a> to generate a preview link.</p>";
-    }
+      });
+  </script>
 
     function processCSV(results) {
       const data = results.data;
