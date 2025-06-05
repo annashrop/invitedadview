@@ -399,10 +399,37 @@ textarea {
     </div>
   </div>
 
-  <!-- Firebase CSV load logic -->
+  
+<script>
+  const region = "West";
+  const latestCsvFunctionUrl = `https://us-central1-marketingapprovalportal.cloudfunctions.net/getLatestCsvUrl?region=${region}`;
+
+  fetch(latestCsvFunctionUrl)
+    .then(res => res.json())
+    .then(data => {
+      const fileUrl = data.url;
+      return fetch(fileUrl);
+    })
+    .then(res => res.text())
+    .then(csvText => {
+      Papa.parse(csvText, {
+        header: true,
+        skipEmptyLines: true,
+        complete: function(results) {
+          processCSV(results);
+        }
+      });
+    })
+    .catch(error => {
+      console.error("Error loading dynamic CSV:", error);
+      document.getElementById("no-ads-message").style.display = "block";
+    });
+</script>
 
   
 <script>
+
+
   const firebaseConfig = {
     apiKey: "AIzaSyCLl4jDy3dfN8Ntgjnjt0IieVbPTQywPwE",
     authDomain: "marketingapprovalportal.firebaseapp.com",
