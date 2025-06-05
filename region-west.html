@@ -442,14 +442,6 @@ textarea {
   firebase.initializeApp(firebaseConfig);
   const storage = firebase.storage();
 
-  // 3. Load latest file from West/uploads
-  const folderPath = "West/uploads";
-
-  storage.ref(folderPath).listAll()
-    .then((res) => {
-      const items = res.items;
-      if (items.length === 0) throw new Error("No files found.");
-
       const sorted = items.sort((a, b) => b.name.localeCompare(a.name));
 const latestRef = sorted[0];
 
