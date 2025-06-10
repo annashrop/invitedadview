@@ -620,9 +620,26 @@ function sendEditsToAdsTeam() {
     const textStatus = card.querySelector('.text-approval')?.value;
 
 
-    if (imageStatus === 'Needs Edit' || textStatus === 'Needs Edit' || 
-        imageStatus === 'Declined' || textStatus === 'Declined') {
-      const comments = card.querySelector('textarea')?.value || '';
+  if (imageStatus === 'Needs Edit' || textStatus === 'Needs Edit' || 
+    imageStatus === 'Declined' || textStatus === 'Declined') {
+  
+  const commentBox = card.querySelector('textarea');
+  const comments = commentBox?.value.trim();
+
+  if (!comments) {
+    commentBox.style.border = "2px solid red";
+    commentBox.placeholder = "Comment required before submitting edits.";
+    return; // ⛔️ prevent submission if no comment
+  }
+
+  editAds.push({ html: card.outerHTML, comment: comments });
+
+  card.style.transition = "opacity 0.4s ease";
+  card.style.opacity = 0;
+  setTimeout(() => card.remove(), 400);
+}
+
+      
       editAds.push({ html: card.outerHTML, comment: comments });
 
       card.style.transition = "opacity 0.4s ease";
@@ -712,9 +729,41 @@ window.addEventListener("DOMContentLoaded", () => {
     mainContent.style.backgroundColor = '#22326e';
   }
 });
+<script>
+  function showToast(message) {
+    const toast = document.getElementById("toast");
+    toast.textContent = message;
+    toast.style.visibility = "visible";
+    toast.style.opacity = "1";
+
+    setTimeout(() => {
+      toast.style.opacity = "0";
+      toast.style.visibility = "hidden";
+    }, 3000);
+  }
+</script>
 
 
   </script>
+  <div id="toast" style="
+  visibility: hidden;
+  min-width: 250px;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  border-radius: 8px;
+  padding: 12px;
+  position: fixed;
+  z-index: 1000;
+  left: 50%;
+  bottom: 30px;
+  transform: translateX(-50%);
+  font-size: 14px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  transition: visibility 0s, opacity 0.3s ease-in-out;
+  opacity: 0;
+"></div>
+
 </div>
 </body>
 </html>
