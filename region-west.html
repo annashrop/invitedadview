@@ -357,6 +357,10 @@ textarea {
   font-size: 18px;
   opacity: 0.9;
 }
+#toast.show {
+  visibility: visible;
+  opacity: 1;
+}
 
 
 </style>
@@ -741,16 +745,7 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-  <script>
-  function showToast(message) {
-    const toast = document.getElementById("toast");
-    toast.innerText = message;
-    toast.classList.add("show");
-    setTimeout(() => {
-      toast.classList.remove("show");
-    }, 3000);
-  }
-</script>
+ 
 
 
 
