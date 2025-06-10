@@ -401,25 +401,27 @@ textarea {
 
   
 <script>
+  const region = "West";
   const latestCsvFunctionUrl = `https://us-central1-marketingapprovalportal.cloudfunctions.net/getLatestCsvUrl?region=${region}`;
+
+  let fileURL = ""; // ✅ Define it up top
 
   fetch(latestCsvFunctionUrl)
     .then(res => res.json())
     .then(data => {
-      const fileUrl = data.url;
-      return fetch(fileUrl);
+      fileURL = data.url; // ✅ Assign it here
+      return fetch(fileURL);
     })
     .then(res => res.text())
     .then(csvText => {
-  Papa.parse(csvText, {
-    header: true,
-    skipEmptyLines: true,
-    complete: function(results) {
-      processCSV(results, fileURL); // ✅ pass fileURL here
-    }
-  });
-})
-
+      Papa.parse(csvText, {
+        header: true,
+        skipEmptyLines: true,
+        complete: function(results) {
+          processCSV(results, fileURL); // ✅ Now this works
+        }
+      });
+    })
     .catch(error => {
       console.error("Error loading CSV:", error);
       document.getElementById("no-ads-message").style.display = "block";
@@ -430,40 +432,7 @@ textarea {
 <script>
 
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyCLl4jDy3dfN8Ntgjnjt0IieVbPTQywPwE",
-    authDomain: "marketingapprovalportal.firebaseapp.com",
-    projectId: "marketingapprovalportal",
-    storageBucket: "marketingapprovalportal.appspot.com",
-    messagingSenderId: "324995086351",
-    appId: "1:324995086351:web:2e510d67bf824f2f32cb7a"
-  };
-
-  firebase.initializeApp(firebaseConfig);
-  const storage = firebase.storage();
-
-      const sorted = items.sort((a, b) => b.name.localeCompare(a.name));
-const latestRef = sorted[0];
-
-return latestRef.getDownloadURL();
-})
-.then((url) => {
-  return fetch(url);
-})
-.then((res) => res.text())
-.then((csvText) => {
-  Papa.parse(csvText, {
-    header: true,
-    skipEmptyLines: true,
-    complete: function(results) {
-      processCSV(results);
-    }
-  });
-})
-.catch((error) => {
-  console.error("Error loading CSV:", error);
-  document.getElementById("no-ads-message").style.display = "block";
-});
+  
 
 </script>
 
