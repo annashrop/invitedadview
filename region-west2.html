@@ -1,0 +1,772 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+
+  <script>
+    const region = "West";
+    const user = localStorage.getItem("user");
+    if (!user) {
+      window.location.href = "login.html";
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <title>West Regional Marketing Ad Approval Portal</title>
+  <style>
+
+   .top-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #22326e;
+  padding: 10px 20px;
+  border-bottom: 1px solid #1b264f;
+}
+
+.nav-logo {
+  height: 36px;
+  margin-right: 15px;
+}
+
+.nav-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: white;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background-color: #22326e;
+    color: #ffffff;
+    margin: 0;
+    padding: 0;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+  }
+
+  header {
+    background-color: #22326e;
+    padding: 20px 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  header img {
+    max-height: 40px;
+  }
+
+  h1 {
+    text-align: center;
+    font-size: 26px;
+    margin: 30px 0 10px;
+    color: #ffffff;
+  }
+
+ .preview-card {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.preview-card:hover {
+  transform: scale(1.01);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+}
+select,
+textarea {
+  background-color: #f5f5f5;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 8px;
+  font-size: 14px;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 6px;
+}
+
+textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+.preview-card {
+  color: #222222;
+}
+   
+.header-wrapper {
+  margin-bottom: 40px; /* Adds the blue space between buttons and white cards */
+  text-align: center;
+}
+
+.top-buttons button {
+  margin: 0 10px;
+}
+#club-link-list ul {
+  list-style: none;
+  padding-left: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+#club-link-list li {
+  margin: 0;
+}
+
+.preview-link-button {
+  display: inline-block;
+  padding: 6px 14px;
+  background-color: #009cbd;
+  color: white;
+  text-decoration: none;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.preview-link-button:hover {
+  background-color: #FFFFFF;
+}
+  .preview-card:hover {
+    box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+  }
+.ad-name {
+  font-size: 10px;
+  color: #666;
+  font-weight: 500;
+}
+
+  #preview-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    gap: 24px;
+  }
+   .meta-section {
+  background-color: #ececec;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+
+  .meta, .headline, .primary-text {
+    margin-bottom: 10px;
+  }
+
+  .headline {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 10px 0 6px;
+  color: #333;
+}
+
+.meta-divider {
+  border-top: 1px solid #ddd;
+  margin: 12px 0;
+}
+
+  .primary-text {
+  font-size: 15px;
+  color: #555;
+  margin-bottom: 12px;
+}
+
+  .image-wrapper {
+    margin-top: 20px;
+  }
+
+  .card-image {
+    width: 100%;
+    max-height: 300px;
+    object-fit: cover;
+    border-radius: 6px;
+    margin-bottom: 10px;
+  }
+
+ button {
+  background-color: #007bff;
+  color: #fff;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  margin: 8px 0;
+  transition: background-color 0.2s ease;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+
+  select, textarea {
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  padding: 8px;
+  font-size: 14px;
+  width: 100%;
+  margin-top: 4px;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+}
+  textarea:focus, select:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+  .club-link-list ul {
+    list-style: none;
+    padding-left: 0;
+  }
+
+  .club-link-list li a {
+    color: #ffffff;
+    text-decoration: underline;
+    font-size: 14px;
+  }
+
+   .top-buttons {
+  text-align: center;
+  margin-bottom: 30px;
+  }
+.top-buttons button {
+  margin: 0 10px;
+  }
+.view-image-button {
+  display: inline-block;
+  background-color: #22326e;
+  color: white;
+  padding: 6px 12px;
+  margin-bottom: 6px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.view-image-button:hover {
+  background-color: #1a244f;
+}
+
+  .approval label {
+    font-size: 13px;
+    font-weight: 500;
+    display: inline-block;
+    margin-top: 10px;
+  }
+   .approval-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+  margin-bottom: 10px;
+}
+
+.approval-row label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  white-space: nowrap;
+}
+.sidebar {
+  width: 240px;
+  background-color: #22326e;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 100;
+}
+
+.sidebar h2 {
+  font-size: 22px;
+  margin-bottom: 30px;
+}
+
+.sidebar a {
+  display: block;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 12px 16px;
+  border-radius: 999px;
+  margin-bottom: 14px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.sidebar a:nth-of-type(1) { background-color: #83b573; color: white; }       /* Paid Ads */
+.sidebar a:nth-of-type(2) { background-color: #00a3cf; color: white; }       /* Emails */
+.sidebar a:nth-of-type(3) { background-color: #933b45; color: white; }       /* Landing Page */
+.sidebar a:nth-of-type(4) { background-color: #e35205; color: white; }       /* Coming Soon */
+.sidebar a:nth-of-type(5) { background-color: #ffffff; color: #22326e; }     /* Coming Soon (white) */
+
+.sidebar a:hover {
+  transform: scale(1.03);
+  opacity: 0.9;
+}
+
+
+.logout-button {
+  margin-top: auto;
+  background-color: #ff6f3c;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.logout-button:hover {
+  background-color: #e35205;
+}
+
+.main-content {
+  margin-left: 240px;
+  flex-grow: 1;
+  /* background-color: #f4f6fb; */ /* remove or comment this out */
+  padding: 40px;
+  height: 100vh;
+  overflow-y: auto;
+  transition: background-color 0.3s ease;
+}
+.welcome-container {
+  text-align: center;
+  margin-top: 100px;
+  color: white;
+}
+
+.welcome-container h1 {
+  font-size: 36px;
+  margin-bottom: 10px;
+}
+
+.welcome-container p {
+  font-size: 18px;
+  opacity: 0.9;
+}
+
+#toast {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background-color: #323232;
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 8px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 1000;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+}
+#toast.show {
+  opacity: 1;
+}
+
+
+</style>
+
+</head>
+<body>
+  <div class="sidebar">
+    <h2>Regional Dashboard</h2>
+    <a href="region-west.html" id="paid-ads-btn">Paid Ads</a>
+    <a href="#" id="emails-btn">Emails</a>
+    <a href="#" id="landing-btn">Landing Pages</a>
+    <a href="#">[Coming Soon!]</a>
+    <a href="#">[Coming Soon!]</a>
+    <button class="logout-button" onclick="logout()">Logout</button>
+  </div>
+
+  <div class="main-content">
+    <div id="welcome-message" class="welcome-container">
+      <h1>Welcome to Your Dashboard</h1>
+      <p>Select a section from the sidebar to get started.</p>
+    </div>
+
+    <nav class="top-nav">
+      <img src="https://www.invitedclubs.com/globalassets/.invited-corporate-site/_logos/invited-logo_500px-wide.png" alt="Invited Logo" class="nav-logo">
+      <span class="nav-title">West Regional Marketing Ad Approval Portal</span>
+    </nav>
+
+    <div class="container">
+      <div id="club-link-list" style="margin-bottom: 30px;"></div>
+      <div class="header-wrapper">
+        <div class="top-buttons">
+          <button id="sendToClubBtn" style="background-color: #7baa65; color: white; padding: 10px; border: none; border-radius: 6px;">Send Approved Ads to Club</button>
+          <button id="sendEdits" style="background-color: #e35205; color: white; padding: 10px; border: none; border-radius: 6px;">Send Feedback to Ads Team</button>
+        </div>
+      </div>
+      <div id="preview-container"></div>
+      
+      <div id="no-ads-message" style="display:none; text-align:center; font-size:18px; color:#888; margin-top:40px;">
+  🎉 All ads have been reviewed!
+</div>
+    </div>
+  </div>
+
+  <div id="toast" style="
+  visibility: hidden;
+  min-width: 250px;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  border-radius: 8px;
+  padding: 12px;
+  position: fixed;
+  z-index: 1000;
+  left: 50%;
+  bottom: 30px;
+  transform: translateX(-50%);
+  font-size: 14px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  transition: visibility 0s, opacity 0.3s ease-in-out;
+  opacity: 0;
+"></div>
+
+  
+<script>
+  const latestCsvFunctionUrl = `https://us-central1-marketingapprovalportal.cloudfunctions.net/getLatestCsvUrl?region=${region}`;
+
+  let fileURL = ""; // ✅ Define it up top
+
+  fetch(latestCsvFunctionUrl)
+    .then(res => res.json())
+    .then(data => {
+      fileURL = data.url; // ✅ Assign it here
+      return fetch(fileURL);
+    })
+    .then(res => res.text())
+    .then(csvText => {
+      Papa.parse(csvText, {
+        header: true,
+        skipEmptyLines: true,
+        complete: function(results) {
+          processCSV(results, fileURL); // ✅ Now this works
+        }
+      });
+    })
+    .catch(error => {
+      console.error("Error loading CSV:", error);
+      document.getElementById("no-ads-message").style.display = "block";
+    });
+</script>
+
+
+
+<script>
+    function processCSV(results, fileURL) {
+      const data = results.data;
+      const container = document.getElementById('preview-container');
+      const clubListContainer = document.getElementById('club-link-list');
+      container.innerHTML = '';
+      clubListContainer.innerHTML = '';
+
+      const uniqueClubs = [...new Set(data.map(row => row['Club']).filter(Boolean))];
+      const listHTML = ['<strong>Preview Links:</strong>', '<ul>'];
+      listHTML.push(`<li><a class="preview-link-button" href="?review=true">All Clubs (Regional View)</a></li>`);
+      uniqueClubs.forEach(club => {
+        const encodedClub = encodeURIComponent(club);
+        const encodedFile = encodeURIComponent(fileURL);
+      listHTML.push(`<li><a class="preview-link-button" href="?review=true&club=${encodedClub}&file=${encodedFile}">${club}</a></li>`);
+      });
+      listHTML.push('</ul>');
+      clubListContainer.innerHTML = listHTML.join('\n');
+
+      const selectedClub = new URLSearchParams(window.location.search).get("club");
+
+      data.forEach((row, index) => {
+        if (selectedClub && row['Club'] !== selectedClub) return;
+
+        const card = document.createElement('div');
+        const imageTags = ['Image_URL_1', 'Image_URL_2', 'Image_URL_3'].map((key, imgIndex) => {
+  const url = row[key];
+  if (url && url !== '/') {
+    const isTif = url.toLowerCase().endsWith('.tif');
+    const idMatch = url.match(/I[0-9A-Za-z_.]+/) ||
+        url.match(/img-get2\/([^/]+)/) ||
+        url.match(/\/(I[0-9A-Za-z_.]+)\//) ||
+        url.match(/\/(G[0-9A-Za-z_]+)\//) ||
+        url.match(/\/(C[0-9A-Za-z_]+)\//) ||
+        url.match(/\/(I[0-9A-Za-z_.]+)\/[^/]+$/);
+
+    const imageId = idMatch && (idMatch[1] || idMatch[0]);
+    const imgSrc = (!isTif && imageId)
+      ? `https://cdn.photoshelter.com/img-get2/${imageId}/fit=1000x750`
+      : 'https://st4.depositphotos.com/14953852/22772/v/450/depositphotos_227725020-stock-illustration-image-available-icon-flat-vector.jpg';
+
+    return `
+      <div class="image-wrapper">
+        <img class="card-image" src="${imgSrc}" alt="Ad image" />
+        <div class="view-link">
+          <a href="#" class="view-image-button" onclick="window.open('${url}', 'ImagePopup', 'width=800,height=600'); return false;">View Full Image ${imgIndex + 1}</a>
+          <div class="approval-row">
+          <label>Image Approval Status:</label>
+          <select class="image-approval">
+            <option value="Pending">Pending</option>
+            <option value="Approved">Approved</option>
+            <option value="Needs Edit">Needs Edit</option>
+          </select>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+  return '';
+}).join('');
+
+        card.className = 'preview-card';
+
+        
+
+        card.innerHTML = `
+          <div class="card-body">
+            <div class="meta-section">
+               <div class="meta"><strong>Region:</strong> ${row['Region'] || 'N/A'}</div>
+      <div class="meta"><strong>Club:</strong> ${row['Club'] || 'N/A'} &nbsp; | &nbsp; <strong>Category:</strong> ${row['Category'] || 'N/A'}</div>
+      <div class="meta ad-name"><strong>Ad Name:</strong> ${row['Ad Name'] || 'N/A'}</div>
+    </div>
+    <div class="meta-divider"></div>
+    <div class="headline">${row['Headline'] || ''}</div>
+    <div class="primary-text">${row['Primary Text'] || ''}</div>
+            <div class="image-set">${imageTags}</div>
+            <div class="approval-row">
+                <label>Ad Text Approval Status:</label>
+                <select class="text-approval">
+                  <option value="Pending">Pending</option>
+                  <option value="Approved">Approved</option>
+                  <option value="Needs Edit">Needs Edit</option>
+                </select>
+            </div>
+
+            <div class="approval">
+              <label>Reviewer Comments:</label>
+              <textarea placeholder="Enter comments here..."></textarea>
+            </div>
+          </div>
+        `;
+function updateCardStatus() {
+  const textStatus = card.querySelector('.text-approval')?.value;
+  const imageStatuses = Array.from(card.querySelectorAll('.image-approval')).map(sel => sel.value);
+  const commentBox = card.querySelector('textarea');
+
+  const needsEdit = textStatus === 'Needs Edit' || imageStatuses.includes('Needs Edit');
+
+  if (needsEdit) {
+    card.style.border = '2px solid #e74c3c';
+    card.style.backgroundColor = '#ffe6e6';
+    commentBox.required = true;
+    commentBox.placeholder = "Required – please explain what needs edits.";
+  } else if (textStatus === 'Approved' && imageStatuses.every(v => v === 'Approved')) {
+    card.style.border = '2px solid #2ecc71';
+    card.style.backgroundColor = '#e8f6f0';
+    commentBox.required = false;
+    commentBox.placeholder = "Optional – add comments if needed.";
+  } else {
+    card.style.border = '2px solid #000000';
+    card.style.backgroundColor = '#ffffff';
+    commentBox.required = false;
+    commentBox.placeholder = "Optional – add comments if needed.";
+  }
+}
+
+
+// Attach event listeners for dropdowns
+card.querySelectorAll('select').forEach(sel =>
+  sel.addEventListener('change', updateCardStatus)
+);
+
+        
+// Run immediately to apply status styling on page load
+updateCardStatus();
+
+
+        container.appendChild(card);
+      });
+    } 
+
+function sendApprovedAdsToClub() {
+  const adCards = document.querySelectorAll('.preview-card');
+  let approvedAds = [];
+
+  adCards.forEach(card => {
+    const imageStatus = card.querySelector('.image-approval')?.value;
+    const textStatus = card.querySelector('.text-approval')?.value;
+
+    if (imageStatus === 'Approved' && textStatus === 'Approved') {
+      approvedAds.push(card.outerHTML);
+
+      card.style.transition = "opacity 0.4s ease";
+      card.style.opacity = 0;
+      setTimeout(() => card.remove(), 400);
+    }
+  });
+
+  if (approvedAds.length > 0) {
+    const existing = JSON.parse(localStorage.getItem("agencyFinalApproved") || "[]");
+
+    const timestamp = new Date().toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    });
+
+    const clubName = new URLSearchParams(window.location.search).get("club") || "All Clubs";
+
+    existing.push({
+      clubName,
+      timestamp,
+      ads: approvedAds
+    });
+
+    localStorage.setItem("agencyFinalApproved", JSON.stringify(existing));
+    showToast("Approved ads sent to club!");
+  }
+  checkIfNoAdsLeft();
+}
+
+
+    
+function sendEditsToAdsTeam() {
+ const adCards = document.querySelectorAll('.preview-card');
+  let editAds = [];
+
+  adCards.forEach(card => {
+    const imageStatus = card.querySelector('.image-approval')?.value;
+    const textStatus = card.querySelector('.text-approval')?.value;
+
+
+  if (imageStatus === 'Needs Edit' || textStatus === 'Needs Edit' || 
+    imageStatus === 'Declined' || textStatus === 'Declined') {
+  
+  const commentBox = card.querySelector('textarea');
+  const comments = commentBox?.value.trim();
+
+  if (!comments) {
+    commentBox.style.border = "2px solid red";
+    commentBox.placeholder = "Comment required before submitting edits.";
+    return; // ⛔️ prevent submission if no comment
+  }
+
+  editAds.push({ html: card.outerHTML, comment: comments });
+
+  card.style.transition = "opacity 0.4s ease";
+  card.style.opacity = 0;
+  setTimeout(() => card.remove(), 400);
+}
+
+  });
+checkIfNoAdsLeft();
+
+  if (editAds.length > 0) {
+  localStorage.setItem("adsNeedingEdits", JSON.stringify(editAds));
+  showToast("Ads sent to Ads Team for edits.");
+} else {
+  showToast("No ads marked for edits.");
+  }
+}
+function checkIfNoAdsLeft() {
+  const remaining = document.querySelectorAll('.preview-card');
+  const message = document.getElementById('no-ads-message');
+  if (remaining.length === 0 && message) {
+    message.style.display = 'block';
+  }
+}
+
+function showToast(message) {
+  const toast = document.createElement('div');
+  toast.textContent = message;
+  toast.style.position = 'fixed';
+  toast.style.bottom = '20px';
+  toast.style.right = '20px';
+  toast.style.backgroundColor = '#4CAF50';
+  toast.style.color = 'white';
+  toast.style.padding = '12px 20px';
+  toast.style.borderRadius = '5px';
+  toast.style.boxShadow = '0 2px 6px rgba(0,0,0,0.2)';
+  toast.style.zIndex = 1000;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+}
+
+document.getElementById("sendToClubBtn").addEventListener("click", sendApprovedAdsToClub);
+document.getElementById("sendEdits").addEventListener("click", sendEditsToAdsTeam);
+
+  const mainContent = document.querySelector('.main-content');
+
+// Save selected section to localStorage and update background
+function hideWelcome() {
+  const welcomeEl = document.getElementById("welcome-message");
+  if (welcomeEl) welcomeEl.style.display = "none";
+}
+
+document.getElementById('paid-ads-btn')?.addEventListener('click', (e) => {
+  e.preventDefault();
+  localStorage.setItem("activeSection", "paid");
+  mainContent.style.backgroundColor = '#83b573';
+  hideWelcome();
+});
+
+document.getElementById('emails-btn')?.addEventListener('click', (e) => {
+  e.preventDefault();
+  localStorage.setItem("activeSection", "emails");
+  mainContent.style.backgroundColor = '#00a3cf';
+  hideWelcome();
+});
+
+document.getElementById('landing-btn')?.addEventListener('click', (e) => {
+  e.preventDefault();
+  localStorage.setItem("activeSection", "landing");
+  mainContent.style.backgroundColor = '#933b45';
+  hideWelcome();
+});
+
+// On page load, show welcome OR restore section background
+window.addEventListener("DOMContentLoaded", () => {
+  const active = localStorage.getItem("activeSection");
+  if (active === "paid") {
+    mainContent.style.backgroundColor = '#83b573';
+    hideWelcome();
+  } else if (active === "emails") {
+    mainContent.style.backgroundColor = '#00a3cf';
+    hideWelcome();
+  } else if (active === "landing") {
+    mainContent.style.backgroundColor = '#933b45';
+    hideWelcome();
+  } else {
+    // Default background
+    mainContent.style.backgroundColor = '#22326e';
+  }
+});
+
+ 
+
+</script>
+  
+</div>
+</body>
+</html>
