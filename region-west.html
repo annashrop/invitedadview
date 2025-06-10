@@ -529,18 +529,28 @@ textarea {
 function updateCardStatus() {
   const textStatus = card.querySelector('.text-approval')?.value;
   const imageStatuses = Array.from(card.querySelectorAll('.image-approval')).map(sel => sel.value);
+  const commentBox = card.querySelector('textarea');
 
-  if (imageStatuses.includes('Needs Edit') || textStatus === 'Needs Edit') {
+  const needsEdit = textStatus === 'Needs Edit' || imageStatuses.includes('Needs Edit');
+
+  if (needsEdit) {
     card.style.border = '2px solid #e74c3c';
     card.style.backgroundColor = '#ffe6e6';
-  } else if (imageStatuses.every(v => v === 'Approved') && textStatus === 'Approved') {
+    commentBox.required = true;
+    commentBox.placeholder = "Required – please explain what needs edits.";
+  } else if (textStatus === 'Approved' && imageStatuses.every(v => v === 'Approved')) {
     card.style.border = '2px solid #2ecc71';
     card.style.backgroundColor = '#e8f6f0';
+    commentBox.required = false;
+    commentBox.placeholder = "Optional – add comments if needed.";
   } else {
     card.style.border = '2px solid #000000';
     card.style.backgroundColor = '#ffffff';
+    commentBox.required = false;
+    commentBox.placeholder = "Optional – add comments if needed.";
   }
 }
+
 
 // Attach event listeners for dropdowns
 card.querySelectorAll('select').forEach(sel =>
