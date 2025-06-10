@@ -399,6 +399,25 @@ textarea {
     </div>
   </div>
 
+  <div id="toast" style="
+  visibility: hidden;
+  min-width: 250px;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  border-radius: 8px;
+  padding: 12px;
+  position: fixed;
+  z-index: 1000;
+  left: 50%;
+  bottom: 30px;
+  transform: translateX(-50%);
+  font-size: 14px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  transition: visibility 0s, opacity 0.3s ease-in-out;
+  opacity: 0;
+"></div>
+
   
 <script>
   const latestCsvFunctionUrl = `https://us-central1-marketingapprovalportal.cloudfunctions.net/getLatestCsvUrl?region=${region}`;
@@ -722,39 +741,21 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 });
 
+  <script>
   function showToast(message) {
     const toast = document.getElementById("toast");
-    toast.textContent = message;
-    toast.style.visibility = "visible";
-    toast.style.opacity = "1";
-
+    toast.innerText = message;
+    toast.classList.add("show");
     setTimeout(() => {
-      toast.style.opacity = "0";
-      toast.style.visibility = "hidden";
+      toast.classList.remove("show");
     }, 3000);
   }
+</script>
+
 
 
   </script>
-  <div id="toast" style="
-  visibility: hidden;
-  min-width: 250px;
-  background-color: #333;
-  color: #fff;
-  text-align: center;
-  border-radius: 8px;
-  padding: 12px;
-  position: fixed;
-  z-index: 1000;
-  left: 50%;
-  bottom: 30px;
-  transform: translateX(-50%);
-  font-size: 14px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-  transition: visibility 0s, opacity 0.3s ease-in-out;
-  opacity: 0;
-"></div>
-
+  
 </div>
 </body>
 </html>
