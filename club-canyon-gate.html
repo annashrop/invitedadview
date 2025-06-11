@@ -304,7 +304,8 @@ document.getElementById("sendEdits").addEventListener("click", () => {
   document.querySelectorAll(".preview-card").forEach(card => {
     const imageStatuses = [...card.querySelectorAll("select.image-approval")].map(sel => sel.value);
     const textStatus = card.querySelector("select.text-approval")?.value;
-    const needsEdit = imageStatuses.includes("Needs Edit") || textStatus === "Needs Edit";
+    const needsEdit = imageStatuses.some(v => v === "Needs Edit" || v === "Declined") || 
+                  textStatus === "Needs Edit" || textStatus === "Declined";
 
     if (needsEdit) {
       const commentBox = card.querySelector("textarea");
