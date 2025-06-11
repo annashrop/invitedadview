@@ -504,17 +504,25 @@ button:hover {
   const url = row[key];
   if (url && url !== '/') {
     const isTif = url.toLowerCase().endsWith('.tif');
-    const idMatch = url.match(/I[0-9A-Za-z_.]+/) ||
+    const isCanva = url.includes("canva.com");
+
+    let imgSrc;
+
+    if (isCanva) {
+      imgSrc = url; // Directly use Canva link (might work if it's a direct image URL)
+    } else {
+      const idMatch = url.match(/I[0-9A-Za-z_.]+/) ||
         url.match(/img-get2\/([^/]+)/) ||
         url.match(/\/(I[0-9A-Za-z_.]+)\//) ||
         url.match(/\/(G[0-9A-Za-z_]+)\//) ||
         url.match(/\/(C[0-9A-Za-z_]+)\//) ||
         url.match(/\/(I[0-9A-Za-z_.]+)\/[^/]+$/);
 
-    const imageId = idMatch && (idMatch[1] || idMatch[0]);
-    const imgSrc = (!isTif && imageId)
-      ? `https://cdn.photoshelter.com/img-get2/${imageId}/fit=1000x750`
-      : 'https://st4.depositphotos.com/14953852/22772/v/450/depositphotos_227725020-stock-illustration-image-available-icon-flat-vector.jpg';
+      const imageId = idMatch && (idMatch[1] || idMatch[0]);
+      imgSrc = (!isTif && imageId)
+        ? `https://cdn.photoshelter.com/img-get2/${imageId}/fit=1000x750`
+        : url; // fallback to raw URL even if it breaks
+    }
 
     return `
       <div class="image-wrapper">
@@ -522,12 +530,12 @@ button:hover {
         <div class="view-link">
           <a href="#" class="view-image-button" onclick="window.open('${url}', 'ImagePopup', 'width=800,height=600'); return false;">View Full Image ${imgIndex + 1}</a>
           <div class="approval-row">
-          <label>Image Approval Status:</label>
-          <select class="image-approval">
-            <option value="Pending">Pending</option>
-            <option value="Approved">Approved</option>
-            <option value="Needs Edit">Needs Edit</option>
-          </select>
+            <label>Image Approval Status:</label>
+            <select class="image-approval">
+              <option value="Pending">Pending</option>
+              <option value="Approved">Approved</option>
+              <option value="Needs Edit">Needs Edit</option>
+            </select>
           </div>
         </div>
       </div>
@@ -535,6 +543,7 @@ button:hover {
   }
   return '';
 }).join('');
+
 
         card.className = 'preview-card';
 
