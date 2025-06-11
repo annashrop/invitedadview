@@ -260,8 +260,9 @@ textarea:focus, select:focus {
   document.querySelectorAll(".preview-card").forEach(card => {
     const allApproved = [...card.querySelectorAll("select")].every(sel => sel.value === "Approved");
 
-    if (allApproved) {
-      approvedAds.push(ad);
+  if (allApproved) {
+      const adData = JSON.parse(card.dataset.ad);
+      approvedAds.push(adData);
 
       // Fade out & remove card
       card.style.transition = "opacity 0.4s ease";
@@ -271,7 +272,7 @@ textarea:focus, select:focus {
         checkIfNoAdsLeft();
       }, 400);
     }
-  });
+
 
   if (approvedAds.length > 0) {
     const existing = JSON.parse(localStorage.getItem("agencyFinalApproved") || "[]");
@@ -380,6 +381,8 @@ function checkIfNoAdsLeft() {
     ads.forEach(ad => {
       const card = document.createElement("div");
       card.className = "preview-card";
+        card.dataset.ad = JSON.stringify(ad);
+
 
       const imageTags = ['Image_URL_1', 'Image_URL_2', 'Image_URL_3'].map((key, imgIndex) => {
   const url = ad[key];
