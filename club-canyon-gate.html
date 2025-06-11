@@ -382,7 +382,7 @@ function checkIfNoAdsLeft() {
       card.className = "preview-card";
 
       const imageTags = ['Image_URL_1', 'Image_URL_2', 'Image_URL_3'].map((key, imgIndex) => {
-  const url = row[key];
+  const url = ad[key];
   if (url && url !== '/') {
     const isTif = url.toLowerCase().endsWith('.tif');
     const isCanva = url.includes("canva.com");
