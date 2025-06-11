@@ -297,12 +297,7 @@ textarea:focus, select:focus {
   }
 });
 
-    localStorage.setItem("agencyFinalApproved", JSON.stringify(existing));
-    showToast("Approved ads sent to Agency View.");
-  } else {
-    showToast("No fully approved ads to send.");
-  }
-});
+
 
 document.getElementById("sendEdits").addEventListener("click", () => {
   const editAds = [];
