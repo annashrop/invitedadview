@@ -297,21 +297,45 @@ textarea:focus, select:focus {
   }
 });
 
+document.getElementById("sendEdits").addEventListener("click", () => {
+  const editAds = [];
+  document.querySelectorAll(".preview-card").forEach(card => {
+    const imageStatuses = [...card.querySelectorAll("select.image-approval")].map(sel => sel.value);
+    const textStatus = card.querySelector("select.text-approval")?.value;
+    const needsEdit = imageStatuses.includes("Needs Edit") || textStatus === "Needs Edit";
 
+    if (needsEdit) {
+      const commentBox = card.querySelector("textarea");
+      const comments = commentBox?.value.trim();
 
-
-  document.getElementById("sendEdits").addEventListener("click", () => {
-    const editAds = [];
-    document.querySelectorAll(".preview-card").forEach(card => {
-      const hasEdit = [...card.querySelectorAll("select")].some(sel => sel.value === "Needs Edit");
-      if (hasEdit) {
-        const comments = card.querySelector("textarea")?.value || '';
-        editAds.push({ html: card.outerHTML, comment: comments });
+      if (!comments) {
+        commentBox.style.border = "2px solid red";
+        commentBox.placeholder = "Comment required before submitting edits.";
+        return; // prevent sending without comment
       }
-    });
-    localStorage.setItem("adsNeedingEdits", JSON.stringify(editAds));
-    window.location.href = "ads.html";
+
+      editAds.push({ html: card.outerHTML, comment: comments });
+
+      // Fade and remove
+      card.style.transition = "opacity 0.4s ease";
+      card.style.opacity = 0;
+      setTimeout(() => card.remove(), 400);
+    }
   });
+
+  if (editAds.length > 0) {
+    localStorage.setItem("adsNeedingEdits", JSON.stringify(editAds));
+    showToast("Ads sent to Ads Team for edits.");
+  } else {
+    showToast("No ads marked for edits.");
+  }
+
+  checkIfNoAdsLeft();
+});
+
+
+
+  
 
   document.addEventListener("DOMContentLoaded", () => {
     const clubKey = window.location.pathname
