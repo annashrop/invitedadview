@@ -514,13 +514,14 @@ button:hover {
     const imageId = idMatch && (idMatch[1] || idMatch[0]);
 
 let imgSrc;
-
-if (!isTif && imageId) {
-  imgSrc = `https://cdn.photoshelter.com/img-get2/${imageId}/fit=1000x750`;
-} else if (url.includes("canva.com")) {
-  imgSrc = url; // Canva links can display directly
+if (url.includes("photoshelter.com")) {
+  const imageId = idMatch && (idMatch[1] || idMatch[0]);
+  imgSrc = (!isTif && imageId)
+    ? `https://cdn.photoshelter.com/img-get2/${imageId}/fit=1000x750`
+    : 'https://st4.depositphotos.com/14953852/22772/v/450/depositphotos_227725020-stock-illustration-image-available-icon-flat-vector.jpg';
 } else {
-  imgSrc = 'https://st4.depositphotos.com/14953852/22772/v/450/depositphotos_227725020-stock-illustration-image-available-icon-flat-vector.jpg';
+  // Assume it's a direct external link (like Canva)
+  imgSrc = url;
 }
 
     return `
