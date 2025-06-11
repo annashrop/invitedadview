@@ -261,7 +261,7 @@ textarea:focus, select:focus {
     const allApproved = [...card.querySelectorAll("select")].every(sel => sel.value === "Approved");
 
     if (allApproved) {
-      approvedAds.push(card.outerHTML);
+      approvedAds.push(ad);
 
       // Fade out & remove card
       card.style.transition = "opacity 0.4s ease";
@@ -285,10 +285,10 @@ textarea:focus, select:focus {
     });
 
     existing.push({
-      clubName: "Canyon Gate",
-      timestamp: timestamp,
-      ads: approvedAds
-    });
+  clubName: "Canyon Gate",
+  timestamp: timestamp,
+  ads: approvedAds
+});
 
     localStorage.setItem("agencyFinalApproved", JSON.stringify(existing));
     showToast("Approved ads sent to Agency View.");
