@@ -503,50 +503,51 @@ button:hover {
         const imageTags = ['Image_URL_1', 'Image_URL_2', 'Image_URL_3'].map((key, imgIndex) => {
   const url = row[key];
   if (url && url !== '/') {
-    const isTif = url.toLowerCase().endsWith('.tif');
-    const idMatch = url.match(/I[0-9A-Za-z_.]+/) ||
-        url.match(/img-get2\/([^/]+)/) ||
-        url.match(/\/(I[0-9A-Za-z_.]+)\//) ||
-        url.match(/\/(G[0-9A-Za-z_]+)\//) ||
-        url.match(/\/(C[0-9A-Za-z_]+)\//) ||
-        url.match(/\/(I[0-9A-Za-z_.]+)\/[^/]+$/);
+    const isCanva = url.includes('canva.com');
 
-    const imageId = idMatch && (idMatch[1] || idMatch[0]);
+    let imgSrc = '';
 
-let imgSrc;
-if (url.includes("photoshelter.com")) {
-  const imageId = idMatch && (idMatch[1] || idMatch[0]);
-  imgSrc = (!isTif && imageId)
-    ? `https://cdn.photoshelter.com/img-get2/${imageId}/fit=1000x750`
-    : 'https://st4.depositphotos.com/14953852/22772/v/450/depositphotos_227725020-stock-illustration-image-available-icon-flat-vector.jpg';
-} else {
-  // Assume it's a direct external link (like Canva)
-  imgSrc = url;
-}
+    if (isCanva) {
+      imgSrc = url;
+    } else {
+      const isTif = url.toLowerCase().endsWith('.tif');
+      const idMatch = url.match(/I[0-9A-Za-z_.]+/) ||
+                      url.match(/img-get2\/([^/]+)/) ||
+                      url.match(/\/(I[0-9A-Za-z_.]+)\//) ||
+                      url.match(/\/(G[0-9A-Za-z_]+)\//) ||
+                      url.match(/\/(C[0-9A-Za-z_]+)\//) ||
+                      url.match(/\/(I[0-9A-Za-z_.]+)\/[^/]+$/);
 
-    return `
-      <div class="image-wrapper">
-        <img class="card-image" src="${imgSrc}" alt="Ad image" />
-        <div class="view-link">
-          <a href="#" class="view-image-button" onclick="window.open('${url}', 'ImagePopup', 'width=800,height=600'); return false;">View Full Image ${imgIndex + 1}</a>
-          <div class="approval-row">
-          <label>Image Approval Status:</label>
-          <select class="image-approval">
-            <option value="Pending">Pending</option>
-            <option value="Approved">Approved</option>
-            <option value="Needs Edit">Needs Edit</option>
-          </select>
+      const imageId = idMatch && (idMatch[1] || idMatch[0]);
+      if (!isTif && imageId) {
+        imgSrc = `https://cdn.photoshelter.com/img-get2/${imageId}/fit=1000x750`;
+      }
+    }
+
+    if (imgSrc) {
+      return `
+        <div class="image-wrapper">
+          <img class="card-image" src="${imgSrc}" alt="Ad image" />
+          <div class="view-link">
+            <a href="#" class="view-image-button" onclick="window.open('${url}', 'ImagePopup', 'width=800,height=600'); return false;">View Full Image ${imgIndex + 1}</a>
+            <div class="approval-row">
+              <label>Image Approval Status:</label>
+              <select class="image-approval">
+                <option value="Pending">Pending</option>
+                <option value="Approved">Approved</option>
+                <option value="Needs Edit">Needs Edit</option>
+              </select>
+            </div>
           </div>
         </div>
-      </div>
-    `;
+      `;
+    }
   }
   return '';
 }).join('');
 
-        card.className = 'preview-card';
 
-        
+        card.className = 'preview-card';
 
         card.innerHTML = `
           <div class="card-body">
