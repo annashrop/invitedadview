@@ -307,8 +307,10 @@
       if (storedEdits.length > 0) {
         storedEdits.forEach(({ html }) => {
           const wrapper = document.createElement("div");
-          wrapper.innerHTML = html;
-          editSection.appendChild(wrapper);
+            wrapper.className = "ad-card"; // 💡 this applies your styles
+            wrapper.innerHTML = html;
+            editSection.appendChild(wrapper);
+        ;
         });
 
         document.getElementById("downloadEditsBtn").style.display = "inline-block";
