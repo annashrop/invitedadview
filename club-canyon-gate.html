@@ -385,7 +385,7 @@ function checkIfNoAdsLeft() {
 
 
       const imageTags = ['Image_URL_1', 'Image_URL_2', 'Image_URL_3'].map((key, imgIndex) => {
-  const url = row[key];
+  const url = ad[key];
   if (url && url !== '/') {
     const isCanva = url.includes('canva.com');
     let imgSrc = '';
