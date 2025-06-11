@@ -30,6 +30,79 @@
   <title>Ad Department Homepage</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
+    /* Container */
+.ads-needing-edit {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+/* Card Styling */
+.ad-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  padding: 16px;
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Image Preview */
+.ad-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+  background-color: #f2f2f2;
+}
+
+/* Status Badge */
+.status-badge {
+  background-color: #ff4d4f;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+  display: inline-block;
+  margin-bottom: 10px;
+}
+
+/* Comments Box */
+.comment-box {
+  background: #fff8f0;
+  border-left: 4px solid #ff9f43;
+  padding: 10px;
+  margin-top: 10px;
+  font-style: italic;
+  font-size: 14px;
+}
+
+/* Action Buttons */
+.action-buttons {
+  margin-top: 12px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.action-buttons button {
+  background-color: #eee;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.action-buttons button:hover {
+  background-color: #ddd;
+}
+
     * {
       box-sizing: border-box;
     }
@@ -181,6 +254,24 @@
       </div>
     </div>
   </div>
+    <div class="ads-needing-edit">
+  <div class="ad-card">
+    <span class="status-badge">Needs Edit</span>
+    <img src="https://example.com/ad-image.jpg" onerror="this.style.display='none'" alt="Ad Preview">
+    
+    <div class="comment-box">
+      “Please change the headline – too similar to previous campaign.”
+    </div>
+    
+    <div class="action-buttons">
+      <button>Mark as Resolved</button>
+      <button>Reupload</button>
+    </div>
+  </div>
+
+  <!-- Repeat this block for each ad -->
+</div>
+
 
   <script>
     const user = localStorage.getItem("user");
