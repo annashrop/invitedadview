@@ -384,50 +384,59 @@ function checkIfNoAdsLeft() {
   card.dataset.ad = JSON.stringify(ad);
 
 
-      const imageTags = ['Image_URL_1', 'Image_URL_2', 'Image_URL_3'].map((key, imgIndex) => {
+  ['Image_URL_1', 'Image_URL_2', 'Image_URL_3'].forEach((key, imgIndex) => {
   const url = ad[key];
-  if (url && url !== '/') {
-    const isCanva = url.includes('canva.com');
-    let imgSrc = '';
+  if (!url || url === '/') return;
 
-    if (isCanva) {
-      imgSrc = url;
-    } else {
-      const isTif = url.toLowerCase().endsWith('.tif');
-      const idMatch = url.match(/I[0-9A-Za-z_.]+/) ||
-                      url.match(/img-get2\/([^/]+)/) ||
-                      url.match(/\/(I[0-9A-Za-z_.]+)\//) ||
-                      url.match(/\/(G[0-9A-Za-z_]+)\//) ||
-                      url.match(/\/(C[0-9A-Za-z_]+)\//) ||
-                      url.match(/\/(I[0-9A-Za-z_.]+)\/[^/]+$/);
+  const isCanva = url.includes('canva.com');
+  let imgSrc = '';
 
-      const imageId = idMatch && (idMatch[1] || idMatch[0]);
-      if (!isTif && imageId) {
-        imgSrc = `https://cdn.photoshelter.com/img-get2/${imageId}/fit=1000x750`;
-      }
-    }
+  if (isCanva) {
+    imgSrc = url;
+  } else {
+    const isTif = url.toLowerCase().endsWith('.tif');
+    const idMatch = url.match(/I[0-9A-Za-z_.]+/) ||
+                    url.match(/img-get2\/([^/]+)/) ||
+                    url.match(/\/(I[0-9A-Za-z_.]+)\//) ||
+                    url.match(/\/(G[0-9A-Za-z_]+)\//) ||
+                    url.match(/\/(C[0-9A-Za-z_]+)\//) ||
+                    url.match(/\/(I[0-9A-Za-z_.]+)\/[^/]+$/);
+    const imageId = idMatch && (idMatch[1] || idMatch[0]);
 
-    if (imgSrc) {
-      return `
-        <div class="image-wrapper">
-          <img class="card-image" src="${imgSrc}" alt="Ad image" />
-          <div class="view-link">
-            <a href="#" class="view-image-button" onclick="window.open('${url}', 'ImagePopup', 'width=800,height=600'); return false;">View Full Image ${imgIndex + 1}</a>
-            <div class="approval-row">
-              <label>Image Approval Status:</label>
-              <select class="image-approval">
-                <option value="Pending">Pending</option>
-                <option value="Approved">Approved</option>
-                <option value="Needs Edit">Needs Edit</option>
-              </select>
-            </div>
-          </div>
-        </div>
-      `;
+    if (!isTif && imageId) {
+      imgSrc = `https://cdn.photoshelter.com/img-get2/${imageId}/fit=1000x750`;
     }
   }
-  return '';
-}).join('');
+
+  if (imgSrc) {
+  const wrapperDiv = document.createElement("div");
+  wrapperDiv.className = "image-wrapper";
+
+  const img = document.createElement("img");
+  img.className = "card-image";
+  img.src = imgSrc;
+  img.alt = "Ad image";
+
+  const viewDiv = document.createElement("div");
+  viewDiv.className = "view-link";
+  viewDiv.innerHTML = `
+    <a href="#" class="view-image-button" onclick="window.open('${url}', 'ImagePopup', 'width=800,height=600'); return false;">View Full Image ${imgIndex + 1}</a>
+    <div class="approval-row">
+      <label>Image Approval Status:</label>
+      <select class="image-approval">
+        <option value="Pending">Pending</option>
+        <option value="Approved">Approved</option>
+        <option value="Needs Edit">Needs Edit</option>
+      </select>
+    </div>
+  `;
+
+  wrapperDiv.appendChild(img);
+  wrapperDiv.appendChild(viewDiv);
+  card.appendChild(wrapperDiv);
+}
+
+
 
 
 
