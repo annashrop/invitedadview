@@ -512,9 +512,16 @@ button:hover {
         url.match(/\/(I[0-9A-Za-z_.]+)\/[^/]+$/);
 
     const imageId = idMatch && (idMatch[1] || idMatch[0]);
-    const imgSrc = (!isTif && imageId)
-      ? `https://cdn.photoshelter.com/img-get2/${imageId}/fit=1000x750`
-      : 'https://st4.depositphotos.com/14953852/22772/v/450/depositphotos_227725020-stock-illustration-image-available-icon-flat-vector.jpg';
+
+let imgSrc;
+
+if (!isTif && imageId) {
+  imgSrc = `https://cdn.photoshelter.com/img-get2/${imageId}/fit=1000x750`;
+} else if (url.includes("canva.com")) {
+  imgSrc = url; // Canva links can display directly
+} else {
+  imgSrc = 'https://st4.depositphotos.com/14953852/22772/v/450/depositphotos_227725020-stock-illustration-image-available-icon-flat-vector.jpg';
+}
 
     return `
       <div class="image-wrapper">
