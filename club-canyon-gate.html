@@ -375,10 +375,10 @@ function checkIfNoAdsLeft() {
 
     const ads = JSON.parse(adsData);
 
-    const wrapper = document.createElement("div");
-    wrapper.className = "card-wrapper";
+   const wrapper = document.createElement("div");
+wrapper.className = "card-wrapper";
 
-    ads.forEach(ad => {
+ads.forEach(ad => {
   const card = document.createElement("div");
   card.className = "preview-card";
   card.dataset.ad = JSON.stringify(ad);
