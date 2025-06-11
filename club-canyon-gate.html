@@ -297,6 +297,13 @@ textarea:focus, select:focus {
   }
 });
 
+    localStorage.setItem("agencyFinalApproved", JSON.stringify(existing));
+    showToast("Approved ads sent to Agency View.");
+  } else {
+    showToast("No fully approved ads to send.");
+  }
+});
+
 document.getElementById("sendEdits").addEventListener("click", () => {
   const editAds = [];
   document.querySelectorAll(".preview-card").forEach(card => {
@@ -333,6 +340,28 @@ document.getElementById("sendEdits").addEventListener("click", () => {
   checkIfNoAdsLeft();
 });
 
+function showToast(message) {
+  const toast = document.createElement("div");
+  toast.textContent = message;
+  toast.style.position = "fixed";
+  toast.style.bottom = "20px";
+  toast.style.left = "50%";
+  toast.style.transform = "translateX(-50%)";
+  toast.style.backgroundColor = "#333";
+  toast.style.color = "#fff";
+  toast.style.padding = "12px 20px";
+  toast.style.borderRadius = "6px";
+  toast.style.zIndex = "9999";
+  toast.style.fontSize = "14px";
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+}
+
+function checkIfNoAdsLeft() {
+  if (document.querySelectorAll('.preview-card').length === 0) {
+    document.getElementById('no-ads-message').style.display = 'block';
+  }
+}
 
 
   
