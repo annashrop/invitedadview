@@ -379,54 +379,56 @@ function checkIfNoAdsLeft() {
     wrapper.className = "card-wrapper";
 
     ads.forEach(ad => {
-      const card = document.createElement("div");
-      card.className = "preview-card";
-        card.dataset.ad = JSON.stringify(ad);
+  const card = document.createElement("div");
+  card.className = "preview-card";
+  card.dataset.ad = JSON.stringify(ad);
 
 
       const imageTags = ['Image_URL_1', 'Image_URL_2', 'Image_URL_3'].map((key, imgIndex) => {
-  const url = ad[key];
+  const url = row[key];
   if (url && url !== '/') {
-    const isTif = url.toLowerCase().endsWith('.tif');
-    const isCanva = url.includes("canva.com");
-
-    let imgSrc;
+    const isCanva = url.includes('canva.com');
+    let imgSrc = '';
 
     if (isCanva) {
-      imgSrc = url; // Directly use Canva link (might work if it's a direct image URL)
+      imgSrc = url;
     } else {
+      const isTif = url.toLowerCase().endsWith('.tif');
       const idMatch = url.match(/I[0-9A-Za-z_.]+/) ||
-        url.match(/img-get2\/([^/]+)/) ||
-        url.match(/\/(I[0-9A-Za-z_.]+)\//) ||
-        url.match(/\/(G[0-9A-Za-z_]+)\//) ||
-        url.match(/\/(C[0-9A-Za-z_]+)\//) ||
-        url.match(/\/(I[0-9A-Za-z_.]+)\/[^/]+$/);
+                      url.match(/img-get2\/([^/]+)/) ||
+                      url.match(/\/(I[0-9A-Za-z_.]+)\//) ||
+                      url.match(/\/(G[0-9A-Za-z_]+)\//) ||
+                      url.match(/\/(C[0-9A-Za-z_]+)\//) ||
+                      url.match(/\/(I[0-9A-Za-z_.]+)\/[^/]+$/);
 
       const imageId = idMatch && (idMatch[1] || idMatch[0]);
-      imgSrc = (!isTif && imageId)
-        ? `https://cdn.photoshelter.com/img-get2/${imageId}/fit=1000x750`
-        : url; // fallback to raw URL even if it breaks
+      if (!isTif && imageId) {
+        imgSrc = `https://cdn.photoshelter.com/img-get2/${imageId}/fit=1000x750`;
+      }
     }
 
-    return `
-      <div class="image-wrapper">
-        <img class="card-image" src="${imgSrc}" alt="Ad image" />
-        <div class="view-link">
-          <a href="#" class="view-image-button" onclick="window.open('${url}', 'ImagePopup', 'width=800,height=600'); return false;">View Full Image ${imgIndex + 1}</a>
-          <div class="approval-row">
-            <label>Image Approval Status:</label>
-            <select class="image-approval">
-              <option value="Pending">Pending</option>
-              <option value="Approved">Approved</option>
-              <option value="Needs Edit">Needs Edit</option>
-            </select>
+    if (imgSrc) {
+      return `
+        <div class="image-wrapper">
+          <img class="card-image" src="${imgSrc}" alt="Ad image" />
+          <div class="view-link">
+            <a href="#" class="view-image-button" onclick="window.open('${url}', 'ImagePopup', 'width=800,height=600'); return false;">View Full Image ${imgIndex + 1}</a>
+            <div class="approval-row">
+              <label>Image Approval Status:</label>
+              <select class="image-approval">
+                <option value="Pending">Pending</option>
+                <option value="Approved">Approved</option>
+                <option value="Needs Edit">Needs Edit</option>
+              </select>
+            </div>
           </div>
         </div>
-      </div>
-    `;
+      `;
+    }
   }
   return '';
 }).join('');
+
 
 
       card.innerHTML = `
