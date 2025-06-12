@@ -405,16 +405,16 @@ function renderApprovedAds(ads) {
     }
 
     // Attach event listeners and initialize
-    card.querySelectorAll('select').forEach(sel =>
-      sel.addEventListener('change', updateCardStatus)
-    );
+   document.querySelectorAll('select').forEach(sel =>
+  sel.addEventListener('change', updateCardStatus)
+);
 
-    updateCardStatus();
-    wrapper.appendChild(card);
-  });
+updateCardStatus(); // initial
+wrapper.appendChild(card);
+});
 
-  container.appendChild(wrapper);
-}
+document.getElementById("preview-container").appendChild(wrapper);
+
 
 
 
