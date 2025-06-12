@@ -405,7 +405,6 @@ ads.forEach(ad => {
     </div>
   `;
 
-  // Append image elements
   ['Image_URL_1', 'Image_URL_2', 'Image_URL_3'].forEach((key, imgIndex) => {
     const url = ad[key];
     if (!url || url === '/') return;
@@ -459,7 +458,6 @@ ads.forEach(ad => {
     }
   });
 
-  // Add status coloring
   function updateCardStatus() {
     const textStatus = card.querySelector('.text-approval')?.value;
     const imageStatuses = Array.from(card.querySelectorAll('.image-approval')).map(sel => sel.value);
@@ -476,14 +474,14 @@ ads.forEach(ad => {
     }
   }
 
-  updateCardStatus();
-  card.querySelectorAll('select').forEach(select => {
-    select.addEventListener('change', updateCardStatus);
-  });
+  card.querySelectorAll('select').forEach(sel =>
+    sel.addEventListener('change', updateCardStatus)
+  );
 
-  wrapper.appendChild(card); // ✅ append to wrapper
+  updateCardStatus(); // initial
+
+  wrapper.appendChild(card);
 });
-
 container.appendChild(wrapper); // ✅ append wrapper to container
 
 </script>
