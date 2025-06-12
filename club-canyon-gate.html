@@ -365,41 +365,15 @@ function checkIfNoAdsLeft() {
   
 
   document.addEventListener("DOMContentLoaded", () => {
-    const clubKey = window.location.pathname
-      .split("/")
-      .pop()
-      .replace(".html", "")
-      .replace("club-", "clubApprovedAds_");
+    const clubKey = "clubApprovedAds_Canyon Gate";
+const adsData = localStorage.getItem(clubKey);
+if (adsData) {
+  const ads = JSON.parse(adsData);
+  renderApprovedAds(ads);
+}
+  
 
-    const adsData = localStorage.getItem(clubKey);
-    if (!adsData) return;
 
-    const ads = JSON.parse(adsData);
-const region = "West";
-const selectedClub = "Canyon Gate Country Club";
-const latestCsvFunctionUrl = `https://us-central1-marketingapprovalportal.cloudfunctions.net/getLatestCsvUrl?region=${region}`;
-
-fetch(latestCsvFunctionUrl)
-  .then(response => response.json())
-  .then(data => {
-    const csvUrl = data.url;
-    Papa.parse(csvUrl, {
-      download: true,
-      header: true,
-      complete: function(results) {
-        const ads = results.data.filter(row =>
-          row['Club'] === selectedClub &&
-          row['Image Approval'] === "Approved" &&
-          row['Text Approval'] === "Approved"
-        );
-
-        renderApprovedAds(ads); // You must define this function to handle the rendering below
-      }
-    });
-  })
-  .catch(error => {
-    console.error("Error fetching latest CSV URL:", error);
-  });
 
     
    function renderApprovedAds(ads) {
