@@ -388,33 +388,7 @@ renderApprovedAds(savedData);
     const card = wrapperDiv.firstElementChild;
     wrapper.appendChild(card);
 
-    function updateCardStatus() {
-      const textStatus = card.querySelector('.text-approval')?.value;
-      const imageStatuses = Array.from(card.querySelectorAll('.image-approval')).map(sel => sel.value);
-
-      if (imageStatuses.includes('Needs Edit') || textStatus === 'Needs Edit') {
-        card.style.border = '2px solid #e74c3c';
-        card.style.backgroundColor = '#ffe6e6';
-      } else if (imageStatuses.every(v => v === 'Approved') && textStatus === 'Approved') {
-        card.style.border = '2px solid #2ecc71';
-        card.style.backgroundColor = '#e8f6f0';
-      } else {
-        card.style.border = '2px solid #000000';
-        card.style.backgroundColor = '#ffffff';
-      }
-    }
-
-    updateCardStatus();
-
-    card.querySelectorAll('select').forEach(select => {
-      select.addEventListener('change', updateCardStatus);
-    });
-  });
-}
-
-
-
-  card.innerHTML = `
+     card.innerHTML = `
     <div class="meta-section" style="background-color:#f5f5f5; padding:10px; border-radius:8px; margin-bottom:10px;">
       <div class="meta"><strong>Region:</strong> ${ad.Region}</div>
       <div class="meta"><strong>Club:</strong> ${ad.Club} | <strong>Category:</strong> ${ad.Category}</div>
@@ -488,6 +462,34 @@ renderApprovedAds(savedData);
       card.appendChild(wrapperDiv);
     }
   });
+
+    function updateCardStatus() {
+      const textStatus = card.querySelector('.text-approval')?.value;
+      const imageStatuses = Array.from(card.querySelectorAll('.image-approval')).map(sel => sel.value);
+
+      if (imageStatuses.includes('Needs Edit') || textStatus === 'Needs Edit') {
+        card.style.border = '2px solid #e74c3c';
+        card.style.backgroundColor = '#ffe6e6';
+      } else if (imageStatuses.every(v => v === 'Approved') && textStatus === 'Approved') {
+        card.style.border = '2px solid #2ecc71';
+        card.style.backgroundColor = '#e8f6f0';
+      } else {
+        card.style.border = '2px solid #000000';
+        card.style.backgroundColor = '#ffffff';
+      }
+    }
+
+    updateCardStatus();
+
+    card.querySelectorAll('select').forEach(select => {
+      select.addEventListener('change', updateCardStatus);
+    });
+  });
+}
+
+
+
+ 
 </script>
   <script>
     const mainContent = document.querySelector('.main-content');
