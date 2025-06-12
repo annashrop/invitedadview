@@ -644,17 +644,19 @@ function sendApprovedAdsToClub() {
       hour12: true
     });
 
-    const clubName = new URLSearchParams(window.location.search).get("club") || "All Clubs";
+    const clubParam = new URLSearchParams(window.location.search).get("club");
+    const storageKey = `clubApprovedAds_${clubParam || "Unknown"}`;
 
     existing.push({
-      clubName,
+      clubName: clubParam || "Unknown",
       timestamp,
       ads: approvedAds
     });
 
-    localStorage.setItem("agencyFinalApproved", JSON.stringify(existing));
+    localStorage.setItem(storageKey, JSON.stringify(existing));
     showToast("Approved ads sent to club!");
   }
+
   checkIfNoAdsLeft();
 }
 
