@@ -388,32 +388,32 @@ function renderApprovedAds(ads) {
     wrapperDiv.innerHTML = adHTML;
     const card = wrapperDiv.firstElementChild;
 
+    container.appendChild(wrapper);
+}
+
     function updateCardStatus() {
-      const textStatus = card.querySelector('.text-approval')?.value;
-      const imageStatuses = Array.from(card.querySelectorAll('.image-approval')).map(sel => sel.value);
+  const textStatus = card.querySelector('.text-approval')?.value;
+  const imageStatuses = Array.from(card.querySelectorAll('.image-approval')).map(sel => sel.value);
 
-      if (imageStatuses.includes('Needs Edit') || textStatus === 'Needs Edit') {
-        card.style.border = '2px solid #e74c3c';
-        card.style.backgroundColor = '#ffe6e6';
-      } else if (imageStatuses.every(v => v === 'Approved') && textStatus === 'Approved') {
-        card.style.border = '2px solid #2ecc71';
-        card.style.backgroundColor = '#e8f6f0';
-      } else {
-        card.style.border = '2px solid #000000';
-        card.style.backgroundColor = '#ffffff';
-      }
-    }
+  if (imageStatuses.includes('Needs Edit') || textStatus === 'Needs Edit') {
+    card.style.border = '2px solid #e74c3c';
+    card.style.backgroundColor = '#ffe6e6';
+  } else if (imageStatuses.every(v => v === 'Approved') && textStatus === 'Approved') {
+    card.style.border = '2px solid #2ecc71';
+    card.style.backgroundColor = '#e8f6f0';
+  } else {
+    card.style.border = '2px solid #000000';
+    card.style.backgroundColor = '#ffffff';
+  }
+}
 
-    // Attach event listeners and initialize
-   document.querySelectorAll('select').forEach(sel =>
+card.querySelectorAll('select').forEach(sel =>
   sel.addEventListener('change', updateCardStatus)
 );
 
 updateCardStatus(); // initial
 wrapper.appendChild(card);
-});
 
-document.getElementById("preview-container").appendChild(wrapper);
 
 
 
@@ -496,34 +496,7 @@ document.getElementById("preview-container").appendChild(wrapper);
   });
 
 
-  function updateCardStatus() {
-    const textStatus = card.querySelector('.text-approval')?.value;
-    const imageStatuses = Array.from(card.querySelectorAll('.image-approval')).map(sel => sel.value);
-
-    if (imageStatuses.includes('Needs Edit') || textStatus === 'Needs Edit') {
-      card.style.border = '2px solid #e74c3c';
-      card.style.backgroundColor = '#ffe6e6';
-    } else if (imageStatuses.every(v => v === 'Approved') && textStatus === 'Approved') {
-      card.style.border = '2px solid #2ecc71';
-      card.style.backgroundColor = '#e8f6f0';
-    } else {
-      card.style.border = '2px solid #000000';
-      card.style.backgroundColor = '#ffffff';
-    }
-  }
-
-  
-        card.querySelectorAll('select').forEach(sel =>
-          sel.addEventListener('change', updateCardStatus)
-        );
-
-        updateCardStatus(); // initial
-        wrapper.appendChild(card);
-    
-  });
-}
-</script>
-
+ 
   <script>
   function logout() {
     localStorage.removeItem("user");
