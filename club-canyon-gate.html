@@ -374,23 +374,20 @@ renderApprovedAds(savedData);
 
   
 
-    function renderApprovedAds(ads) {
+   function renderApprovedAds(ads) {
   const container = document.getElementById("preview-container");
   container.innerHTML = "";
 
-  const wrapper = document.createElement("div"); // Create the wrapper once
+  const wrapper = document.createElement("div");
   wrapper.className = "card-wrapper";
-  container.appendChild(wrapper); // Append the wrapper to the container once
+  container.appendChild(wrapper);
 
   ads.forEach(adHTML => {
     const wrapperDiv = document.createElement("div");
     wrapperDiv.innerHTML = adHTML;
     const card = wrapperDiv.firstElementChild;
+    wrapper.appendChild(card);
 
-    wrapper.appendChild(card); // Append the card to the wrapper inside the loop
-
-    // The rest of your logic for updating card status based on selects goes here
-    // ... (your existing updateCardStatus logic)
     function updateCardStatus() {
       const textStatus = card.querySelector('.text-approval')?.value;
       const imageStatuses = Array.from(card.querySelectorAll('.image-approval')).map(sel => sel.value);
@@ -401,21 +398,20 @@ renderApprovedAds(savedData);
       } else if (imageStatuses.every(v => v === 'Approved') && textStatus === 'Approved') {
         card.style.border = '2px solid #2ecc71';
         card.style.backgroundColor = '#e8f6f0';
+      } else {
+        card.style.border = '2px solid #000000';
+        card.style.backgroundColor = '#ffffff';
       }
     }
-    // Call the function after appending the card
-    updateCardStatus(); // Call on initial render
 
-    // Add event listeners to selects and textarea within the card
+    updateCardStatus();
+
     card.querySelectorAll('select').forEach(select => {
       select.addEventListener('change', updateCardStatus);
     });
-    // Add listener for textarea if needed for immediate visual feedback
-    card.querySelectorAll('textarea').forEach(textarea => {
-      textarea.addEventListener('input', updateCardStatus);
-    });
-  }); 
-} 
+  });
+}
+
 
 
   card.innerHTML = `
