@@ -3,12 +3,12 @@
 <html lang="en">
 <head>
   <script>
-  const user = localStorage.getItem("user");
+  const region = "West";
+const user = localStorage.getItem("user");
+if (!user) {
+  window.location.href = "login.html";
+}
 
-  if (!user) {
-    // User didn’t come through login
-    window.location.href = "login.html";
-  }
 </script>
 
   <link rel="stylesheet" href="css/styles.css">
