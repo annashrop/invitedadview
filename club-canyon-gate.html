@@ -305,14 +305,14 @@ textarea:focus, select:focus {
 
 document.getElementById("sendEdits").addEventListener("click", () => {
   const editAds = [];
-  document.querySelectorAll(".preview-card").forEach(card => {
-    const imageStatuses = [...card.querySelectorAll("select.image-approval")].map(sel => sel.value);
-    const textStatus = card.querySelector("select.text-approval")?.value;
+  document.SelectorAll(".preview-card").forEach(card => {
+    const imageStatuses = [...card.SelectorAll("select.image-approval")].map(sel => sel.value);
+    const textStatus = card.Selector("select.text-approval")?.value;
     const needsEdit = imageStatuses.some(v => v === "Needs Edit" || v === "Declined") || 
                   textStatus === "Needs Edit" || textStatus === "Declined";
 
     if (needsEdit) {
-      const commentBox = card.querySelector("textarea");
+      const commentBox = card.Selector("textarea");
       const comments = commentBox?.value.trim();
 
       if (!comments) {
@@ -358,7 +358,7 @@ function showToast(message) {
 }
 
 function checkIfNoAdsLeft() {
-  if (document.querySelectorAll('.preview-card').length === 0) {
+  if (document.SelectorAll('.preview-card').length === 0) {
     document.getElementById('no-ads-message').style.display = 'block';
   }
 }
@@ -396,7 +396,7 @@ if (savedData.length === 0) {
 
     const card = wrapper.firstElementChild;
 
-    card.querySelectorAll('select').forEach(sel => {
+    card.SelectorAll('select').forEach(sel => {
       sel.addEventListener('change', updateCardStatus);
     });
 
@@ -500,15 +500,17 @@ if (savedData.length === 0) {
     }
   }
 
-  card.querySelectorAll('select').forEach(sel =>
-    sel.addEventListener('change', updateCardStatus)
-  );
+  
+        card.querySelectorAll('select').forEach(sel =>
+          sel.addEventListener('change', updateCardStatus)
+        );
 
-  updateCardStatus(); // initial
-
-  wrapper.appendChild(card);
-}); 
-}
+        updateCardStatus(); // initial
+        wrapper.appendChild(card);
+      });
+    });
+  }
+});
 </script>
   <script>
   function logout() {
