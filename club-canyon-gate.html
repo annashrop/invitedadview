@@ -389,14 +389,23 @@ if (savedData.length === 0) {
   container.innerHTML = "<p style='color:white;'>No approved ads available for this club.</p>";
 } else {
   savedData.forEach(entry => {
-    entry.ads.forEach(adHTML => {
-      console.log("Rendering ad for", clubName, adHTML);
-      const wrapper = document.createElement("div");
-      wrapper.innerHTML = adHTML;
-      container.appendChild(wrapper.firstElementChild);
+  entry.ads.forEach(adHTML => {
+    const wrapper = document.createElement("div");
+    wrapper.className = "card-wrapper";
+    wrapper.innerHTML = adHTML;
+
+    const card = wrapper.firstElementChild;
+
+    card.querySelectorAll('select').forEach(sel => {
+      sel.addEventListener('change', updateCardStatus);
     });
+
+    updateCardStatus(); // initial
+
+    document.getElementById("preview-container").appendChild(wrapper);
   });
-}
+});
+
 
 
   card.innerHTML = `
@@ -498,7 +507,7 @@ if (savedData.length === 0) {
   updateCardStatus(); // initial
 
   wrapper.appendChild(card);
-document.getElementById("preview-container").appendChild(wrapper);
+
 }); 
 </script>
   <script>
