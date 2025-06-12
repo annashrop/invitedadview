@@ -377,34 +377,48 @@ renderApprovedAds(savedData);
 
 
     
-   function renderApprovedAds(ads) {
+   <script>
+function renderApprovedAds(ads) {
   const container = document.getElementById("preview-container");
-container.innerHTML = "";
+  container.innerHTML = "";
 
-const clubName = new URLSearchParams(window.location.search).get("club") || "Unknown";
-const storageKey = `clubApprovedAds_${clubName}`;
-const savedData = JSON.parse(localStorage.getItem(storageKey) || "[]");
+  const wrapper = document.createElement("div");
+  wrapper.className = "card-wrapper";
 
-if (savedData.length === 0) {
-  container.innerHTML = "<p style='color:white;'>No approved ads available for this club.</p>";
-} else {
-  savedData.forEach(entry => {
-  entry.ads.forEach(adHTML => {
-    const wrapper = document.createElement("div");
-    wrapper.className = "card-wrapper";
-    wrapper.innerHTML = adHTML;
+  ads.forEach(adHTML => {
+    const wrapperDiv = document.createElement("div");
+    wrapperDiv.innerHTML = adHTML;
+    const card = wrapperDiv.firstElementChild;
 
-    const card = wrapper.firstElementChild;
+    function updateCardStatus() {
+      const textStatus = card.querySelector('.text-approval')?.value;
+      const imageStatuses = Array.from(card.querySelectorAll('.image-approval')).map(sel => sel.value);
 
-    card.SelectorAll('select').forEach(sel => {
-      sel.addEventListener('change', updateCardStatus);
-    });
+      if (imageStatuses.includes('Needs Edit') || textStatus === 'Needs Edit') {
+        card.style.border = '2px solid #e74c3c';
+        card.style.backgroundColor = '#ffe6e6';
+      } else if (imageStatuses.every(v => v === 'Approved') && textStatus === 'Approved') {
+        card.style.border = '2px solid #2ecc71';
+        card.style.backgroundColor = '#e8f6f0';
+      } else {
+        card.style.border = '2px solid #000000';
+        card.style.backgroundColor = '#ffffff';
+      }
+    }
 
-    updateCardStatus(); // initial
+    // Attach event listeners and initialize
+    card.querySelectorAll('select').forEach(sel =>
+      sel.addEventListener('change', updateCardStatus)
+    );
 
-    document.getElementById("preview-container").appendChild(wrapper);
+    updateCardStatus();
+    wrapper.appendChild(card);
   });
-});
+
+  container.appendChild(wrapper);
+}
+</script>
+
 
 
 
