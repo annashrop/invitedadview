@@ -295,9 +295,9 @@ textarea:focus, select:focus {
 });
 
     localStorage.setItem("agencyFinalApproved", JSON.stringify(existing));
-    showToast("Approved ads sent to Agency View.");
+    ("Approved ads sent to Agency View.");
   } else {
-    showToast("No fully approved ads to send.");
+    ("No fully approved ads to send.");
   }
 });
 
@@ -332,15 +332,15 @@ document.getElementById("sendEdits").addEventListener("click", () => {
 
   if (editAds.length > 0) {
     localStorage.setItem("adsNeedingEdits", JSON.stringify(editAds));
-    showToast("Ads sent to Ads Team for edits.");
+    ("Ads sent to Ads Team for edits.");
   } else {
-    showToast("No ads marked for edits.");
+    ("No ads marked for edits.");
   }
 
   checkIfNoAdsLeft();
 });
 
- showToast(message) {
+const showToast = (message) => { 
   const toast = document.createElement("div");
   toast.textContent = message;
   toast.style.position = "fixed";
@@ -355,7 +355,7 @@ document.getElementById("sendEdits").addEventListener("click", () => {
   toast.style.fontSize = "14px";
   document.body.appendChild(toast);
   setTimeout(() => toast.remove(), 3000);
-}
+};
 
 function checkIfNoAdsLeft() {
   if (document.SelectorAll('.preview-card').length === 0) {
