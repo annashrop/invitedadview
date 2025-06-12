@@ -294,10 +294,10 @@ textarea:focus, select:focus {
   ads: approvedAds
 });
 
-    localStorage.setItem("agencyFinalApproved", JSON.stringify(existing));
-    ("Approved ads sent to Agency View.");
+     localStorage.setItem("agencyFinalApproved", JSON.stringify(existing));
+    showToast("Approved ads sent to Agency View."); // <-- Added showToast()
   } else {
-    ("No fully approved ads to send.");
+    showToast("No fully approved ads to send."); // <-- Added showToast()
   }
 });
 
