@@ -374,7 +374,7 @@ renderApprovedAds(savedData);
 
   
 
-
+<script>
     function renderApprovedAds(ads) {
   const container = document.getElementById("preview-container");
   container.innerHTML = "";
@@ -417,7 +417,6 @@ renderApprovedAds(savedData);
     });
   }); 
 } 
-</script>
 
 
   card.innerHTML = `
@@ -441,7 +440,7 @@ renderApprovedAds(savedData);
       <textarea>${ad["Reviewer Comments"] || ""}</textarea>
     </div>
   `;
-
+  
   ['Image_URL_1', 'Image_URL_2', 'Image_URL_3'].forEach((key, imgIndex) => {
     const url = ad[key];
     if (!url || url === '/') return;
@@ -494,8 +493,8 @@ renderApprovedAds(savedData);
       card.appendChild(wrapperDiv);
     }
   });
-
-
+</script>
+  
     const mainContent = document.querySelector('.main-content');
 
  // Save selected section to localStorage and update background
