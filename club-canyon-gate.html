@@ -370,11 +370,8 @@ function checkIfNoAdsLeft() {
     const clubName = new URLSearchParams(window.location.search).get("club") || "Unknown";
 const storageKey = `clubApprovedAds_${clubName}`;
 const savedData = JSON.parse(localStorage.getItem(storageKey) || "[]");
+renderApprovedAds(savedData);
 
-if (adsData) {
-  const ads = JSON.parse(adsData);
-  renderApprovedAds(ads);
-}
   
 
 
