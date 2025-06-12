@@ -226,6 +226,8 @@ textarea:focus, select:focus {
 
 
 <div class="main-content">
+   <div id="preview-container"></div>
+</div>
 <div id="welcome-message" class="welcome-container">
   <h1>Welcome to Your Dashboard</h1>
   <p>Select a section from the sidebar to get started.</p>
@@ -475,7 +477,6 @@ if (savedData.length === 0) {
     }
   });
 
-     <div id="preview-container"></div>
 
   function updateCardStatus() {
     const textStatus = card.querySelector('.text-approval')?.value;
