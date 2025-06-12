@@ -305,14 +305,14 @@ textarea:focus, select:focus {
 
 document.getElementById("sendEdits").addEventListener("click", () => {
   const editAds = [];
-  document.SelectorAll(".preview-card").forEach(card => {
-    const imageStatuses = [...card.SelectorAll("select.image-approval")].map(sel => sel.value);
-    const textStatus = card.Selector("select.text-approval")?.value;
+  document.querySelectorAll(".preview-card").forEach(card => {
+    const imageStatuses = [...card.querySelectorAll("select.image-approval")].map(sel => sel.value);
+    const textStatus = card.querySelector("select.text-approval")?.value;
     const needsEdit = imageStatuses.some(v => v === "Needs Edit" || v === "Declined") || 
                   textStatus === "Needs Edit" || textStatus === "Declined";
 
     if (needsEdit) {
-      const commentBox = card.Selector("textarea");
+      const commentBox = card.querySelector("textarea");
       const comments = commentBox?.value.trim();
 
       if (!comments) {
@@ -358,7 +358,7 @@ const showToast = (message) => {
 };
 
 function checkIfNoAdsLeft() {
-  if (document.SelectorAll('.preview-card').length === 0) {
+  if (document.querySelectorAll('.preview-card').length === 0) {
     document.getElementById('no-ads-message').style.display = 'block';
   }
 }
@@ -374,7 +374,6 @@ renderApprovedAds(savedData);
 
   
 
-<script>
     function renderApprovedAds(ads) {
   const container = document.getElementById("preview-container");
   container.innerHTML = "";
