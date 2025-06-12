@@ -405,14 +405,22 @@ renderApprovedAds(savedData);
       }
     }
     // Call the function after appending the card
-    updateCardStatus();
+    updateCardStatus(); // Call on initial render
 
-    // Add event listeners for select elements within the card
+    // Add event listeners to selects and textarea within the card
     card.querySelectorAll('select').forEach(select => {
       select.addEventListener('change', updateCardStatus);
     });
-});
-}
+    // Add listener for textarea if needed for immediate visual feedback
+    card.querySelectorAll('textarea').forEach(textarea => {
+      textarea.addEventListener('input', updateCardStatus);
+    });
+
+  }); // <-- Closing brace for the forEach loop inside renderApprovedAds
+
+} // <-- Closing brace for the renderApprovedAds function
+
+</script> // <-- The final closing script tag
 
 
 
