@@ -330,14 +330,14 @@ document.getElementById("sendEdits").addEventListener("click", () => {
     }
   });
 
-  if (editAds.length > 0) {
+   if (editAds.length > 0) {
     localStorage.setItem("adsNeedingEdits", JSON.stringify(editAds));
-    ("Ads sent to Ads Team for edits.");
+    showToast("Ads sent to Ads Team for edits."); // <-- Fix: Call showToast() here
   } else {
-    ("No ads marked for edits.");
+    showToast("No ads marked for edits."); // <-- Fix: Call showToast() here
   }
 
-  checkIfNoAdsLeft();
+  checkIfNoAdsLeft(); // Remember to fix SelectorAll in checkIfNoAdsLeft as well
 });
 
 const showToast = (message) => { 
