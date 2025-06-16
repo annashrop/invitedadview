@@ -365,13 +365,6 @@ textarea:focus, select:focus {
     });
   }
 
-  // ✅ Now safely call it because it's defined above
-  document.addEventListener("DOMContentLoaded", () => {
-    const clubName = new URLSearchParams(window.location.search).get("club");
-    const storageKey = `clubApprovedAds_${clubName}`;
-    const savedData = JSON.parse(localStorage.getItem(storageKey) || "[]");
-    renderApprovedAds(savedData);
-  });
 </script>
 
       card.querySelectorAll('select').forEach(select => {
