@@ -642,16 +642,16 @@ function sendApprovedAdsToClub() {
 
     if (imageStatus === 'Approved' && textStatus === 'Approved') {
       const ad = {
-        Region: card.querySelector(".meta-region")?.textContent?.replace("Region: ", "") || "",
-        Club: card.querySelector(".meta-club")?.textContent?.replace("Club: ", "") || "",
+         "Ad Name": card.querySelector(".meta.ad-name")?.textContent?.replace("Ad Name: ", "") || "",
         Category: card.querySelector(".meta-category")?.textContent?.replace("Category: ", "") || "",
-        "Ad Name": card.querySelector(".meta-ad-name")?.textContent?.replace("Ad Name: ", "") || "",
+        Club: card.querySelector(".meta-club")?.textContent?.replace("Club: ", "") || "",
+        Region: card.querySelector(".meta-region")?.textContent?.replace("Region: ", "") || "",
         Headline: card.querySelector(".headline")?.textContent || "",
         "Primary Text": card.querySelector(".primary-text")?.textContent || "",
-        textApprovalStatus: textStatus,
-        imageApprovalStatuses: [imageStatus],
-        reviewerComments: card.querySelector("textarea")?.value.trim() || ""
-      };
+        textApprovalStatus: card.querySelector(".text-approval")?.value || "",
+        imageApprovalStatuses: [...card.querySelectorAll(".image-approval")].map(sel => sel.value),
+        reviewerComments: card.querySelector("textarea")?.value || ""
+};
 
       approvedAds.push(ad);
 
