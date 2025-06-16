@@ -672,9 +672,7 @@ function sendApprovedAdsToClub() {
       ads: approvedAds
     };
  
-    <script>
 
-    const db = firebase.database();
     const clubPath = `approvedAds/${clubParam}`;
     set(ref(db, clubPath), payload)
       .then(() => {
@@ -689,7 +687,6 @@ function sendApprovedAdsToClub() {
     showToast("No fully approved ads to send.");
   }
 }
-</script>
 
 
     
