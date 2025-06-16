@@ -249,7 +249,9 @@ textarea:focus, select:focus {
     <!-- Cards will be injected here -->
   </div>
 </div>
+  
 <script>
+  <script>
   function renderApprovedAds(ads) {
     const container = document.getElementById("preview-container");
     container.innerHTML = "";
@@ -258,37 +260,30 @@ textarea:focus, select:focus {
     wrapper.className = "card-wrapper";
     container.appendChild(wrapper);
 
-    // If your savedData is an array of HTML strings, you need to parse them into objects.
-    // Recommend: Store ad objects, not HTML strings.
     ads.forEach(ad => {
-      // If ad is a string (HTML), you need to parse it.
-      // Otherwise, assume ad is an object.
-      // If you use HTML string, try: let adObj = ...parse ad string to object...
-      // For now, assuming ad is an object:
-
       const card = document.createElement("div");
       card.className = "preview-card";
       card.dataset.ad = JSON.stringify(ad);
 
       card.innerHTML = `
         <div class="meta-section" style="background-color:#f5f5f5; padding:10px; border-radius:8px; margin-bottom:10px;">
-          <div class="meta"><strong>Region:</strong> ${ad.Region}</div>
-          <div class="meta"><strong>Club:</strong> ${ad.Club} | <strong>Category:</strong> ${ad.Category}</div>
-          <div class="meta ad-name"><strong>Ad Name:</strong> ${ad["Ad Name"]}</div>
+          <div class="meta meta-region"><strong>Region:</strong> ${ad.Region}</div>
+          <div class="meta meta-club"><strong>Club:</strong> ${ad.Club} | <strong>Category:</strong> ${ad.Category}</div>
+          <div class="meta meta-ad-name"><strong>Ad Name:</strong> ${ad["Ad Name"]}</div>
         </div>
         <div class="headline">${ad.Headline}</div>
         <div class="primary-text">${ad["Primary Text"]}</div>
         <div class="approval-row">
           <label>Ad Text Approval Status:</label>
           <select class="text-approval">
-            <option value="Pending">Pending</option>
-            <option value="Approved" selected>Approved</option>
-            <option value="Needs Edit">Needs Edit</option>
+            <option value="Pending" ${ad.textApprovalStatus === "Pending" ? "selected" : ""}>Pending</option>
+            <option value="Approved" ${ad.textApprovalStatus === "Approved" ? "selected" : ""}>Approved</option>
+            <option value="Needs Edit" ${ad.textApprovalStatus === "Needs Edit" ? "selected" : ""}>Needs Edit</option>
           </select>
         </div>
         <div class="approval-row">
           <label>Reviewer Comments:</label>
-          <textarea>${ad["Reviewer Comments"] || ""}</textarea>
+          <textarea>${ad.reviewerComments || ""}</textarea>
         </div>
       `;
 
@@ -332,9 +327,9 @@ textarea:focus, select:focus {
             <div class="approval-row">
               <label>Image Approval Status:</label>
               <select class="image-approval">
-                <option value="Pending">Pending</option>
-                <option value="Approved">Approved</option>
-                <option value="Needs Edit">Needs Edit</option>
+                <option value="Pending" ${ad.imageApprovalStatuses?.[imgIndex] === "Pending" ? "selected" : ""}>Pending</option>
+                <option value="Approved" ${ad.imageApprovalStatuses?.[imgIndex] === "Approved" ? "selected" : ""}>Approved</option>
+                <option value="Needs Edit" ${ad.imageApprovalStatuses?.[imgIndex] === "Needs Edit" ? "selected" : ""}>Needs Edit</option>
               </select>
             </div>
           `;
@@ -344,6 +339,41 @@ textarea:focus, select:focus {
           card.appendChild(wrapperDiv);
         }
       });
+
+      function updateCardStatus() {
+        const textStatus = card.querySelector('.text-approval')?.value;
+        const imageStatuses = Array.from(card.querySelectorAll('.image-approval')).map(sel => sel.value);
+
+        if (imageStatuses.includes('Needs Edit') || textStatus === 'Needs Edit') {
+          card.style.border = '2px solid #e74c3c';
+          card.style.backgroundColor = '#ffe6e6';
+        } else if (imageStatuses.every(v => v === 'Approved') && textStatus === 'Approved') {
+          card.style.border = '2px solid #2ecc71';
+          card.style.backgroundColor = '#e8f6f0';
+        } else {
+          card.style.border = '2px solid #000000';
+          card.style.backgroundColor = '#ffffff';
+        }
+      }
+
+      updateCardStatus();
+
+      card.querySelectorAll('select').forEach(select => {
+        select.addEventListener('change', updateCardStatus);
+      });
+
+      wrapper.appendChild(card);
+    });
+  }
+
+  // ✅ Now safely call it because it's defined above
+  document.addEventListener("DOMContentLoaded", () => {
+    const clubName = new URLSearchParams(window.location.search).get("club");
+    const storageKey = `clubApprovedAds_${clubName}`;
+    const savedData = JSON.parse(localStorage.getItem(storageKey) || "[]");
+    renderApprovedAds(savedData);
+  });
+</script>
 
       function updateCardStatus() {
         const textStatus = card.querySelector('.text-approval')?.value;
