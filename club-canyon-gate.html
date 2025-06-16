@@ -364,16 +364,6 @@ function checkIfNoAdsLeft() {
 }
 
 
-  
-
-  document.addEventListener("DOMContentLoaded", () => {
-    const clubName = new URLSearchParams(window.location.search).get("club") || "Unknown";
-const storageKey = `clubApprovedAds_${clubName}`;
-const savedData = JSON.parse(localStorage.getItem(storageKey) || "[]");
-renderApprovedAds(savedData);
-
-  
-
    function renderApprovedAds(ads) {
   const container = document.getElementById("preview-container");
   container.innerHTML = "";
@@ -461,7 +451,13 @@ renderApprovedAds(savedData);
       wrapperDiv.appendChild(viewDiv);
       card.appendChild(wrapperDiv);
     }
-  });
+    
+    document.addEventListener("DOMContentLoaded", () => {
+  const clubName = new URLSearchParams(window.location.search).get("club") || "Unknown";
+  const storageKey = `clubApprovedAds_${clubName}`;
+  const savedData = JSON.parse(localStorage.getItem(storageKey) || "[]");
+  renderApprovedAds(savedData);
+});
 
     function updateCardStatus() {
       const textStatus = card.querySelector('.text-approval')?.value;
