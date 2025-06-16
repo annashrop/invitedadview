@@ -654,18 +654,21 @@ updateCardStatus();
       if (categoryMatch) category = categoryMatch[1].trim();
 
       const adName = card.querySelector(".ad-name")?.textContent?.replace("Ad Name:", "").trim() || "";
-
+  
       const ad = {
-        "Ad Name": adName,
-        Category: category,
-        Club: club,
-        Region: region,
-        Headline: card.querySelector(".headline")?.textContent || "",
-        "Primary Text": card.querySelector(".primary-text")?.textContent || "",
-        textApprovalStatus: textStatus,
-        imageApprovalStatuses: [...card.querySelectorAll(".image-approval")].map(sel => sel.value),
-        reviewerComments: card.querySelector("textarea")?.value || ""
-      };
+       "Ad Name": card.querySelector(".meta.ad-name")?.textContent?.replace("Ad Name: ", "") || "",
+  Category: card.querySelector(".meta-category")?.textContent?.replace("Category: ", "") || "",
+  Club: card.querySelector(".meta-club")?.textContent?.replace("Club: ", "") || "",
+  Region: card.querySelector(".meta-region")?.textContent?.replace("Region: ", "") || "",
+  Headline: card.querySelector(".headline")?.textContent || "",
+  "Primary Text": card.querySelector(".primary-text")?.textContent || "",
+  textApprovalStatus: card.querySelector(".text-approval")?.value || "",
+  imageApprovalStatuses: [...card.querySelectorAll(".image-approval")].map(sel => sel.value),
+  reviewerComments: card.querySelector("textarea")?.value || "",
+  Image_URL_1: card.querySelectorAll("img")[0]?.src || "",
+  Image_URL_2: card.querySelectorAll("img")[1]?.src || "",
+  Image_URL_3: card.querySelectorAll("img")[2]?.src || ""
+};
 
       approvedAds.push(ad);
 
