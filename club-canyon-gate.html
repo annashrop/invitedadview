@@ -507,30 +507,33 @@ textarea:focus, select:focus {
   });
 
   // On page load, show welcome OR restore section background
-  window.addEventListener("DOMContentLoaded", () => {
-    const active = localStorage.getItem("activeSection");
-    if (active === "paid") {
-      mainContent.style.backgroundColor = '#83b573';
-      hideWelcome();
-    } else if (active === "emails") {
-      mainContent.style.backgroundColor = '#00a3cf';
-      hideWelcome();
-    } else if (active === "landing") {
-      mainContent.style.backgroundColor = '#933b45';
-      hideWelcome();
-    } else {
-      // Default background
-      mainContent.style.backgroundColor = '#22326e';
-    }
-  });
   document.addEventListener("DOMContentLoaded", () => {
-    const clubName = new URLSearchParams(window.location.search).get("club") || "Unknown";
-    const storageKey = `clubApprovedAds_${clubName}`;
-    // If you stored array of HTML strings, parse to objects here.
-    // If you stored array of objects, just use as is:
-    const savedData = JSON.parse(localStorage.getItem(storageKey) || "[]");
-    renderApprovedAds(savedData);
-  });
+  // Section background logic
+  const mainContent = document.querySelector('.main-content');
+  function hideWelcome() {
+    const welcomeEl = document.getElementById("welcome-message");
+    if (welcomeEl) welcomeEl.style.display = "none";
+  }
+  const active = localStorage.getItem("activeSection");
+  if (active === "paid") {
+    mainContent.style.backgroundColor = '#83b573';
+    hideWelcome();
+  } else if (active === "emails") {
+    mainContent.style.backgroundColor = '#00a3cf';
+    hideWelcome();
+  } else if (active === "landing") {
+    mainContent.style.backgroundColor = '#933b45';
+    hideWelcome();
+  } else {
+    mainContent.style.backgroundColor = '#22326e';
+  }
+
+  // Ad rendering logic
+  const clubName = new URLSearchParams(window.location.search).get("club") || "Unknown";
+  const storageKey = `clubApprovedAds_${clubName}`;
+  const savedData = JSON.parse(localStorage.getItem(storageKey) || "[]");
+  renderApprovedAds(savedData);
+});
 </script>
 </body>
 </html>
