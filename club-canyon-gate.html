@@ -41,11 +41,23 @@ if (!user) {
   }
 
   .top-nav {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #22326e;
-  }
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+}
+    .nav-logo {
+  max-width: 160px;
+  height: auto;
+}
+
+.nav-title {
+  color: white;
+  font-size: 18px;
+  margin-top: 10px;
+  text-align: center;
+}
+    
     .container {
       max-width: 1000px;
       margin: 0 auto;
