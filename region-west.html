@@ -632,7 +632,7 @@ updateCardStatus();
       });
     } 
 
-function sendApprovedAdsToClub() {
+  function sendApprovedAdsToClub() {
   const adCards = document.querySelectorAll('.preview-card');
   const approvedAds = [];
 
@@ -641,17 +641,31 @@ function sendApprovedAdsToClub() {
     const textStatus = card.querySelector('.text-approval')?.value;
 
     if (imageStatus === 'Approved' && textStatus === 'Approved') {
+      // Extract region
+      const regionMeta = card.querySelector(".meta:nth-child(1)")?.textContent || "";
+      const region = regionMeta.replace("Region:", "").trim();
+
+      // Extract club and category from one line
+      const clubCategoryMeta = card.querySelector(".meta:nth-child(2)")?.textContent || "";
+      let club = "", category = "";
+      const clubMatch = clubCategoryMeta.match(/Club:\s*(.*?)\s*\|/);
+      const categoryMatch = clubCategoryMeta.match(/Category:\s*(.*)/);
+      if (clubMatch) club = clubMatch[1].trim();
+      if (categoryMatch) category = categoryMatch[1].trim();
+
+      const adName = card.querySelector(".ad-name")?.textContent?.replace("Ad Name:", "").trim() || "";
+
       const ad = {
-         "Ad Name": card.querySelector(".meta.ad-name")?.textContent?.replace("Ad Name: ", "") || "",
-        Category: card.querySelector(".meta-category")?.textContent?.replace("Category: ", "") || "",
-        Club: card.querySelector(".meta-club")?.textContent?.replace("Club: ", "") || "",
-        Region: card.querySelector(".meta-region")?.textContent?.replace("Region: ", "") || "",
+        "Ad Name": adName,
+        Category: category,
+        Club: club,
+        Region: region,
         Headline: card.querySelector(".headline")?.textContent || "",
         "Primary Text": card.querySelector(".primary-text")?.textContent || "",
-        textApprovalStatus: card.querySelector(".text-approval")?.value || "",
+        textApprovalStatus: textStatus,
         imageApprovalStatuses: [...card.querySelectorAll(".image-approval")].map(sel => sel.value),
         reviewerComments: card.querySelector("textarea")?.value || ""
-};
+      };
 
       approvedAds.push(ad);
 
@@ -671,7 +685,6 @@ function sendApprovedAdsToClub() {
       ads: approvedAds
     };
 
-
     const clubPath = `approvedAds/${clubParam}`;
     firebase.database().ref(clubPath).set(payload)
       .then(() => {
@@ -686,6 +699,8 @@ function sendApprovedAdsToClub() {
     showToast("No fully approved ads to send.");
   }
 }
+
+
 
 
     
