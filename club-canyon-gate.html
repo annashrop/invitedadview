@@ -268,7 +268,7 @@ textarea:focus, select:focus {
 </div>
   <script>
 document.addEventListener("DOMContentLoaded", () => {
-  const clubParam = new URLSearchParams(window.location.search).get("club") || "Unknown";
+  const clubParam = new URLSearchParams(window.location.search).get("Club") || "Unknown";
   const dbRef = firebase.database().ref(`approvedAds/${clubParam}`);
 
   dbRef.once("value")
