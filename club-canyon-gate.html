@@ -44,9 +44,11 @@ if (!user) {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 20px;
+  margin: 20px auto;
+  text-align: center;
 }
-    .nav-logo {
+
+   .nav-logo {
   max-width: 160px;
   height: auto;
 }
@@ -54,8 +56,7 @@ if (!user) {
 .nav-title {
   color: white;
   font-size: 18px;
-  margin-top: 10px;
-  text-align: center;
+  margin-top: 8px;
 }
     
     .container {
@@ -150,9 +151,10 @@ if (!user) {
   margin-top: 10px;
 }
     
-    body {
+ body {
   display: flex;
-  overflow: hidden;
+  flex-direction: column;
+  background-color: #0F2454; /* your navy background */
 }
     select, textarea {
   border-radius: 8px;
@@ -227,7 +229,11 @@ textarea:focus, select:focus {
 .logout-button:hover {
   background-color: #e35205;
 }
-
+.main-container {
+  margin: 0 auto;
+  padding: 20px;
+  max-width: 1000px;
+}
 .main-content {
   margin-left: 240px;
   flex-grow: 1;
