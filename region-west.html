@@ -670,7 +670,7 @@ function sendApprovedAdsToClub() {
       timestamp,
       ads: approvedAds
     };
- 
+
 
     const clubPath = `approvedAds/${clubParam}`;
     firebase.database().ref(clubPath).set(payload)
