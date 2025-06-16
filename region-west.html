@@ -658,9 +658,9 @@ function sendApprovedAdsToClub() {
   const firebaseConfig = {
     apiKey: "AIzaSyCLl4jDy3dfN8Ntgjnjt0IieVbPTQywPwE",
     authDomain: "marketingapprovalportal.firebaseapp.com,
-    databaseURL: "marketingapprovalportal.firebaseapp.com",
+    databaseURL: "https://marketingapprovalportal-default-rtdb.firebaseio.com",
     projectId: "marketingapprovalportal",
-    storageBucket: "marketingapprovalportal.firebasestorage.app",
+    storageBucket: "marketingapprovalportal.appspot.app",
     messagingSenderId: "324995086351",
     appId: "1:324995086351:web:2e510d67bf824f2f32cb7a""
   };
@@ -668,9 +668,9 @@ function sendApprovedAdsToClub() {
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database(); // ✅ Save this globally
   window.db = db; // Optional: make it globally accessible
-</script>
 
-    const db = getDatabase();
+
+    const db = firebase.database();
     const clubPath = `approvedAds/${clubParam}`;
     set(ref(db, clubPath), payload)
       .then(() => {
@@ -685,7 +685,7 @@ function sendApprovedAdsToClub() {
     showToast("No fully approved ads to send.");
   }
 }
-
+</script>
 
 
     
