@@ -224,7 +224,6 @@ textarea:focus, select:focus {
   <button class="logout-button" onclick="logout()">Logout</button>
 </div>
 
-
 <div class="main-content">
    <div id="preview-container"></div>
 </div>
@@ -233,138 +232,25 @@ textarea:focus, select:focus {
   <p>Select a section from the sidebar to get started.</p>
 </div>
 
-  <div class="top-nav">
-    <img class="nav-logo" src="https://www.invitedclubs.com/globalassets/.invited-corporate-site/_logos/invited-logo_500px-wide.png" alt="Invited Logo" />
-    <div class="nav-title">Ad Review Portal – Club View</div>
-  </div>
-
-  <div class="main-container">
-    <h1>Canyon Gate Ad Approvals</h1>
-    
-    <div class="top-buttons">
-      <button id="sendToAgencyBtn">Send Final Approvals</button>
-      <button id="sendEdits">Send Edits to Ads Department</button>
-    </div>
-
-    <div id="preview-container">
-      <div id="no-ads-message" style="display:none; text-align:center; font-size:18px; color:#888; margin-top:40px;">
-  🎉 All ads have been reviewed!
+<div class="top-nav">
+  <img class="nav-logo" src="https://www.invitedclubs.com/globalassets/.invited-corporate-site/_logos/invited-logo_500px-wide.png" alt="Invited Logo" />
+  <div class="nav-title">Ad Review Portal – Club View</div>
 </div>
 
-      <!-- Cards will be injected here -->
+<div class="main-container">
+  <h1>Canyon Gate Ad Approvals</h1>
+  <div class="top-buttons">
+    <button id="sendToAgencyBtn">Send Final Approvals</button>
+    <button id="sendEdits">Send Edits to Ads Department</button>
+  </div>
+  <div id="preview-container">
+    <div id="no-ads-message" style="display:none; text-align:center; font-size:18px; color:#888; margin-top:40px;">
+      🎉 All ads have been reviewed!
     </div>
+    <!-- Cards will be injected here -->
   </div>
 </div>
- <script>
-  const container = document.getElementById('preview-container');
-
-  document.getElementById("sendToAgencyBtn").addEventListener("click", () => {
-  const approvedAds = [];
-  document.querySelectorAll(".preview-card").forEach(card => {
-    const allApproved = [...card.querySelectorAll("select")].every(sel => sel.value === "Approved");
-
-  if (allApproved) {
-      const adData = JSON.parse(card.dataset.ad);
-      approvedAds.push(adData);
-
-      // Fade out & remove card
-      card.style.transition = "opacity 0.4s ease";
-      card.style.opacity = 0;
-      setTimeout(() => {
-        card.remove();
-        checkIfNoAdsLeft();
-      }, 400);
-    }
-});
-
-  if (approvedAds.length > 0) {
-    const existing = JSON.parse(localStorage.getItem("agencyFinalApproved") || "[]");
-    const timestamp = new Date().toLocaleString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true
-    });
-
-    existing.push({
-  clubName: "Canyon Gate",
-  timestamp: timestamp,
-  ads: approvedAds
-});
-
-     localStorage.setItem("agencyFinalApproved", JSON.stringify(existing));
-    showToast("Approved ads sent to Agency View."); // <-- Added showToast()
-  } else {
-    showToast("No fully approved ads to send."); // <-- Added showToast()
-  }
-});
-
-
-
-document.getElementById("sendEdits").addEventListener("click", () => {
-  const editAds = [];
-  document.querySelectorAll(".preview-card").forEach(card => {
-    const imageStatuses = [...card.querySelectorAll("select.image-approval")].map(sel => sel.value);
-    const textStatus = card.querySelector("select.text-approval")?.value;
-    const needsEdit = imageStatuses.some(v => v === "Needs Edit" || v === "Declined") || 
-                  textStatus === "Needs Edit" || textStatus === "Declined";
-
-    if (needsEdit) {
-      const commentBox = card.querySelector("textarea");
-      const comments = commentBox?.value.trim();
-
-      if (!comments) {
-        commentBox.style.border = "2px solid red";
-        commentBox.placeholder = "Comment required before submitting edits.";
-        return; // prevent sending without comment
-      }
-
-      editAds.push({ html: card.outerHTML, comment: comments });
-
-      // Fade and remove
-      card.style.transition = "opacity 0.4s ease";
-      card.style.opacity = 0;
-      setTimeout(() => card.remove(), 400);
-    }
-  });
-
-   if (editAds.length > 0) {
-    localStorage.setItem("adsNeedingEdits", JSON.stringify(editAds));
-    showToast("Ads sent to Ads Team for edits."); // <-- Fix: Call showToast() here
-  } else {
-    showToast("No ads marked for edits."); // <-- Fix: Call showToast() here
-  }
-
-  checkIfNoAdsLeft(); // Remember to fix SelectorAll in checkIfNoAdsLeft as well
-});
-
-const showToast = (message) => { 
-  const toast = document.createElement("div");
-  toast.textContent = message;
-  toast.style.position = "fixed";
-  toast.style.bottom = "20px";
-  toast.style.left = "50%";
-  toast.style.transform = "translateX(-50%)";
-  toast.style.backgroundColor = "#333";
-  toast.style.color = "#fff";
-  toast.style.padding = "12px 20px";
-  toast.style.borderRadius = "6px";
-  toast.style.zIndex = "9999";
-  toast.style.fontSize = "14px";
-  document.body.appendChild(toast);
-  setTimeout(() => toast.remove(), 3000);
-};
-
-function checkIfNoAdsLeft() {
-  if (document.querySelectorAll('.preview-card').length === 0) {
-    document.getElementById('no-ads-message').style.display = 'block';
-  }
-}
-
-
-   <script>
+<script>
   function renderApprovedAds(ads) {
     const container = document.getElementById("preview-container");
     container.innerHTML = "";
@@ -373,9 +259,14 @@ function checkIfNoAdsLeft() {
     wrapper.className = "card-wrapper";
     container.appendChild(wrapper);
 
+    // If your savedData is an array of HTML strings, you need to parse them into objects.
+    // Recommend: Store ad objects, not HTML strings.
     ads.forEach(ad => {
-      // If ads are saved as HTML, you'll need to parse data from HTML or change storage format to plain objects.
-      // If they are plain JS objects, this is correct:
+      // If ad is a string (HTML), you need to parse it.
+      // Otherwise, assume ad is an object.
+      // If you use HTML string, try: let adObj = ...parse ad string to object...
+      // For now, assuming ad is an object:
+
       const card = document.createElement("div");
       card.className = "preview-card";
       card.dataset.ad = JSON.stringify(ad);
@@ -420,6 +311,7 @@ function checkIfNoAdsLeft() {
                           url.match(/\/(C[0-9A-Za-z_]+)\//) ||
                           url.match(/\/(I[0-9A-Za-z_.]+)\/[^/]+$/);
           const imageId = idMatch && (idMatch[1] || idMatch[0]);
+
           if (!isTif && imageId) {
             imgSrc = `https://cdn.photoshelter.com/img-get2/${imageId}/fit=1000x750`;
           }
@@ -480,94 +372,165 @@ function checkIfNoAdsLeft() {
     });
   }
 
-  // Only ONE main DOMContentLoaded event
+  document.getElementById("sendToAgencyBtn").addEventListener("click", () => {
+    const approvedAds = [];
+    document.querySelectorAll(".preview-card").forEach(card => {
+      const allApproved = [...card.querySelectorAll("select")].every(sel => sel.value === "Approved");
+
+      if (allApproved) {
+        const adData = JSON.parse(card.dataset.ad);
+        approvedAds.push(adData);
+
+        // Fade out & remove card
+        card.style.transition = "opacity 0.4s ease";
+        card.style.opacity = 0;
+        setTimeout(() => {
+          card.remove();
+          checkIfNoAdsLeft();
+        }, 400);
+      }
+    });
+
+    if (approvedAds.length > 0) {
+      const existing = JSON.parse(localStorage.getItem("agencyFinalApproved") || "[]");
+      const timestamp = new Date().toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+      });
+
+      existing.push({
+        clubName: "Canyon Gate",
+        timestamp: timestamp,
+        ads: approvedAds
+      });
+
+      localStorage.setItem("agencyFinalApproved", JSON.stringify(existing));
+      showToast("Approved ads sent to Agency View.");
+    } else {
+      showToast("No fully approved ads to send.");
+    }
+  });
+
+  document.getElementById("sendEdits").addEventListener("click", () => {
+    const editAds = [];
+    document.querySelectorAll(".preview-card").forEach(card => {
+      const imageStatuses = [...card.querySelectorAll("select.image-approval")].map(sel => sel.value);
+      const textStatus = card.querySelector("select.text-approval")?.value;
+      const needsEdit = imageStatuses.some(v => v === "Needs Edit" || v === "Declined") ||
+                        textStatus === "Needs Edit" || textStatus === "Declined";
+
+      if (needsEdit) {
+        const commentBox = card.querySelector("textarea");
+        const comments = commentBox?.value.trim();
+
+        if (!comments) {
+          commentBox.style.border = "2px solid red";
+          commentBox.placeholder = "Comment required before submitting edits.";
+          return; // prevent sending without comment
+        }
+
+        editAds.push({ html: card.outerHTML, comment: comments });
+
+        // Fade and remove
+        card.style.transition = "opacity 0.4s ease";
+        card.style.opacity = 0;
+        setTimeout(() => card.remove(), 400);
+      }
+    });
+
+    if (editAds.length > 0) {
+      localStorage.setItem("adsNeedingEdits", JSON.stringify(editAds));
+      showToast("Ads sent to Ads Team for edits.");
+    } else {
+      showToast("No ads marked for edits.");
+    }
+
+    checkIfNoAdsLeft();
+  });
+
+  const showToast = (message) => {
+    const toast = document.createElement("div");
+    toast.textContent = message;
+    toast.style.position = "fixed";
+    toast.style.bottom = "20px";
+    toast.style.left = "50%";
+    toast.style.transform = "translateX(-50%)";
+    toast.style.backgroundColor = "#333";
+    toast.style.color = "#fff";
+    toast.style.padding = "12px 20px";
+    toast.style.borderRadius = "6px";
+    toast.style.zIndex = "9999";
+    toast.style.fontSize = "14px";
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+  };
+
+  function checkIfNoAdsLeft() {
+    if (document.querySelectorAll('.preview-card').length === 0) {
+      document.getElementById('no-ads-message').style.display = 'block';
+    }
+  }
+
+  // Only ONE top-level DOMContentLoaded event!
   document.addEventListener("DOMContentLoaded", () => {
     const clubName = new URLSearchParams(window.location.search).get("club") || "Unknown";
     const storageKey = `clubApprovedAds_${clubName}`;
+    // If you stored array of HTML strings, parse to objects here.
+    // If you stored array of objects, just use as is:
     const savedData = JSON.parse(localStorage.getItem(storageKey) || "[]");
     renderApprovedAds(savedData);
   });
-
- 
-
-    function updateCardStatus() {
-      const textStatus = card.querySelector('.text-approval')?.value;
-      const imageStatuses = Array.from(card.querySelectorAll('.image-approval')).map(sel => sel.value);
-
-      if (imageStatuses.includes('Needs Edit') || textStatus === 'Needs Edit') {
-        card.style.border = '2px solid #e74c3c';
-        card.style.backgroundColor = '#ffe6e6';
-      } else if (imageStatuses.every(v => v === 'Approved') && textStatus === 'Approved') {
-        card.style.border = '2px solid #2ecc71';
-        card.style.backgroundColor = '#e8f6f0';
-      } else {
-        card.style.border = '2px solid #000000';
-        card.style.backgroundColor = '#ffffff';
-      }
-    }
-
-    updateCardStatus();
-
-    card.querySelectorAll('select').forEach(select => {
-      select.addEventListener('change', updateCardStatus);
-    });
-  });
-}
-
-
-
- 
 </script>
-  <script>
-    const mainContent = document.querySelector('.main-content');
+<script>
+  const mainContent = document.querySelector('.main-content');
 
- // Save selected section to localStorage and update background
-function hideWelcome() {
-  const welcomeEl = document.getElementById("welcome-message");
-  if (welcomeEl) welcomeEl.style.display = "none";
-}
+  function hideWelcome() {
+    const welcomeEl = document.getElementById("welcome-message");
+    if (welcomeEl) welcomeEl.style.display = "none";
+  }
 
-document.getElementById('paid-ads-btn')?.addEventListener('click', (e) => {
-  e.preventDefault();
-  localStorage.setItem("activeSection", "paid");
-  mainContent.style.backgroundColor = '#83b573';
-  hideWelcome();
-});
-
-document.getElementById('emails-btn')?.addEventListener('click', (e) => {
-  e.preventDefault();
-  localStorage.setItem("activeSection", "emails");
-  mainContent.style.backgroundColor = '#00a3cf';
-  hideWelcome();
-});
-
-document.getElementById('landing-btn')?.addEventListener('click', (e) => {
-  e.preventDefault();
-  localStorage.setItem("activeSection", "landing");
-  mainContent.style.backgroundColor = '#933b45';
-  hideWelcome();
-});
-
-// On page load, show welcome OR restore section background
-window.addEventListener("DOMContentLoaded", () => {
-  const active = localStorage.getItem("activeSection");
-  if (active === "paid") {
+  document.getElementById('paid-ads-btn')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    localStorage.setItem("activeSection", "paid");
     mainContent.style.backgroundColor = '#83b573';
     hideWelcome();
-  } else if (active === "emails") {
+  });
+
+  document.getElementById('emails-btn')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    localStorage.setItem("activeSection", "emails");
     mainContent.style.backgroundColor = '#00a3cf';
     hideWelcome();
-  } else if (active === "landing") {
+  });
+
+  document.getElementById('landing-btn')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    localStorage.setItem("activeSection", "landing");
     mainContent.style.backgroundColor = '#933b45';
     hideWelcome();
-  } else {
-    // Default background
-    mainContent.style.backgroundColor = '#22326e';
-  }
-});
+  });
 
-
+  // On page load, show welcome OR restore section background
+  window.addEventListener("DOMContentLoaded", () => {
+    const active = localStorage.getItem("activeSection");
+    if (active === "paid") {
+      mainContent.style.backgroundColor = '#83b573';
+      hideWelcome();
+    } else if (active === "emails") {
+      mainContent.style.backgroundColor = '#00a3cf';
+      hideWelcome();
+    } else if (active === "landing") {
+      mainContent.style.backgroundColor = '#933b45';
+      hideWelcome();
+    } else {
+      // Default background
+      mainContent.style.backgroundColor = '#22326e';
+    }
+  });
 </script>
 </body>
 </html>
-</body>
