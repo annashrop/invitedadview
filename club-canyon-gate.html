@@ -100,22 +100,25 @@ if (!user) {
   margin-bottom: 12px;
 }
 
-    .preview-card {
-  background-color: #fff;
-  border-radius: 12px;
+ .preview-card {
+  width: 340px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.2s ease;
   padding: 16px;
-  margin-bottom: 24px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.preview-card:hover {
-  transform: scale(1.01);
-  box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+.preview-card img.card-image {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: 10px;
 }
 
     .image-wrapper {
-    margin-top: 20px;
+    margin-top: 10px;
   }
 
   .card-image {
@@ -125,6 +128,16 @@ if (!user) {
     border-radius: 6px;
     margin-bottom: 10px;
   }
+    .view-link {
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.approval-row,
+.approval {
+  margin-top: 10px;
+}
+    
     body {
   display: flex;
   overflow: hidden;
@@ -227,7 +240,13 @@ textarea:focus, select:focus {
   font-size: 18px;
   opacity: 0.9;
 }
-
+.card-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px;
+}
   </style>
 </head>
 <body>
