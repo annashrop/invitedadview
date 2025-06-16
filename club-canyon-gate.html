@@ -476,14 +476,7 @@ textarea:focus, select:focus {
   }
 
   // Only ONE top-level DOMContentLoaded event!
-  document.addEventListener("DOMContentLoaded", () => {
-    const clubName = new URLSearchParams(window.location.search).get("club") || "Unknown";
-    const storageKey = `clubApprovedAds_${clubName}`;
-    // If you stored array of HTML strings, parse to objects here.
-    // If you stored array of objects, just use as is:
-    const savedData = JSON.parse(localStorage.getItem(storageKey) || "[]");
-    renderApprovedAds(savedData);
-  });
+  
 </script>
 <script>
   const mainContent = document.querySelector('.main-content');
@@ -530,6 +523,14 @@ textarea:focus, select:focus {
       // Default background
       mainContent.style.backgroundColor = '#22326e';
     }
+  });
+  document.addEventListener("DOMContentLoaded", () => {
+    const clubName = new URLSearchParams(window.location.search).get("club") || "Unknown";
+    const storageKey = `clubApprovedAds_${clubName}`;
+    // If you stored array of HTML strings, parse to objects here.
+    // If you stored array of objects, just use as is:
+    const savedData = JSON.parse(localStorage.getItem(storageKey) || "[]");
+    renderApprovedAds(savedData);
   });
 </script>
 </body>
