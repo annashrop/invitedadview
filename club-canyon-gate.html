@@ -364,100 +364,131 @@ function checkIfNoAdsLeft() {
 }
 
 
-   function renderApprovedAds(ads) {
-  const container = document.getElementById("preview-container");
-  container.innerHTML = "";
+   <script>
+  function renderApprovedAds(ads) {
+    const container = document.getElementById("preview-container");
+    container.innerHTML = "";
 
-  const wrapper = document.createElement("div");
-  wrapper.className = "card-wrapper";
-  container.appendChild(wrapper);
+    const wrapper = document.createElement("div");
+    wrapper.className = "card-wrapper";
+    container.appendChild(wrapper);
 
-  ads.forEach(adHTML => {
-    const wrapperDiv = document.createElement("div");
-    wrapperDiv.innerHTML = adHTML;
-    const card = wrapperDiv.firstElementChild;
-    wrapper.appendChild(card);
+    ads.forEach(ad => {
+      // If ads are saved as HTML, you'll need to parse data from HTML or change storage format to plain objects.
+      // If they are plain JS objects, this is correct:
+      const card = document.createElement("div");
+      card.className = "preview-card";
+      card.dataset.ad = JSON.stringify(ad);
 
-     card.innerHTML = `
-    <div class="meta-section" style="background-color:#f5f5f5; padding:10px; border-radius:8px; margin-bottom:10px;">
-      <div class="meta"><strong>Region:</strong> ${ad.Region}</div>
-      <div class="meta"><strong>Club:</strong> ${ad.Club} | <strong>Category:</strong> ${ad.Category}</div>
-      <div class="meta ad-name"><strong>Ad Name:</strong> ${ad["Ad Name"]}</div>
-    </div>
-    <div class="headline">${ad.Headline}</div>
-    <div class="primary-text">${ad["Primary Text"]}</div>
-    <div class="approval-row">
-      <label>Ad Text Approval Status:</label>
-      <select class="text-approval">
-        <option value="Pending">Pending</option>
-        <option value="Approved" selected>Approved</option>
-        <option value="Needs Edit">Needs Edit</option>
-      </select>
-    </div>
-    <div class="approval-row">
-      <label>Reviewer Comments:</label>
-      <textarea>${ad["Reviewer Comments"] || ""}</textarea>
-    </div>
-  `;   
-  
-  ['Image_URL_1', 'Image_URL_2', 'Image_URL_3'].forEach((key, imgIndex) => {
-    const url = ad[key];
-    if (!url || url === '/') return;
-
-    const isCanva = url.includes('canva.com');
-    let imgSrc = '';
-
-    if (isCanva) {
-      imgSrc = url;
-    } else {
-      const isTif = url.toLowerCase().endsWith('.tif');
-      const idMatch = url.match(/I[0-9A-Za-z_.]+/) ||
-                      url.match(/img-get2\/([^/]+)/) ||
-                      url.match(/\/(I[0-9A-Za-z_.]+)\//) ||
-                      url.match(/\/(G[0-9A-Za-z_]+)\//) ||
-                      url.match(/\/(C[0-9A-Za-z_]+)\//) ||
-                      url.match(/\/(I[0-9A-Za-z_.]+)\/[^/]+$/);
-      const imageId = idMatch && (idMatch[1] || idMatch[0]);
-
-      if (!isTif && imageId) {
-        imgSrc = `https://cdn.photoshelter.com/img-get2/${imageId}/fit=1000x750`;
-      }
-    }
-
-    if (imgSrc) {
-      const wrapperDiv = document.createElement("div");
-      wrapperDiv.className = "image-wrapper";
-
-      const img = document.createElement("img");
-      img.className = "card-image";
-      img.src = imgSrc;
-      img.alt = "Ad image";
-
-      const viewDiv = document.createElement("div");
-      viewDiv.className = "view-link";
-      viewDiv.innerHTML = `
-        <a href="#" class="view-image-button" onclick="window.open('${url}', 'ImagePopup', 'width=800,height=600'); return false;">View Full Image ${imgIndex + 1}</a>
+      card.innerHTML = `
+        <div class="meta-section" style="background-color:#f5f5f5; padding:10px; border-radius:8px; margin-bottom:10px;">
+          <div class="meta"><strong>Region:</strong> ${ad.Region}</div>
+          <div class="meta"><strong>Club:</strong> ${ad.Club} | <strong>Category:</strong> ${ad.Category}</div>
+          <div class="meta ad-name"><strong>Ad Name:</strong> ${ad["Ad Name"]}</div>
+        </div>
+        <div class="headline">${ad.Headline}</div>
+        <div class="primary-text">${ad["Primary Text"]}</div>
         <div class="approval-row">
-          <label>Image Approval Status:</label>
-          <select class="image-approval">
+          <label>Ad Text Approval Status:</label>
+          <select class="text-approval">
             <option value="Pending">Pending</option>
-            <option value="Approved">Approved</option>
+            <option value="Approved" selected>Approved</option>
             <option value="Needs Edit">Needs Edit</option>
           </select>
         </div>
+        <div class="approval-row">
+          <label>Reviewer Comments:</label>
+          <textarea>${ad["Reviewer Comments"] || ""}</textarea>
+        </div>
       `;
 
-      wrapperDiv.appendChild(img);
-      wrapperDiv.appendChild(viewDiv);
-      card.appendChild(wrapperDiv);
-    }
-    
-    document.addEventListener("DOMContentLoaded", () => {
-  const clubName = new URLSearchParams(window.location.search).get("club") || "Unknown";
-  const storageKey = `clubApprovedAds_${clubName}`;
-  const savedData = JSON.parse(localStorage.getItem(storageKey) || "[]");
-  renderApprovedAds(savedData);
-});
+      ['Image_URL_1', 'Image_URL_2', 'Image_URL_3'].forEach((key, imgIndex) => {
+        const url = ad[key];
+        if (!url || url === '/') return;
+
+        const isCanva = url.includes('canva.com');
+        let imgSrc = '';
+
+        if (isCanva) {
+          imgSrc = url;
+        } else {
+          const isTif = url.toLowerCase().endsWith('.tif');
+          const idMatch = url.match(/I[0-9A-Za-z_.]+/) ||
+                          url.match(/img-get2\/([^/]+)/) ||
+                          url.match(/\/(I[0-9A-Za-z_.]+)\//) ||
+                          url.match(/\/(G[0-9A-Za-z_]+)\//) ||
+                          url.match(/\/(C[0-9A-Za-z_]+)\//) ||
+                          url.match(/\/(I[0-9A-Za-z_.]+)\/[^/]+$/);
+          const imageId = idMatch && (idMatch[1] || idMatch[0]);
+          if (!isTif && imageId) {
+            imgSrc = `https://cdn.photoshelter.com/img-get2/${imageId}/fit=1000x750`;
+          }
+        }
+
+        if (imgSrc) {
+          const wrapperDiv = document.createElement("div");
+          wrapperDiv.className = "image-wrapper";
+
+          const img = document.createElement("img");
+          img.className = "card-image";
+          img.src = imgSrc;
+          img.alt = "Ad image";
+
+          const viewDiv = document.createElement("div");
+          viewDiv.className = "view-link";
+          viewDiv.innerHTML = `
+            <a href="#" class="view-image-button" onclick="window.open('${url}', 'ImagePopup', 'width=800,height=600'); return false;">View Full Image ${imgIndex + 1}</a>
+            <div class="approval-row">
+              <label>Image Approval Status:</label>
+              <select class="image-approval">
+                <option value="Pending">Pending</option>
+                <option value="Approved">Approved</option>
+                <option value="Needs Edit">Needs Edit</option>
+              </select>
+            </div>
+          `;
+
+          wrapperDiv.appendChild(img);
+          wrapperDiv.appendChild(viewDiv);
+          card.appendChild(wrapperDiv);
+        }
+      });
+
+      function updateCardStatus() {
+        const textStatus = card.querySelector('.text-approval')?.value;
+        const imageStatuses = Array.from(card.querySelectorAll('.image-approval')).map(sel => sel.value);
+
+        if (imageStatuses.includes('Needs Edit') || textStatus === 'Needs Edit') {
+          card.style.border = '2px solid #e74c3c';
+          card.style.backgroundColor = '#ffe6e6';
+        } else if (imageStatuses.every(v => v === 'Approved') && textStatus === 'Approved') {
+          card.style.border = '2px solid #2ecc71';
+          card.style.backgroundColor = '#e8f6f0';
+        } else {
+          card.style.border = '2px solid #000000';
+          card.style.backgroundColor = '#ffffff';
+        }
+      }
+
+      updateCardStatus();
+
+      card.querySelectorAll('select').forEach(select => {
+        select.addEventListener('change', updateCardStatus);
+      });
+
+      wrapper.appendChild(card);
+    });
+  }
+
+  // Only ONE main DOMContentLoaded event
+  document.addEventListener("DOMContentLoaded", () => {
+    const clubName = new URLSearchParams(window.location.search).get("club") || "Unknown";
+    const storageKey = `clubApprovedAds_${clubName}`;
+    const savedData = JSON.parse(localStorage.getItem(storageKey) || "[]");
+    renderApprovedAds(savedData);
+  });
+
+ 
 
     function updateCardStatus() {
       const textStatus = card.querySelector('.text-approval')?.value;
