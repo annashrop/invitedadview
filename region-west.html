@@ -673,7 +673,7 @@ function sendApprovedAdsToClub() {
  
 
     const clubPath = `approvedAds/${clubParam}`;
-    set(ref(db, clubPath), payload)
+    firebase.database().ref(clubPath).set(payload)
       .then(() => {
         showToast("Approved ads sent to club!");
         checkIfNoAdsLeft();
