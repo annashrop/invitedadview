@@ -414,43 +414,53 @@ textarea:focus, select:focus {
     }
   });
 
-  document.getElementById("sendEdits").addEventListener("click", () => {
-    const editAds = [];
-    document.querySelectorAll(".preview-card").forEach(card => {
-      const imageStatuses = [...card.querySelectorAll("select.image-approval")].map(sel => sel.value);
-      const textStatus = card.querySelector("select.text-approval")?.value;
-      const needsEdit = imageStatuses.some(v => v === "Needs Edit" || v === "Declined") ||
-                        textStatus === "Needs Edit" || textStatus === "Declined";
+document.getElementById("sendEdits").addEventListener("click", () => {
+  const editAds = [];
+  document.querySelectorAll(".preview-card").forEach(card => {
+    const imageStatuses = [...card.querySelectorAll("select.image-approval")].map(sel => sel.value);
+    const textStatus = card.querySelector("select.text-approval")?.value;
+    const needsEdit = imageStatuses.some(v => v === "Needs Edit" || v === "Declined") ||
+                      textStatus === "Needs Edit" || textStatus === "Declined";
 
-      if (needsEdit) {
-        const commentBox = card.querySelector("textarea");
-        const comments = commentBox?.value.trim();
+    if (needsEdit) {
+      const commentBox = card.querySelector("textarea");
+      const comments = commentBox?.value.trim();
 
-        if (!comments) {
-          commentBox.style.border = "2px solid red";
-          commentBox.placeholder = "Comment required before submitting edits.";
-          return; // prevent sending without comment
-        }
-
-        const adData = JSON.parse(card.dataset.ad);
-adData.textApprovalStatus = textStatus;
-adData.imageApprovalStatuses = imageStatuses;
-adData.reviewerComments = comments;
-editAds.push(adData);
-
-        // Fade and remove
-        card.style.transition = "opacity 0.4s ease";
-        card.style.opacity = 0;
-        setTimeout(() => card.remove(), 400);
+      if (!comments) {
+        commentBox.style.border = "2px solid red";
+        commentBox.placeholder = "Comment required before submitting edits.";
+        return; // prevent sending without comment
       }
-    });
 
-    if (editAds.length > 0) {
-      localStorage.setItem("adsNeedingEdits", JSON.stringify(editAds));
-      showToast("Ads sent to Ads Team for edits.");
-    } else {
-      showToast("No ads marked for edits.");
+      const ad = {
+        Region: card.querySelector(".meta-region")?.textContent?.replace("Region: ", "") || "",
+        Club: card.querySelector(".meta-club")?.textContent?.replace("Club: ", "") || "",
+        Category: card.querySelector(".meta-category")?.textContent?.replace("Category: ", "") || "",
+        "Ad Name": card.querySelector(".meta-ad-name")?.textContent?.replace("Ad Name: ", "") || "",
+        Headline: card.querySelector(".headline")?.textContent || "",
+        "Primary Text": card.querySelector(".primary-text")?.textContent || "",
+        textApprovalStatus: textStatus,
+        imageApprovalStatuses: imageStatuses,
+        reviewerComments: comments
+      };
+
+      editAds.push(ad);
+
+      // Fade and remove the card after submitting
+      card.style.transition = "opacity 0.4s ease";
+      card.style.opacity = 0;
+      setTimeout(() => card.remove(), 400);
     }
+  });
+
+  if (editAds.length > 0) {
+    localStorage.setItem("adsNeedingEdits", JSON.stringify(editAds));
+    showToast("Edits sent to Ads Department.");
+  } else {
+    showToast("No edits to send.");
+  }
+});
+
 
     checkIfNoAdsLeft();
   });
