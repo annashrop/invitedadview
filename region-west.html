@@ -654,7 +654,22 @@ function sendApprovedAdsToClub() {
       ads: approvedAds
     };
 
-    // ✅ Save to Firebase
+    <script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCLl4jDy3dfN8Ntgjnjt0IieVbPTQywPwE",
+    authDomain: "marketingapprovalportal.firebaseapp.com,
+    databaseURL: "marketingapprovalportal.firebaseapp.com",
+    projectId: "marketingapprovalportal",
+    storageBucket: "marketingapprovalportal.firebasestorage.app",
+    messagingSenderId: "324995086351",
+    appId: "1:324995086351:web:2e510d67bf824f2f32cb7a""
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database(); // ✅ Save this globally
+  window.db = db; // Optional: make it globally accessible
+</script>
+
     const db = getDatabase();
     const clubPath = `approvedAds/${clubParam}`;
     set(ref(db, clubPath), payload)
