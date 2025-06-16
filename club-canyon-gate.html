@@ -2,6 +2,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "marketingapprovalportal.firebaseapp.com",
+    databaseURL: "https://marketingapprovalportal-default-rtdb.firebaseio.com",
+    projectId: "marketingapprovalportal",
+    storageBucket: "marketingapprovalportal.appspot.com",
+    messagingSenderId: "324999586351",
+    appId: "1:324999586351:web:2e516d07f8242f13f2cb7a"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+</script>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
   <script>
   const region = "West";
@@ -249,7 +266,26 @@ textarea:focus, select:focus {
     <!-- Cards will be injected here -->
   </div>
 </div>
-  
+  <script>
+document.addEventListener("DOMContentLoaded", () => {
+  const clubParam = new URLSearchParams(window.location.search).get("club") || "Unknown";
+  const dbRef = firebase.database().ref(`approvedAds/${clubParam}`);
+
+  dbRef.once("value")
+    .then(snapshot => {
+      const data = snapshot.val();
+      if (data && data.ads && Array.isArray(data.ads)) {
+        renderApprovedAds(data.ads);  // ✅ Use your existing function
+      } else {
+        console.log("No approved ads found for this club.");
+      }
+    })
+    .catch(error => {
+      console.error("Error fetching approved ads:", error);
+    });
+});
+</script>
+
 <script>
   function renderApprovedAds(ads) {
     const container = document.getElementById("preview-container");
