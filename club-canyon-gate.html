@@ -290,24 +290,26 @@ textarea:focus, select:focus {
 </div>
 
 
-<div class="top-nav">
-  <img class="nav-logo" src="https://www.invitedclubs.com/globalassets/.invited-corporate-site/_logos/invited-logo_500px-wide.png" alt="Invited Logo" />
-  <div class="nav-title">Ad Review Portal – Club View</div>
+<div class="main-content">
+  <div class="top-nav">
+    <img class="nav-logo" src="https://www.invitedclubs.com/globalassets/.invited-corporate-site/_logos/invited-logo_500px-wide.png" alt="Invited Logo" />
+    <div class="nav-title">Ad Review Portal – Club View</div>
+  </div>
+
+  <div class="main-container">
+    <h1>Canyon Gate Ad Approvals</h1>
+    <div class="top-buttons">
+      <button id="sendToAgencyBtn">Send Final Approvals</button>
+      <button id="sendEdits">Send Edits to Ads Department</button>
+    </div>
+    <div id="preview-container">
+      <div id="no-ads-message" style="display:none; text-align:center; font-size:18px; color:#888; margin-top:40px;">
+        🎉 All ads have been reviewed!
+      </div>
+    </div>
+  </div>
 </div>
 
-<div class="main-container">
-  <h1>Canyon Gate Ad Approvals</h1>
-  <div class="top-buttons">
-    <button id="sendToAgencyBtn">Send Final Approvals</button>
-    <button id="sendEdits">Send Edits to Ads Department</button>
-  </div>
-  <div id="preview-container">
-    <div id="no-ads-message" style="display:none; text-align:center; font-size:18px; color:#888; margin-top:40px;">
-      🎉 All ads have been reviewed!
-    </div>
-    <!-- Cards will be injected here -->
-  </div>
-</div>
   <script>
 document.addEventListener("DOMContentLoaded", () => {
   const clubParam = new URLSearchParams(window.location.search).get("Club") || "Unknown";
