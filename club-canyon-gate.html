@@ -367,14 +367,6 @@ textarea:focus, select:focus {
 
 </script>
 
-      card.querySelectorAll('select').forEach(select => {
-        select.addEventListener('change', updateCardStatus);
-      });
-
-      wrapper.appendChild(card);
-    });
-  }
-
   document.getElementById("sendToAgencyBtn").addEventListener("click", () => {
     const approvedAds = [];
     document.querySelectorAll(".preview-card").forEach(card => {
