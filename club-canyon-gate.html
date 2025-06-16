@@ -345,79 +345,85 @@ document.addEventListener("DOMContentLoaded", () => {
       card.dataset.ad = JSON.stringify(ad);
 
       card.innerHTML = `
-        <div class="meta-section" style="background-color:#f5f5f5; padding:10px; border-radius:8px; margin-bottom:10px;">
-          <div class="meta meta-region"><strong>Region:</strong> ${ad.Region}</div>
-          <div class="meta meta-club"><strong>Club:</strong> ${ad.Club} | <strong>Category:</strong> ${ad.Category}</div>
-          <div class="meta meta-ad-name"><strong>Ad Name:</strong> ${ad["Ad Name"]}</div>
-        </div>
-        <div class="headline">${ad.Headline}</div>
-        <div class="primary-text">${ad["Primary Text"]}</div>
-        <div class="approval-row">
-          <label>Ad Text Approval Status:</label>
-          <select class="text-approval">
-            <option value="Pending" ${ad.textApprovalStatus === "Pending" ? "selected" : ""}>Pending</option>
-            <option value="Approved" ${ad.textApprovalStatus === "Approved" ? "selected" : ""}>Approved</option>
-            <option value="Needs Edit" ${ad.textApprovalStatus === "Needs Edit" ? "selected" : ""}>Needs Edit</option>
-          </select>
-        </div>
-        <div class="approval-row">
-          <label>Reviewer Comments:</label>
-          <textarea>${ad.reviewerComments || ""}</textarea>
-        </div>
-      `;
+  <div class="meta-section">
+    <div class="meta"><strong>Region:</strong> ${ad.Region || 'N/A'}</div>
+    <div class="meta"><strong>Club:</strong> ${ad.Club || 'N/A'}</div>
+    <div class="meta ad-name"><strong>Ad Name:</strong> ${ad["Ad Name"] || 'N/A'}</div>
+  </div>
+  <div class="meta-divider"></div>
+  <div class="headline">${ad.Headline || ''}</div>
+  <div class="primary-text">${ad["Primary Text"] || ''}</div>
+`;
 
-      ['Image_URL_1', 'Image_URL_2', 'Image_URL_3'].forEach((key, imgIndex) => {
-        const url = ad[key];
-        if (!url || url === '/') return;
+["Image_URL_1", "Image_URL_2", "Image_URL_3"].forEach((key, imgIndex) => {
+  const url = ad[key];
+  if (!url || url === '/') return;
 
-        const isCanva = url.includes('canva.com');
-        let imgSrc = '';
+  const isCanva = url.includes('canva.com');
+  let imgSrc = '';
 
-        if (isCanva) {
-          imgSrc = url;
-        } else {
-          const isTif = url.toLowerCase().endsWith('.tif');
-          const idMatch = url.match(/I[0-9A-Za-z_.]+/) ||
-                          url.match(/img-get2\/([^/]+)/) ||
-                          url.match(/\/(I[0-9A-Za-z_.]+)\//) ||
-                          url.match(/\/(G[0-9A-Za-z_]+)\//) ||
-                          url.match(/\/(C[0-9A-Za-z_]+)\//) ||
-                          url.match(/\/(I[0-9A-Za-z_.]+)\/[^/]+$/);
-          const imageId = idMatch && (idMatch[1] || idMatch[0]);
+  if (isCanva) {
+    imgSrc = url;
+  } else {
+    const isTif = url.toLowerCase().endsWith('.tif');
+    const idMatch = url.match(/I[0-9A-Za-z_.]+/) ||
+                    url.match(/img-get2\/([^/]+)/) ||
+                    url.match(/\/(I[0-9A-Za-z_.]+)\//) ||
+                    url.match(/\/(G[0-9A-Za-z_]+)\//) ||
+                    url.match(/\/(C[0-9A-Za-z_]+)\//) ||
+                    url.match(/\/(I[0-9A-Za-z_.]+)\/[^/]+$/);
+    const imageId = idMatch && (idMatch[1] || idMatch[0]);
 
-          if (!isTif && imageId) {
-            imgSrc = `https://cdn.photoshelter.com/img-get2/${imageId}/fit=1000x750`;
-          }
-        }
+    if (!isTif && imageId) {
+      imgSrc = `https://cdn.photoshelter.com/img-get2/${imageId}/fit=1000x750`;
+    }
+  }
 
-        if (imgSrc) {
-          const wrapperDiv = document.createElement("div");
-          wrapperDiv.className = "image-wrapper";
+  if (imgSrc) {
+    const wrapperDiv = document.createElement("div");
+    wrapperDiv.className = "image-wrapper";
 
-          const img = document.createElement("img");
-          img.className = "card-image";
-          img.src = imgSrc;
-          img.alt = "Ad image";
+    const img = document.createElement("img");
+    img.className = "card-image";
+    img.src = imgSrc;
+    img.alt = "Ad image";
 
-          const viewDiv = document.createElement("div");
-          viewDiv.className = "view-link";
-          viewDiv.innerHTML = `
-            <a href="#" class="view-image-button" onclick="window.open('${url}', 'ImagePopup', 'width=800,height=600'); return false;">View Full Image ${imgIndex + 1}</a>
-            <div class="approval-row">
-              <label>Image Approval Status:</label>
-              <select class="image-approval">
-                <option value="Pending" ${ad.imageApprovalStatuses?.[imgIndex] === "Pending" ? "selected" : ""}>Pending</option>
-                <option value="Approved" ${ad.imageApprovalStatuses?.[imgIndex] === "Approved" ? "selected" : ""}>Approved</option>
-                <option value="Needs Edit" ${ad.imageApprovalStatuses?.[imgIndex] === "Needs Edit" ? "selected" : ""}>Needs Edit</option>
-              </select>
-            </div>
-          `;
+    const viewDiv = document.createElement("div");
+    viewDiv.className = "view-link";
+    viewDiv.innerHTML = `
+      <a href="#" class="view-image-button" onclick="window.open('${url}', 'ImagePopup', 'width=800,height=600'); return false;">View Full Image ${imgIndex + 1}</a>
+      <div class="approval-row">
+        <label>Image Approval Status:</label>
+        <select class="image-approval">
+          <option value="Pending">Pending</option>
+          <option value="Approved">Approved</option>
+          <option value="Needs Edit">Needs Edit</option>
+        </select>
+      </div>
+    `;
 
-          wrapperDiv.appendChild(img);
-          wrapperDiv.appendChild(viewDiv);
-          card.appendChild(wrapperDiv);
-        }
-      });
+    wrapperDiv.appendChild(img);
+    wrapperDiv.appendChild(viewDiv);
+    card.appendChild(wrapperDiv);
+  }
+});
+
+// Text Approval Toggle
+card.innerHTML += `
+  <div class="approval-row">
+    <label>Ad Text Approval Status:</label>
+    <select class="text-approval">
+      <option value="Pending">Pending</option>
+      <option value="Approved">Approved</option>
+      <option value="Needs Edit">Needs Edit</option>
+    </select>
+  </div>
+  <div class="approval">
+    <label>Reviewer Comments:</label>
+    <textarea placeholder="Optional — add comments if needed.">${ad.reviewerComments || ''}</textarea>
+  </div>
+`;
+
 
       function updateCardStatus() {
         const textStatus = card.querySelector('.text-approval')?.value;
