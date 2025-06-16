@@ -432,7 +432,11 @@ textarea:focus, select:focus {
           return; // prevent sending without comment
         }
 
-        editAds.push({ html: card.outerHTML, comment: comments });
+        const adData = JSON.parse(card.dataset.ad);
+adData.textApprovalStatus = textStatus;
+adData.imageApprovalStatuses = imageStatuses;
+adData.reviewerComments = comments;
+editAds.push(adData);
 
         // Fade and remove
         card.style.transition = "opacity 0.4s ease";
