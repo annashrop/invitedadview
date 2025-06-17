@@ -686,18 +686,32 @@ function sendApprovedAdsToClub() {
     }
   });
 
-  // ✅ Log or pass the approved ads list
-  console.log("Approved Ads to Send to Club:", approvedAds);
-  // Optionally send to Firebase or another function here
-}
-approvedAds.forEach(ad => {
-  const clubSlug = ad.Club.toLowerCase().replace(/\s+/g, "-");
-  
-});
-
 
   if (approvedAds.length > 0) {
-    const clubParam = new URLSearchParams(window.location.search).get("Club") || "Unknown";
+  const groupedByClub = {};
+approvedAds.forEach(ad => {
+  const club = ad.Club;
+  if (!groupedByClub[club]) groupedByClub[club] = [];
+  groupedByClub[club].push(ad);
+});
+
+Object.entries(groupedByClub).forEach(([clubName, ads]) => {
+  const timestamp = new Date().toISOString();
+  const payload = {
+    Club: clubName,
+    timestamp,
+    ads
+  };
+  firebase.database().ref(`approvedAds/${clubName}`).set(payload)
+    .then(() => {
+      showToast(`Approved ads sent to ${clubName}`);
+      checkIfNoAdsLeft();
+    })
+    .catch((error) => {
+      console.error(`Error sending to ${clubName}:`, error);
+    });
+});
+
     const timestamp = new Date().toISOString();
 
     const payload = {
