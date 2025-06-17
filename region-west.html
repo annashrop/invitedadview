@@ -663,9 +663,11 @@ function sendApprovedAdsToClub() {
       const [clubPart, categoryPart] = clubAndCategoryText.split("|").map(str => str.trim());
       const club = clubPart.replace("Club:", "").trim();
       const category = categoryPart.replace("Category:", "").trim();
-      const adName = (card.querySelector(".ad-name")?.textContent || "").trim();
-      console.log("Saving to localStorage:", adName);
+      const adNameRaw = card.querySelector(".ad-name")?.textContent || "";
+      const adName = adNameRaw.replace("Ad Name:", "").trim();
+      console.log("✅ Storing approved ad:", adName);
       addHiddenAdName(adName);
+
     
       const ad = {
         Region: region,
