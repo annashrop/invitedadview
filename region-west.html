@@ -476,13 +476,7 @@ button:hover {
     })
     .then(res => res.text())
     .then(csvText => {
-      Papa.parse(csvText, {
-        header: true,
-        skipEmptyLines: true,
-        complete: function(results) {
-          processCSV(results, fileURL); // ✅ Now this works
-        }
-      });
+    
     })
     .catch(error => {
       console.error("Error loading CSV:", error);
@@ -604,7 +598,14 @@ function addHiddenAdName(adName) {
         </div>
       </div>
     `;
-
+  Papa.parse(csvText, {
+        header: true,
+        skipEmptyLines: true,
+        complete: function(results) {
+          processCSV(results, fileURL); // ✅ Now this works
+        }
+      });
+    
     function updateCardStatus() {
       const textStatus = card.querySelector('.text-approval')?.value;
       const imageStatuses = Array.from(card.querySelectorAll('.image-approval')).map(sel => sel.value);
