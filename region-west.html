@@ -500,7 +500,7 @@ button:hover {
 function addHiddenAdName(adName) {
   const current = getHiddenAdNames();
   const cleanName = (adName || "").trim();
-  if (!current.includes(cleanName)) {
+  if (cleanName && !current.includes(cleanName)) {
     current.push(cleanName);
     localStorage.setItem("hiddenAdNames", JSON.stringify(current));
   }
@@ -664,6 +664,7 @@ function sendApprovedAdsToClub() {
       const club = clubPart.replace("Club:", "").trim();
       const category = categoryPart.replace("Category:", "").trim();
       const adName = (card.querySelector(".ad-name")?.textContent || "").trim();
+      console.log("Saving to localStorage:", adName);
       addHiddenAdName(adName);
     
       const ad = {
