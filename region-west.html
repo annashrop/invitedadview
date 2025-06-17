@@ -671,9 +671,7 @@ function sendApprovedAdsToClub() {
       const [clubPart, categoryPart] = clubAndCategoryText.split("|").map(str => str.trim());
       const club = clubPart.replace("Club:", "").trim();
       const category = categoryPart.replace("Category:", "").trim();
-      const adName = (card.querySelector(".ad-name")?.textContent || "")
-        .replace("Ad Name:", "")
-        .trim();
+      const adNameRaw = card.querySelector(".ad-name")?.textContent || "";
       const adName = adNameRaw.replace("Ad Name:", "").trim();
       console.log("✅ Storing approved ad:", adName);
       addHiddenAdName(adName);
