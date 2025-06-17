@@ -712,16 +712,6 @@ Object.entries(groupedByClub).forEach(([clubName, ads]) => {
     });
 });
 
-    const timestamp = new Date().toISOString();
-
-    const payload = {
-      Club: clubParam,
-      timestamp,
-      ads: approvedAds
-    };
-
-    const clubPath = `approvedAds/${clubParam}`;
-    firebase.database().ref(clubPath).set(payload)
       .then(() => {
         showToast("Approved ads sent to club!");
         checkIfNoAdsLeft();
