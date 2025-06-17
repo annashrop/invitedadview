@@ -633,6 +633,8 @@ updateCardStatus();
     } 
 
  function sendApprovedAdsToClub() {
+  const hiddenAdNames = getHiddenAdNames();
+  if (hiddenAdNames.includes(row['Ad Name'])) return;
   const adCards = document.querySelectorAll('.preview-card');
   const approvedAds = [];
 
@@ -666,7 +668,7 @@ updateCardStatus();
       };
 
       approvedAds.push(ad);
-
+      addHiddenAdName(ad["Ad Name"]);
       // Optional: fade out and remove approved card
       card.style.transition = "opacity 0.4s ease";
       card.style.opacity = 0;
@@ -726,7 +728,7 @@ function sendEditsToAdsTeam() {
   }
 
   editAds.push({ html: card.outerHTML, comment: comments });
-
+  addHiddenAdName(ad["Ad Name"]);
   card.style.transition = "opacity 0.4s ease";
   card.style.opacity = 0;
   setTimeout(() => card.remove(), 400);
@@ -734,6 +736,7 @@ function sendEditsToAdsTeam() {
 
   });
 checkIfNoAdsLeft();
+
 
   if (editAds.length > 0) {
   localStorage.setItem("adsNeedingEdits", JSON.stringify(editAds));
