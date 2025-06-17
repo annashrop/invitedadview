@@ -669,7 +669,7 @@ function sendApprovedAdsToClub() {
         Category: category,
         "Ad Name": card.querySelector(".ad-name")?.textContent || "",
         Headline: card.querySelector(".headline")?.textContent || "",
-        Body: card.querySelector(".body")?.textContent || "",
+        Body: card.querySelector(".primary-text")?.textContent || "",
         Image: card.querySelector("img")?.src || "",
         Timestamp: new Date().toISOString()
       };
@@ -692,15 +692,7 @@ function sendApprovedAdsToClub() {
 }
 approvedAds.forEach(ad => {
   const clubSlug = ad.Club.toLowerCase().replace(/\s+/g, "-");
-  const docRef = doc(db, `club-approvals/${clubSlug}/ads`, ad["Ad Name"]);
-
-  setDoc(docRef, ad)
-    .then(() => {
-      console.log(`Ad "${ad["Ad Name"]}" sent to club: ${clubSlug}`);
-    })
-    .catch(error => {
-      console.error("Error sending ad to Firebase:", error);
-    });
+  
 });
 
 
