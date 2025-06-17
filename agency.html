@@ -136,9 +136,9 @@
     ad["Ad Name"] || "",
     ad.Headline || "",
     ad["Primary Text"] || "",
-    ad.Image_URL_1 || "",
-    ad.Image_URL_2 || "",
-    ad.Image_URL_3 || "",
+    ad.imageURLs?.[0] || "",
+    ad.imageURLs?.[1] || "",
+    ad.imageURLs?.[2] || "",
     ad.textApprovalStatus || "",
     ad.imageApprovalStatuses?.[0] || "",
     ad.imageApprovalStatuses?.[1] || "",
@@ -146,7 +146,9 @@
     ad.reviewerComments || ""
   ]);
 
-  const csvContent = headers.join(",") + "\n" + rows.map(row => row.map(val => `"${val}"`).join(",")).join("\n");
+  const csvContent = headers.join(",") + "\n" + rows.map(row =>
+    row.map(value => `"${value.replace(/"/g, '""')}"`).join(",")
+  ).join("\n");
 
   const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
   const link = document.createElement("a");
