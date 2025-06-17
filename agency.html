@@ -112,57 +112,49 @@
     }
 
     function exportToCSV(ads, clubName, timestamp) {
-      const tempDiv = document.createElement("div");
-      tempDiv.innerHTML = ads.join("");
-      const cards = tempDiv.querySelectorAll(".preview-card");
+  const headers = [
+    "Region",
+    "Club",
+    "Category",
+    "Ad Name",
+    "Headline",
+    "Primary Text",
+    "Image URL 1",
+    "Image URL 2",
+    "Image URL 3",
+    "Ad Text Approval Status",
+    "Image 1 Approval Status",
+    "Image 2 Approval Status",
+    "Image 3 Approval Status",
+    "Reviewer Comments"
+  ];
 
-      const headers = [
-        "Region",
-        "Club",
-        "Category",
-        "Ad Name",
-        "Headline",
-        "Primary Text",
-        "Image URL 1",
-        "Image URL 2",
-        "Image URL 3",
-        "Ad Text Approval Status",
-        "Image 1 Approval Status",
-        "Image 2 Approval Status",
-        "Image 3 Approval Status",
-        "Reviewer Comments"
-      ];
+  const rows = ads.map(ad => [
+    ad.Region || "",
+    ad.Club || "",
+    ad.Category || "",
+    ad["Ad Name"] || "",
+    ad.Headline || "",
+    ad["Primary Text"] || "",
+    ad.Image_URL_1 || "",
+    ad.Image_URL_2 || "",
+    ad.Image_URL_3 || "",
+    ad.textApprovalStatus || "",
+    ad.imageApprovalStatuses?.[0] || "",
+    ad.imageApprovalStatuses?.[1] || "",
+    ad.imageApprovalStatuses?.[2] || "",
+    ad.reviewerComments || ""
+  ]);
 
-      const rows = Array.from(cards).map(card => {
-        const getText = sel => card.querySelector(sel)?.textContent.replace(/^.*:\s*/, "") || "";
-        const getValue = sel => card.querySelector(sel)?.value || "";
+  const csvContent = headers.join(",") + "\n" + rows.map(row => row.map(val => `"${val}"`).join(",")).join("\n");
 
-        return [
-          getText(".meta:nth-child(1)"), // Region
-          getText(".meta:nth-child(2)").split("|")[0].trim(), // Club
-          getText(".meta:nth-child(2)").split("|")[1]?.replace("Category:", "").trim() || "", // Category
-          getText(".ad-name"),
-          card.querySelector(".headline")?.textContent || "",
-          card.querySelector(".primary-text")?.textContent || "",
-          card.querySelectorAll(".card-image")[0]?.src || "",
-          card.querySelectorAll(".card-image")[1]?.src || "",
-          card.querySelectorAll(".card-image")[2]?.src || "",
-          getValue(".text-approval"),
-          getValue(".image-approval:nth-of-type(1)"),
-          getValue(".image-approval:nth-of-type(2)"),
-          getValue(".image-approval:nth-of-type(3)"),
-          card.querySelector("textarea")?.value || ""
-        ];
-      });
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = `${clubName.replace(/\s+/g, "_")}_${timestamp.replace(/[^\w]/g, "_")}.csv`;
+  link.click();
+}
 
-      let csvContent = headers.join(",") + "\n" + rows.map(r => r.map(v => `"${v}"`).join(",")).join("\n");
-
-      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = `${clubName.replace(/\s+/g, "_")}_${timestamp.replace(/[^\w]/g, "_")}.csv`;
-      link.click();
-    }
 
     allBatches.forEach(createBatchElement);
   </script>
