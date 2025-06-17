@@ -632,39 +632,48 @@ updateCardStatus();
       });
     } 
 
-  function sendApprovedAdsToClub() {
+ function sendApprovedAdsToClub() {
   const adCards = document.querySelectorAll('.preview-card');
   const approvedAds = [];
 
   adCards.forEach(card => {
-  const imageStatus = card.querySelector('.image-approval')?.value;
-  const textStatus = card.querySelector('.text-approval')?.value;
+    const imageStatus = card.querySelector('.image-approval')?.value;
+    const textStatus = card.querySelector('.text-approval')?.value;
 
-  if (imageStatus === 'Approved' && textStatus === 'Approved') {
-    const ad = {
-  Region: card.querySelector(".meta strong:nth-child(1)")?.nextSibling?.textContent?.trim() || "",
-  Club: card.querySelector(".meta strong:nth-child(2)")?.nextSibling?.textContent?.trim() || "",
-  Category: card.querySelector(".meta strong:nth-child(3)")?.nextSibling?.textContent?.trim() || "",
-  "Ad Name": card.querySelector(".ad-name")?.textContent?.replace("Ad Name: ", "") || "",
-  Headline: card.querySelector(".headline")?.textContent || "",
-  "Primary Text": card.querySelector(".primary-text")?.textContent || "",
-  Image_URL_1: card.querySelectorAll(".card-image")[0]?.src || "",
-  Image_URL_2: card.querySelectorAll(".card-image")[1]?.src || "",
-  Image_URL_3: card.querySelectorAll(".card-image")[2]?.src || "",
-  textApprovalStatus: card.querySelector(".text-approval")?.value || "",
-  imageApprovalStatuses: [...card.querySelectorAll(".image-approval")].map(el => el.value),
-  reviewerComments: card.querySelector("textarea")?.value || ""
-};
+    if (imageStatus === 'Approved' && textStatus === 'Approved') {
+      const regionText = card.querySelector(".meta:nth-child(1)")?.textContent || "";
+      const clubAndCategoryText = card.querySelector(".meta:nth-child(2)")?.textContent || "";
 
+      const region = regionText.replace("Region:", "").trim();
 
-    approvedAds.push(ad);
+      const [clubPart, categoryPart] = clubAndCategoryText.split("|").map(part => part.trim());
+      const club = clubPart?.replace("Club:", "").trim() || "";
+      const category = categoryPart?.replace("Category:", "").trim() || "";
 
-    // Fade out card
-    card.style.transition = "opacity 0.4s ease";
-    card.style.opacity = 0;
-    setTimeout(() => card.remove(), 400);
-  }
-});
+      const ad = {
+        Region: region,
+        Club: club,
+        Category: category,
+        "Ad Name": card.querySelector(".ad-name")?.textContent?.replace("Ad Name: ", "") || "",
+        Headline: card.querySelector(".headline")?.textContent || "",
+        "Primary Text": card.querySelector(".primary-text")?.textContent || "",
+        Image_URL_1: card.querySelectorAll(".card-image")[0]?.src || "",
+        Image_URL_2: card.querySelectorAll(".card-image")[1]?.src || "",
+        Image_URL_3: card.querySelectorAll(".card-image")[2]?.src || "",
+        textApprovalStatus: card.querySelector(".text-approval")?.value || "",
+        imageApprovalStatuses: [...card.querySelectorAll(".image-approval")].map(el => el.value),
+        reviewerComments: card.querySelector("textarea")?.value || ""
+      };
+
+      approvedAds.push(ad);
+
+      // Optional: fade out and remove approved card
+      card.style.transition = "opacity 0.4s ease";
+      card.style.opacity = 0;
+      setTimeout(() => card.remove(), 400);
+    }
+  });
+
 
   if (approvedAds.length > 0) {
     const clubParam = new URLSearchParams(window.location.search).get("Club") || "Unknown";
