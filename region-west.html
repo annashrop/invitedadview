@@ -663,7 +663,9 @@ function sendApprovedAdsToClub() {
       const [clubPart, categoryPart] = clubAndCategoryText.split("|").map(str => str.trim());
       const club = clubPart.replace("Club:", "").trim();
       const category = categoryPart.replace("Category:", "").trim();
-
+      const adName = (card.querySelector(".ad-name")?.textContent || "").trim();
+      addHiddenAdName(adName);
+    
       const ad = {
         Region: region,
         Club: club,
@@ -677,8 +679,7 @@ function sendApprovedAdsToClub() {
 
       approvedAds.push(ad);
 
-      // ✅ Mark as reviewed
-      addHiddenAdName(ad["Ad Name"]);
+      
 
       // ✅ Fade out and remove card
       card.style.transition = "opacity 0.4s ease";
