@@ -508,6 +508,15 @@ function addHiddenAdName(adName) {
     function processCSV(results, fileURL) {
       const data = results.data;
       const hiddenAdNames = getHiddenAdNames().map(name => name.trim());
+
+data.forEach((row, index) => {
+  const rowAdName = (row['Ad Name'] || "").trim();
+  console.log("🔍 Comparing row ad name:", rowAdName);
+  console.log("🧠 Hidden ads list:", hiddenAdNames);
+  if (hiddenAdNames.includes(rowAdName)) {
+    console.log("🚫 Hiding", rowAdName);
+    return;
+  }
       const container = document.getElementById('preview-container');
       const clubListContainer = document.getElementById('club-link-list');
       container.innerHTML = '';
