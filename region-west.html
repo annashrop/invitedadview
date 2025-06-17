@@ -645,49 +645,52 @@ updateCardStatus();
       });
     } 
 
- function sendApprovedAdsToClub() {
-  const hiddenAdNames = getHiddenAdNames();
-  if (hiddenAdNames.includes(row['Ad Name'])) return;
-  const adCards = document.querySelectorAll('.preview-card');
+function sendApprovedAdsToClub() {
+  const hiddenAdNames = getHiddenAdNames(); // pulls from localStorage or similar
+  const adCards = document.querySelectorAll(".preview-card");
   const approvedAds = [];
 
   adCards.forEach(card => {
-    const imageStatus = card.querySelector('.image-approval')?.value;
-    const textStatus = card.querySelector('.text-approval')?.value;
+    const imageStatus = card.querySelector(".image-approval")?.value;
+    const textStatus = card.querySelector(".text-approval")?.value;
 
-    if (imageStatus === 'Approved' && textStatus === 'Approved') {
+    if (imageStatus === "Approved" && textStatus === "Approved") {
       const regionText = card.querySelector(".meta:nth-child(1)")?.textContent || "";
       const clubAndCategoryText = card.querySelector(".meta:nth-child(2)")?.textContent || "";
 
       const region = regionText.replace("Region:", "").trim();
-
-      const [clubPart, categoryPart] = clubAndCategoryText.split("|").map(part => part.trim());
-      const club = clubPart?.replace("Club:", "").trim() || "";
-      const category = categoryPart?.replace("Category:", "").trim() || "";
+      const [clubPart, categoryPart] = clubAndCategoryText.split("|").map(str => str.trim());
+      const club = clubPart.replace("Club:", "").trim();
+      const category = categoryPart.replace("Category:", "").trim();
 
       const ad = {
         Region: region,
         Club: club,
         Category: category,
-        "Ad Name": card.querySelector(".ad-name")?.textContent?.replace("Ad Name: ", "") || "",
+        "Ad Name": card.querySelector(".ad-name")?.textContent || "",
         Headline: card.querySelector(".headline")?.textContent || "",
-        "Primary Text": card.querySelector(".primary-text")?.textContent || "",
-        Image_URL_1: card.querySelectorAll(".card-image")[0]?.src || "",
-        Image_URL_2: card.querySelectorAll(".card-image")[1]?.src || "",
-        Image_URL_3: card.querySelectorAll(".card-image")[2]?.src || "",
-        textApprovalStatus: card.querySelector(".text-approval")?.value || "",
-        imageApprovalStatuses: [...card.querySelectorAll(".image-approval")].map(el => el.value),
-        reviewerComments: card.querySelector("textarea")?.value || ""
+        Body: card.querySelector(".body")?.textContent || "",
+        Image: card.querySelector("img")?.src || "",
+        Timestamp: new Date().toISOString()
       };
 
       approvedAds.push(ad);
+
+      // ✅ Mark as reviewed
       addHiddenAdName(ad["Ad Name"]);
-      // Optional: fade out and remove approved card
+
+      // ✅ Fade out and remove card
       card.style.transition = "opacity 0.4s ease";
       card.style.opacity = 0;
       setTimeout(() => card.remove(), 400);
     }
   });
+
+  // ✅ Log or pass the approved ads list
+  console.log("Approved Ads to Send to Club:", approvedAds);
+  // Optionally send to Firebase or another function here
+}
+
 
 
   if (approvedAds.length > 0) {
