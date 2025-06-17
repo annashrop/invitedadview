@@ -111,7 +111,7 @@
       batchesContainer.appendChild(batchDiv);
     }
 
-    function exportToCSV(ads, clubName, timestamp) {
+   function exportToCSV(ads, clubName, timestamp) {
   const headers = [
     "Region",
     "Club",
@@ -129,27 +129,32 @@
     "Reviewer Comments"
   ];
 
-  const rows = ads.map(ad => {
-    const imageApprovals = ad.imageApprovalStatuses || ["", "", ""];
-    const imageURLs = ad.imageURLs || ["", "", ""];
+  const rows = ads.map(ad => [
+    ad.Region || "",
+    ad.Club || "",
+    ad.Category || "",
+    ad["Ad Name"] || "",
+    ad.Headline || "",
+    ad["Primary Text"] || "",
+    ad.Image_URL_1 || "",
+    ad.Image_URL_2 || "",
+    ad.Image_URL_3 || "",
+    ad.textApprovalStatus || "",
+    ad.imageApprovalStatuses?.[0] || "",
+    ad.imageApprovalStatuses?.[1] || "",
+    ad.imageApprovalStatuses?.[2] || "",
+    ad.reviewerComments || ""
+  ]);
 
-    return [
-      ad.Region || "",
-      ad.Club || "",
-      ad.Category || "",
-      ad["Ad Name"] || "",
-      ad.Headline || "",
-      ad["Primary Text"] || "",
-      imageURLs[0],
-      imageURLs[1],
-      imageURLs[2],
-      ad.textApprovalStatus || "",
-      imageApprovals[0],
-      imageApprovals[1],
-      imageApprovals[2],
-      ad.reviewerComments || ""
-    ];
-  });
+  const csvContent = headers.join(",") + "\n" + rows.map(r => r.map(v => `"${v}"`).join(",")).join("\n");
+
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = `${clubName.replace(/\s+/g, "_")}_${timestamp.replace(/[^\w]/g, "_")}.csv`;
+  link.click();
+}
+
 
   const csvContent = headers.join(",") + "\n" + rows.map(row =>
     row.map(value => `"${value.replace(/"/g, '""')}"`).join(",")
