@@ -129,22 +129,27 @@
     "Reviewer Comments"
   ];
 
-  const rows = ads.map(ad => [
-    ad.Region || "",
-    ad.Club || "",
-    ad.Category || "",
-    ad["Ad Name"] || "",
-    ad.Headline || "",
-    ad["Primary Text"] || "",
-    ad.imageURLs?.[0] || "",
-    ad.imageURLs?.[1] || "",
-    ad.imageURLs?.[2] || "",
-    ad.textApprovalStatus || "",
-    ad.imageApprovalStatuses?.[0] || "",
-    ad.imageApprovalStatuses?.[1] || "",
-    ad.imageApprovalStatuses?.[2] || "",
-    ad.reviewerComments || ""
-  ]);
+  const rows = ads.map(ad => {
+    const imageApprovals = ad.imageApprovalStatuses || ["", "", ""];
+    const imageURLs = ad.imageURLs || ["", "", ""];
+
+    return [
+      ad.Region || "",
+      ad.Club || "",
+      ad.Category || "",
+      ad["Ad Name"] || "",
+      ad.Headline || "",
+      ad["Primary Text"] || "",
+      imageURLs[0],
+      imageURLs[1],
+      imageURLs[2],
+      ad.textApprovalStatus || "",
+      imageApprovals[0],
+      imageApprovals[1],
+      imageApprovals[2],
+      ad.reviewerComments || ""
+    ];
+  });
 
   const csvContent = headers.join(",") + "\n" + rows.map(row =>
     row.map(value => `"${value.replace(/"/g, '""')}"`).join(",")
@@ -156,6 +161,7 @@
   link.download = `${clubName.replace(/\s+/g, "_")}_${timestamp.replace(/[^\w]/g, "_")}.csv`;
   link.click();
 }
+
 
 
     allBatches.forEach(createBatchElement);
