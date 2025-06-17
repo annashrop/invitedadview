@@ -129,29 +129,24 @@
     "Reviewer Comments"
   ];
 
-  const rows = Array.from(cards).map(card => {
-    const getText = (sel) => card.querySelector(sel)?.textContent?.replace(/^.*:\s*/, "") || "";
-    const getValue = (sel) => card.querySelector(sel)?.value || "";
+  const rows = cards.map(card => [
+    card.Region || "",
+    card.Club || "",
+    card.Category || "",
+    card["Ad Name"] || "",
+    card.Headline || "",
+    card["Primary Text"] || "",
+    card.imageUrls?.[0] || "",
+    card.imageUrls?.[1] || "",
+    card.imageUrls?.[2] || "",
+    card.textApprovalStatus || "",
+    card.imageApprovalStatuses?.[0] || "",
+    card.imageApprovalStatuses?.[1] || "",
+    card.imageApprovalStatuses?.[2] || "",
+    card.reviewerComments || ""
+  ]);
 
-    return [
-      getText(".meta-region"),
-      getText(".meta-club"),
-      getText(".meta-category"),
-      getText(".ad-name"),
-      card.querySelector(".headline")?.textContent || "",
-      card.querySelector(".primary-text")?.textContent || "",
-      card.querySelectorAll(".card-image")[0]?.src || "",
-      card.querySelectorAll(".card-image")[1]?.src || "",
-      card.querySelectorAll(".card-image")[2]?.src || "",
-      getValue(".text-approval"),
-      getValue(".image-approval:nth-of-type(1)"),
-      getValue(".image-approval:nth-of-type(2)"),
-      getValue(".image-approval:nth-of-type(3)"),
-      card.querySelector("textarea")?.value || ""
-    ];
-  });
-
-  let csvContent = headers.join(",") + "\n" + rows.map(r => r.map(v => `"${v}"`).join(",")).join("\n");
+  const csvContent = headers.join(",") + "\n" + rows.map(r => r.map(v => `"${v}"`).join(",")).join("\n");
 
   const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
   const link = document.createElement("a");
