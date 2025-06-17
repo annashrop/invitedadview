@@ -155,7 +155,23 @@
   link.click();
 }
 
-
+const headers = [
+  "Region",
+  "Club",
+  "Category",
+  "Ad Name",
+  "Headline",
+  "Primary Text",
+  "Image URL 1",
+  "Image URL 2",
+  "Image URL 3",
+  "Ad Text Approval Status",
+  "Image 1 Approval Status",
+  "Image 2 Approval Status",
+  "Image 3 Approval Status",
+  "Reviewer Comments"
+];
+    
   const csvContent = headers.join(",") + "\n" + rows.map(row =>
     row.map(value => `"${value.replace(/"/g, '""')}"`).join(",")
   ).join("\n");
