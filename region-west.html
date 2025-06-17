@@ -642,19 +642,20 @@ updateCardStatus();
 
   if (imageStatus === 'Approved' && textStatus === 'Approved') {
     const ad = {
-      "Region": card.querySelector('.meta:nth-child(1)')?.textContent?.replace("Region:", "").trim() || "",
-      "Club": card.querySelector('.meta:nth-child(2)')?.textContent?.split("|")[0].replace("Club:", "").trim() || "",
-      "Category": card.querySelector('.meta:nth-child(2)')?.textContent?.split("|")[1]?.replace("Category:", "").trim() || "",
-      "Ad Name": card.querySelector('.ad-name')?.textContent?.replace("Ad Name:", "").trim() || "",
-      "Headline": card.querySelector('.headline')?.textContent || "",
-      "Primary Text": card.querySelector('.primary-text')?.textContent || "",
-      "Image_URL_1": card.querySelectorAll('.card-image')[0]?.src || "",
-      "Image_URL_2": card.querySelectorAll('.card-image')[1]?.src || "",
-      "Image_URL_3": card.querySelectorAll('.card-image')[2]?.src || "",
-      "textApprovalStatus": textStatus,
-      "imageApprovalStatuses": Array.from(card.querySelectorAll('.image-approval')).map(sel => sel.value),
-      "reviewerComments": card.querySelector("textarea")?.value || ""
-    };
+  Region: card.querySelector(".meta strong:nth-child(1)")?.nextSibling?.textContent?.trim() || "",
+  Club: card.querySelector(".meta strong:nth-child(2)")?.nextSibling?.textContent?.trim() || "",
+  Category: card.querySelector(".meta strong:nth-child(3)")?.nextSibling?.textContent?.trim() || "",
+  "Ad Name": card.querySelector(".ad-name")?.textContent?.replace("Ad Name: ", "") || "",
+  Headline: card.querySelector(".headline")?.textContent || "",
+  "Primary Text": card.querySelector(".primary-text")?.textContent || "",
+  Image_URL_1: card.querySelectorAll(".card-image")[0]?.src || "",
+  Image_URL_2: card.querySelectorAll(".card-image")[1]?.src || "",
+  Image_URL_3: card.querySelectorAll(".card-image")[2]?.src || "",
+  textApprovalStatus: card.querySelector(".text-approval")?.value || "",
+  imageApprovalStatuses: [...card.querySelectorAll(".image-approval")].map(el => el.value),
+  reviewerComments: card.querySelector("textarea")?.value || ""
+};
+
 
     approvedAds.push(ad);
 
