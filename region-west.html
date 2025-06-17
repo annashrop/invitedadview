@@ -637,46 +637,33 @@ updateCardStatus();
   const approvedAds = [];
 
   adCards.forEach(card => {
-    const imageStatus = card.querySelector('.image-approval')?.value;
-    const textStatus = card.querySelector('.text-approval')?.value;
+  const imageStatus = card.querySelector('.image-approval')?.value;
+  const textStatus = card.querySelector('.text-approval')?.value;
 
-    if (imageStatus === 'Approved' && textStatus === 'Approved') {
-      // Extract region
-      const regionMeta = card.querySelector(".meta:nth-child(1)")?.textContent || "";
-      const region = regionMeta.replace("Region:", "").trim();
+  if (imageStatus === 'Approved' && textStatus === 'Approved') {
+    const ad = {
+      "Region": card.querySelector('.meta:nth-child(1)')?.textContent?.replace("Region:", "").trim() || "",
+      "Club": card.querySelector('.meta:nth-child(2)')?.textContent?.split("|")[0].replace("Club:", "").trim() || "",
+      "Category": card.querySelector('.meta:nth-child(2)')?.textContent?.split("|")[1]?.replace("Category:", "").trim() || "",
+      "Ad Name": card.querySelector('.ad-name')?.textContent?.replace("Ad Name:", "").trim() || "",
+      "Headline": card.querySelector('.headline')?.textContent || "",
+      "Primary Text": card.querySelector('.primary-text')?.textContent || "",
+      "Image_URL_1": card.querySelectorAll('.card-image')[0]?.src || "",
+      "Image_URL_2": card.querySelectorAll('.card-image')[1]?.src || "",
+      "Image_URL_3": card.querySelectorAll('.card-image')[2]?.src || "",
+      "textApprovalStatus": textStatus,
+      "imageApprovalStatuses": Array.from(card.querySelectorAll('.image-approval')).map(sel => sel.value),
+      "reviewerComments": card.querySelector("textarea")?.value || ""
+    };
 
-      // Extract club and category from one line
-      const clubCategoryMeta = card.querySelector(".meta:nth-child(2)")?.textContent || "";
-      let club = "", category = "";
-      const clubMatch = clubCategoryMeta.match(/Club:\s*(.*?)\s*\|/);
-      const categoryMatch = clubCategoryMeta.match(/Category:\s*(.*)/);
-      if (clubMatch) club = clubMatch[1].trim();
-      if (categoryMatch) category = categoryMatch[1].trim();
+    approvedAds.push(ad);
 
-      const adName = card.querySelector(".ad-name")?.textContent?.replace("Ad Name:", "").trim() || "";
-  
-      const ad = {
-       "Ad Name": card.querySelector(".meta.ad-name")?.textContent?.replace("Ad Name: ", "") || "",
-  Category: card.querySelector(".meta-category")?.textContent?.replace("Category: ", "") || "",
-  Club: card.querySelector(".meta-club")?.textContent?.replace("Club: ", "") || "",
-  Region: card.querySelector(".meta-region")?.textContent?.replace("Region: ", "") || "",
-  Headline: card.querySelector(".headline")?.textContent || "",
-  "Primary Text": card.querySelector(".primary-text")?.textContent || "",
-  textApprovalStatus: card.querySelector(".text-approval")?.value || "",
-  imageApprovalStatuses: [...card.querySelectorAll(".image-approval")].map(sel => sel.value),
-  reviewerComments: card.querySelector("textarea")?.value || "",
-  Image_URL_1: card.querySelectorAll("img")[0]?.src || "",
-  Image_URL_2: card.querySelectorAll("img")[1]?.src || "",
-  Image_URL_3: card.querySelectorAll("img")[2]?.src || ""
-};
-
-      approvedAds.push(ad);
-
-      card.style.transition = "opacity 0.4s ease";
-      card.style.opacity = 0;
-      setTimeout(() => card.remove(), 400);
-    }
-  });
+    // Fade out card
+    card.style.transition = "opacity 0.4s ease";
+    card.style.opacity = 0;
+    setTimeout(() => card.remove(), 400);
+  }
+});
 
   if (approvedAds.length > 0) {
     const clubParam = new URLSearchParams(window.location.search).get("Club") || "Unknown";
