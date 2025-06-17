@@ -346,10 +346,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
       card.innerHTML = `
   <div class="meta-section">
-    <div class="meta"><strong>Region:</strong> ${ad.Region || 'N/A'}</div>
-    <div class="meta"><strong>Club:</strong> ${ad.Club || 'N/A'}</div>
-    <div class="meta ad-name"><strong>Ad Name:</strong> ${ad["Ad Name"] || 'N/A'}</div>
-  </div>
+    <div class="meta"><strong>Region:</strong> ${row['Region'] || 'N/A'}</div>
+      <div class="meta"><strong>Club:</strong> ${row['Club'] || 'N/A'} &nbsp; | &nbsp; <strong>Category:</strong> ${row['Category'] || 'N/A'}</div>
+      <div class="meta ad-name"><strong>Ad Name:</strong> ${row['Ad Name'] || 'N/A'}</div>
+    </div>
   <div class="meta-divider"></div>
   <div class="headline">${ad.Headline || ''}</div>
   <div class="primary-text">${ad["Primary Text"] || ''}</div>
