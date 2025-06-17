@@ -476,16 +476,14 @@ button:hover {
     })
     .then(res => res.text())
     .then(csvText => {
-    
-    })
     Papa.parse(csvText, {
-      header: true,
-      skipEmptyLines: true,
-      complete: function(results) {
-        processCSV(results, fileURL);
-      }
-    });
-  })
+    header: true,
+    skipEmptyLines: true,
+    complete: function(results) {
+      processCSV(results, fileURL); // ✅ Correctly pass the CSV data to the render function
+    }
+  });
+})
     .catch(error => {
       console.error("Error loading CSV:", error);
       document.getElementById("no-ads-message").style.display = "block";
