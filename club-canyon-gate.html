@@ -515,16 +515,20 @@ document.getElementById("sendEdits").addEventListener("click", () => {
       }
 
       const ad = {
-        Region: card.querySelector(".meta-region")?.textContent?.replace("Region: ", "") || "",
-        Club: card.querySelector(".meta-club")?.textContent?.replace("Club: ", "") || "",
-        Category: card.querySelector(".meta-category")?.textContent?.replace("Category: ", "") || "",
-        "Ad Name": card.querySelector(".meta-ad-name")?.textContent?.replace("Ad Name: ", "") || "",
-        Headline: card.querySelector(".headline")?.textContent || "",
-        "Primary Text": card.querySelector(".primary-text")?.textContent || "",
-        textApprovalStatus: textStatus,
-        imageApprovalStatuses: imageStatuses,
-        reviewerComments: comments
-      };
+  Region: card.querySelector(".meta strong:nth-child(1)")?.nextSibling?.textContent?.trim() || "",
+  Club: card.querySelector(".meta strong:nth-child(2)")?.nextSibling?.textContent?.trim() || "",
+  Category: card.querySelector(".meta strong:nth-child(3)")?.nextSibling?.textContent?.trim() || "",
+  "Ad Name": card.querySelector(".ad-name")?.textContent?.replace("Ad Name: ", "") || "",
+  Headline: card.querySelector(".headline")?.textContent || "",
+  "Primary Text": card.querySelector(".primary-text")?.textContent || "",
+  Image_URL_1: card.querySelectorAll(".card-image")[0]?.src || "",
+  Image_URL_2: card.querySelectorAll(".card-image")[1]?.src || "",
+  Image_URL_3: card.querySelectorAll(".card-image")[2]?.src || "",
+  textApprovalStatus: card.querySelector(".text-approval")?.value || "",
+  imageApprovalStatuses: [...card.querySelectorAll(".image-approval")].map(el => el.value),
+  reviewerComments: card.querySelector("textarea")?.value || ""
+};
+
 
       editAds.push(ad);
 
