@@ -331,7 +331,7 @@ textarea:focus, select:focus {
         console.error("❌ Error fetching approved ads:", error);
       });
 
-    function renderApprovedAds(adList) {
+  function renderApprovedAds(adList) {
   const container = document.getElementById("preview-container");
   container.innerHTML = "";
 
@@ -439,6 +439,7 @@ textarea:focus, select:focus {
     });
 
     updateCardStatus();
+    card.dataset.ad = JSON.stringify(ad);
     container.appendChild(card);
   });
 }
@@ -609,45 +610,7 @@ textarea:focus, select:focus {
   });
 
   // On page load, show welcome OR restore section background
-  document.addEventListener("DOMContentLoaded", () => {
-  const clubName = "Canyon Gate";
-const storageKey = `clubApprovedAds_${clubName}`;
-const savedKeys = JSON.parse(localStorage.getItem("removedAds") || "[]");
-
-
-const dbRef = firebase.database().ref(`approvedAds/${clubName}`);
-dbRef.once("value")
-  .then(snapshot => {
-    const data = snapshot.val();
-    if (data && data.ads && Array.isArray(data.ads)) {
-      const filteredAds = data.ads.filter(ad => !savedKeys.includes(ad["Ad Name"]));
-      localStorage.setItem(storageKey, JSON.stringify(filteredAds));
-      renderApprovedAds(filteredAds);
-    } else {
-      console.log("No approved ads found for this club.");
-    }
-  })
-  .catch(error => {
-    console.error("Error fetching approved ads:", error);
-  });
-
-
-
-  // Section background logic
-  const active = localStorage.getItem("activeSection");
-  if (active === "paid") {
-    mainContent.style.backgroundColor = '#83b573';
-    hideWelcome();
-  } else if (active === "emails") {
-    mainContent.style.backgroundColor = '#00a3cf';
-    hideWelcome();
-  } else if (active === "landing") {
-    mainContent.style.backgroundColor = '#933b45';
-    hideWelcome();
-  } else {
-    mainContent.style.backgroundColor = '#22326e';
-  }
-});
+ 
 
 
 </body>
