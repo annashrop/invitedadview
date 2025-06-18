@@ -650,16 +650,17 @@ async function sendApprovedAdsToClub() {
   const approvedAds = [];
 
   adCards.forEach(card => {
-    console.log("🧠 Text status:", textStatus);
-    console.log("🧠 Image statuses:", imageStatuses);
+    
     const imageStatuses = Array.from(card.querySelectorAll(".image-approval")).map(s => s.value);
     const textStatus = card.querySelector(".text-approval")?.value;
 
     const adName = card.querySelector(".ad-name")?.textContent?.replace("Ad Name:", "").trim();
 
-    console.log(`🔍 Card: ${adName}`);
-    console.log("🖼️ Image statuses:", imageStatuses);
-    console.log("📝 Text status:", textStatus);
+    console.log("🔍 Card:", adName);
+    console.log("🧠 Text status:", textStatus);
+    console.log("🧠 Image statuses:", imageStatuses);
+    console.log("💡 All approvals met?", textStatus === "Approved" && imageStatuses.every(v => v === "Approved"));
+  
 
     if (textStatus === "Approved" && imageStatuses.every(v => v === "Approved")) {
       console.log(`✅ Approved: ${adName}`);
