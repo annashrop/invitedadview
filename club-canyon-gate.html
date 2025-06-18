@@ -612,9 +612,11 @@ textarea:focus, select:focus {
 const storageKey = `clubApprovedAds_${clubName}`;
 const savedKeys = JSON.parse(localStorage.getItem("removedAds") || "[]");
 
+console.log("📛 Club Name used in Firebase path:", clubName);
 const dbRef = firebase.database().ref(`approvedAds/${clubName}`);
 dbRef.once("value")
   .then(snapshot => {
+    console.log("📦 Snapshot data received:", snapshot.val());
     const data = snapshot.val();
     if (data && data.ads && Array.isArray(data.ads)) {
       const filteredAds = data.ads.filter(ad => !savedKeys.includes(ad["Ad Name"]));
