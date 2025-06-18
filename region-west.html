@@ -246,7 +246,9 @@ button:hover {
     list-style: none;
     padding-left: 0;
   }
-
+.preview-card {
+  color: #000;  /* <-- ADD THIS */
+}
   .club-link-list li a {
     color: #ffffff;
     text-decoration: underline;
@@ -631,7 +633,6 @@ button:hover {
 
 
 <script>
- 
 
 function addHiddenAdName(adName) {
   const current = getHiddenAdNames();
@@ -641,7 +642,6 @@ function addHiddenAdName(adName) {
     localStorage.setItem("hiddenAdNames", JSON.stringify(current));
   }
 }
-  
                    
 function sendApprovedAdsToClub() {
   const hiddenAdNames = getHiddenAdNames(); // pulls from localStorage or similar
@@ -719,7 +719,9 @@ Object.entries(groupedByClub).forEach(([clubName, ads]) => {
 }
 
 
-
+</script>
+  
+<script>
 
     
 function sendEditsToAdsTeam() {
