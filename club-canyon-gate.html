@@ -312,7 +312,7 @@ textarea:focus, select:focus {
 
   <>
 document.addEventListener("DOMContentLoaded", () => {
-  const clubParam = new URLSearchParams(window.location.search).get("Club") || "Unknown";
+  const clubName = "Canyon Gate";
   const dbRef = firebase.database().ref(`approvedAds/${clubParam}`);
 
   dbRef.once("value")
