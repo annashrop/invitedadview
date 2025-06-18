@@ -486,9 +486,11 @@ textarea:focus, select:focus {
     timestamp,
     ads: approvedAds
   };
-
+  
+  console.log("📛 Club Name used in Firebase path:", clubName);
   firebase.database().ref(`agencyApprovedAds/${clubName}`).set(finalData)
     .then(() => {
+      console.log("📦 Snapshot data received:", snapshot.val());
       localStorage.setItem(`clubApprovedAds_${clubName}`, JSON.stringify(approvedAds));
       showToast("Ads sent to Agency.");
     })
@@ -612,11 +614,10 @@ textarea:focus, select:focus {
 const storageKey = `clubApprovedAds_${clubName}`;
 const savedKeys = JSON.parse(localStorage.getItem("removedAds") || "[]");
 
-console.log("📛 Club Name used in Firebase path:", clubName);
+
 const dbRef = firebase.database().ref(`approvedAds/${clubName}`);
 dbRef.once("value")
   .then(snapshot => {
-    console.log("📦 Snapshot data received:", snapshot.val());
     const data = snapshot.val();
     if (data && data.ads && Array.isArray(data.ads)) {
       const filteredAds = data.ads.filter(ad => !savedKeys.includes(ad["Ad Name"]));
