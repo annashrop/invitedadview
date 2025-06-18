@@ -314,7 +314,7 @@ textarea:focus, select:focus {
   document.addEventListener("DOMContentLoaded", () => {
     const clubName = "Canyon Gate";
     const savedKeys = JSON.parse(localStorage.getItem("removedAds") || "[]");
-    const dbRef = firebase.database().ref(`agencyapprovedAds/${clubName}`);
+    const dbRef = firebase.database().ref(`approvedAds/${clubName}`);
 
     dbRef.once("value")
       .then(snapshot => {
@@ -489,7 +489,7 @@ textarea:focus, select:focus {
   };
   
   console.log("📛 Club Name used in Firebase path:", clubName);
-  firebase.database().ref(`agencyapprovedAds/${clubName}`).set(finalData)
+  firebase.database().ref(`approvedAds/${clubName}`).set(finalData)
     .then(() => {
       console.log("✅ Ads successfully sent to Firebase.");
       localStorage.setItem(`clubApprovedAds_${clubName}`, JSON.stringify(approvedAds));
