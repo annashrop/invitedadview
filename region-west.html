@@ -461,6 +461,8 @@ button:hover {
   transition: visibility 0s, opacity 0.3s ease-in-out;
   opacity: 0;
 "></div>
+  
+  <script>
  function processCSV(results, fileURL) {
   const data = results.data;
   const hiddenAdNames = getHiddenAdNames().map(name => name.trim());
@@ -595,7 +597,7 @@ button:hover {
     container.appendChild(card);
   });
 }
-
+</script>
   
 <script>
   const latestCsvFunctionUrl = `https://us-central1-marketingapprovalportal.cloudfunctions.net/getLatestCsvUrl?region=${region}`;
