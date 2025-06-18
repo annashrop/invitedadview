@@ -477,6 +477,7 @@ card.innerHTML += `
   const timestamp = now.toLocaleString("en-US", {
     month: "short", day: "numeric", year: "numeric",
     hour: "numeric", minute: "2-digit", hour12: true
+  });
   const savedKeys = JSON.parse(localStorage.getItem("removedAds") || "[]");
   const updatedKeys = [...new Set([...savedKeys, ...approvedAds.map(ad => ad["Ad Name"])])];
   localStorage.setItem("removedAds", JSON.stringify(updatedKeys));
@@ -610,14 +611,10 @@ document.getElementById("sendEdits").addEventListener("click", () => {
   // On page load, show welcome OR restore section background
   document.addEventListener("DOMContentLoaded", () => {
   const clubName = new URLSearchParams(window.location.search).get("club") || "Unknown";
-  const storageKey = `clubApprovedAds_${clubName}`;
-  const savedData = JSON.parse(localStorage.getItem(storageKey) || "[]");
-  renderApprovedAds(savedData);const clubName = new URLSearchParams(window.location.search).get("club") || "Unknown";
 const storageKey = `clubApprovedAds_${clubName}`;
 const savedKeys = JSON.parse(localStorage.getItem("removedAds") || "[]");
 
 const dbRef = firebase.database().ref(`approvedAds/${clubName}`);
-
 dbRef.once("value")
   .then(snapshot => {
     const data = snapshot.val();
@@ -632,6 +629,7 @@ dbRef.once("value")
   .catch(error => {
     console.error("Error fetching approved ads:", error);
   });
+
 
 
   // Section background logic
