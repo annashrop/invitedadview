@@ -655,6 +655,14 @@ async function sendApprovedAdsToClub() {
     const textStatus = card.querySelector(".text-approval")?.value;
 
     const adName = card.querySelector(".ad-name")?.textContent?.replace("Ad Name:", "").trim();
+    const currentClub = new URLSearchParams(window.location.search).get("club");
+    const cardClub = card.querySelector(".meta:nth-child(2)")?.textContent || "";
+    const isMatchingClub = cardClub.includes(currentClub);
+
+    if (!isMatchingClub) {
+    console.log(`🚫 Skipping card for club ${cardClub} — does not match current tab: ${currentClub}`);
+    return;
+    }
 
     console.log("🔍 Card:", adName);
     console.log("🧠 Text status:", textStatus);
