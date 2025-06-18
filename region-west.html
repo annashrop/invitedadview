@@ -605,21 +605,22 @@ button:hover {
   let fileURL = ""; // ✅ Define it up top
 
   fetch(latestCsvFunctionUrl)
-    .then(res => res.json())
-    .then(data => {
-      fileURL = data.url; // ✅ Assign it here
-      return fetch(fileURL);
-    })
-    .then(res => res.text())
-    .then(csvText => {
+  .then(res => res.json())
+  .then(data => {
+    fileURL = data.url;
+    return fetch(fileURL);
+  })
+  .then(res => res.text())
+  .then(csvText => {
     Papa.parse(csvText, {
-    header: true,
-    skipEmptyLines: true,
-    complete: function(results) {
-      processCSV(results, fileURL); // ✅ Correctly pass the CSV data to the render function
-    }
-  });
-})
+      header: true,
+      skipEmptyLines: true,
+      complete: function(results) {
+        processCSV(results, fileURL);  // this fails silently if function is undefined
+      }
+    });
+  })
+
     .catch(error => {
       console.error("Error loading CSV:", error);
       document.getElementById("no-ads-message").style.display = "block";
