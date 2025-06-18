@@ -650,6 +650,8 @@ async function sendApprovedAdsToClub() {
   const approvedAds = [];
 
   adCards.forEach(card => {
+    console.log("🧠 Text status:", textStatus);
+    console.log("🧠 Image statuses:", imageStatuses);
     const imageStatuses = Array.from(card.querySelectorAll(".image-approval")).map(s => s.value);
     const textStatus = card.querySelector(".text-approval")?.value;
 
