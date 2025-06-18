@@ -472,28 +472,32 @@ card.innerHTML += `
     });
 
     if (approvedAds.length > 0) {
-      const existing = JSON.parse(localStorage.getItem("agencyFinalApproved") || "[]");
-      const timestamp = new Date().toLocaleString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-        hour: 'numeric',
-        minute: '2-digit',
-        hour12: true
-      });
-
-      existing.push({
-        clubName: "Canyon Gate",
-        timestamp: timestamp,
-        ads: approvedAds
-      });
-
-      localStorage.setItem("agencyFinalApproved", JSON.stringify(existing));
-      showToast("Approved ads sent to Agency View.");
-    } else {
-      showToast("No fully approved ads to send.");
-    }
+  const clubName = "Canyon Gate";
+  const now = new Date();
+  const timestamp = now.toLocaleString("en-US", {
+    month: "short", day: "numeric", year: "numeric",
+    hour: "numeric", minute: "2-digit", hour12: true
+  const savedKeys = JSON.parse(localStorage.getItem("removedAds") || "[]");
+  const updatedKeys = [...new Set([...savedKeys, ...approvedAds.map(ad => ad["Ad Name"])])];
+  localStorage.setItem("removedAds", JSON.stringify(updatedKeys));
   });
+
+  const finalData = {
+    clubName,
+    timestamp,
+    ads: approvedAds
+  };
+
+  firebase.database().ref(`agencyApprovedAds/${clubName}`).set(finalData)
+    .then(() => {
+      localStorage.setItem(`clubApprovedAds_${clubName}`, JSON.stringify(approvedAds));
+      showToast("Ads sent to Agency.");
+    })
+    .catch(error => {
+      console.error("Error writing to Firebase:", error);
+      showToast("Failed to send to Agency.");
+    });
+}
 
 document.getElementById("sendEdits").addEventListener("click", () => {
   const editAds = [];
@@ -608,7 +612,27 @@ document.getElementById("sendEdits").addEventListener("click", () => {
   const clubName = new URLSearchParams(window.location.search).get("club") || "Unknown";
   const storageKey = `clubApprovedAds_${clubName}`;
   const savedData = JSON.parse(localStorage.getItem(storageKey) || "[]");
-  renderApprovedAds(savedData);
+  renderApprovedAds(savedData);const clubName = new URLSearchParams(window.location.search).get("club") || "Unknown";
+const storageKey = `clubApprovedAds_${clubName}`;
+const savedKeys = JSON.parse(localStorage.getItem("removedAds") || "[]");
+
+const dbRef = firebase.database().ref(`approvedAds/${clubName}`);
+
+dbRef.once("value")
+  .then(snapshot => {
+    const data = snapshot.val();
+    if (data && data.ads && Array.isArray(data.ads)) {
+      const filteredAds = data.ads.filter(ad => !savedKeys.includes(ad["Ad Name"]));
+      localStorage.setItem(storageKey, JSON.stringify(filteredAds));
+      renderApprovedAds(filteredAds);
+    } else {
+      console.log("No approved ads found for this club.");
+    }
+  })
+  .catch(error => {
+    console.error("Error fetching approved ads:", error);
+  });
+
 
   // Section background logic
   const active = localStorage.getItem("activeSection");
