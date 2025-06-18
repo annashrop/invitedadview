@@ -783,21 +783,27 @@ function showToast(message) {
   setTimeout(() => toast.remove(), 3000);
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-  const clubBtn = document.getElementById("sendToClubBtn");
-  const editsBtn = document.getElementById("sendEdits");
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const sendBtn = document.getElementById("sendToClubBtn");
+    const editsBtn = document.getElementById("sendEdits");
 
-  if (clubBtn) clubBtn.addEventListener("click", sendApprovedAdsToClub);
-  if (editsBtn) editsBtn.addEventListener("click", sendEditsToAdsTeam);
-});
+    if (sendBtn) {
+      console.log("🔗 Binding Send Approved button");
+      sendBtn.addEventListener("click", sendApprovedAdsToClub);
+    } else {
+      console.warn("⚠️ sendToClubBtn not found in DOM");
+    }
 
-  const mainContent = document.querySelector('.main-content');
+    if (editsBtn) {
+      console.log("🔗 Binding Send Edits button");
+      editsBtn.addEventListener("click", sendEditsToAdsTeam);
+    } else {
+      console.warn("⚠️ sendEdits not found in DOM");
+    }
+  });
+</script>
 
-// Save selected section to localStorage and update background
-function hideWelcome() {
-  const welcomeEl = document.getElementById("welcome-message");
-  if (welcomeEl) welcomeEl.style.display = "none";
-}
       
 document.getElementById('paid-ads-btn')?.addEventListener('click', (e) => {
   e.preventDefault();
