@@ -643,33 +643,36 @@ function addHiddenAdName(adName) {
   }
 }
                    
-function sendApprovedAdsToClub() {
-  const hiddenAdNames = getHiddenAdNames(); // pulls from localStorage or similar
+async function sendApprovedAdsToClub() {
+  console.log("🟢 sendApprovedAdsToClub function triggered");
+
   const adCards = document.querySelectorAll(".preview-card");
   const approvedAds = [];
 
   adCards.forEach(card => {
-    const imageStatus = card.querySelector(".image-approval")?.value;
+    const imageStatuses = Array.from(card.querySelectorAll(".image-approval")).map(s => s.value);
     const textStatus = card.querySelector(".text-approval")?.value;
 
-    if (imageStatus === "Approved" && textStatus === "Approved") {
-      const regionText = card.querySelector(".meta:nth-child(1)")?.textContent || "";
-      const clubAndCategoryText = card.querySelector(".meta:nth-child(2)")?.textContent || "";
+    const adName = card.querySelector(".ad-name")?.textContent?.replace("Ad Name:", "").trim();
 
-      const region = regionText.replace("Region:", "").trim();
-      const [clubPart, categoryPart] = clubAndCategoryText.split("|").map(str => str.trim());
-      const club = clubPart.replace("Club:", "").trim();
-      const category = categoryPart.replace("Category:", "").trim();
-    
-      const adName = card.querySelector(".ad-name")?.textContent.replace("Ad Name:", "").trim();
-      addHiddenAdName(adName);
-      console.log("🔒 Saved hidden ad name:", adName);
-    
+    console.log(`🔍 Card: ${adName}`);
+    console.log("🖼️ Image statuses:", imageStatuses);
+    console.log("📝 Text status:", textStatus);
+
+    if (textStatus === "Approved" && imageStatuses.every(v => v === "Approved")) {
+      console.log(`✅ Approved: ${adName}`);
+
+      const region = card.querySelector(".meta:nth-child(1)")?.textContent?.replace("Region:", "").trim();
+      const clubCategory = card.querySelector(".meta:nth-child(2)")?.textContent || "";
+      const [clubPart, categoryPart] = clubCategory.split("|").map(str => str.trim());
+      const club = clubPart?.replace("Club:", "").trim();
+      const category = categoryPart?.replace("Category:", "").trim();
+
       const ad = {
-        Region: region,
-        Club: club,
-        Category: category,
-        "Ad Name": card.querySelector(".ad-name")?.textContent || "",
+        Region: region || "N/A",
+        Club: club || "N/A",
+        Category: category || "N/A",
+        "Ad Name": adName || "N/A",
         Headline: card.querySelector(".headline")?.textContent || "",
         Body: card.querySelector(".primary-text")?.textContent || "",
         Image: card.querySelector("img")?.src || "",
@@ -678,43 +681,32 @@ function sendApprovedAdsToClub() {
 
       approvedAds.push(ad);
 
-      
-
-      // ✅ Fade out and remove card
+      // Save to local storage to hide on refresh
+      addHiddenAdName(ad["Ad Name"]);
       card.style.transition = "opacity 0.4s ease";
       card.style.opacity = 0;
       setTimeout(() => card.remove(), 400);
     }
   });
 
+  console.log("📦 Final approved ads to send:", approvedAds);
 
-  if (approvedAds.length > 0) {
-  const groupedByClub = {};
-approvedAds.forEach(ad => {
-  const club = ad.Club;
-  if (!groupedByClub[club]) groupedByClub[club] = [];
-  groupedByClub[club].push(ad);
-});
+  if (approvedAds.length === 0) {
+    showToast("⚠️ No fully approved ads found.");
+    return;
+  }
 
-Object.entries(groupedByClub).forEach(([clubName, ads]) => {
-  const timestamp = new Date().toISOString();
-  const payload = {
-    Club: clubName,
-    timestamp,
-    ads
-  };
-  firebase.database().ref(`approvedAds/${clubName}`).set(payload)
-    .then(() => {
-      showToast(`Approved ads sent to ${clubName}`);
-      checkIfNoAdsLeft();
-    })
-    .catch((error) => {
-      console.error(`Error sending to ${clubName}:`, error);
-    });
-});
+  const clubName = approvedAds[0].Club || "UnknownClub";
+  const payload = { ads: approvedAds, timestamp: new Date().toISOString() };
 
-  } else {
-    showToast("No fully approved ads to send.");
+  try {
+    await firebase.database().ref(`approvedAds/${clubName}`).set(payload);
+    console.log("✅ Firebase write success");
+    showToast(`✅ Approved ads sent to ${clubName}`);
+    checkIfNoAdsLeft();
+  } catch (error) {
+    console.error("🔥 Firebase write failed:", error);
+    showToast("❌ Failed to send ads. Try again.");
   }
 }
 
