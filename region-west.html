@@ -644,35 +644,20 @@ function addHiddenAdName(adName) {
 }
                    
 async function sendApprovedAdsToClub() {
-  console.log("🟢 sendApprovedAdsToClub function triggered");
-
   const adCards = document.querySelectorAll(".preview-card");
   const approvedAds = [];
 
   adCards.forEach(card => {
-    
-    const imageStatuses = Array.from(card.querySelectorAll(".image-approval")).map(s => s.value);
+    const imageStatuses = Array.from(card.querySelectorAll(".image-approval")).map(sel => sel.value);
     const textStatus = card.querySelector(".text-approval")?.value;
 
-    const adName = card.querySelector(".ad-name")?.textContent?.replace("Ad Name:", "").trim();
-    const currentClub = document.querySelector('.preview-link-button.active')?.textContent?.trim();
-    const cardClub = card.querySelector(".meta:nth-child(2)")?.textContent || "";
-    const isMatchingClub = cardClub.includes(currentClub);
-
-    if (!isMatchingClub) {
-    console.log(`🚫 Skipping card for club ${cardClub} — does not match current tab: ${currentClub}`);
-    return;
-    }
-
-    console.log("🔍 Card:", adName);
+    console.log("🔍 Card:", card.querySelector(".ad-name")?.textContent);
     console.log("🧠 Text status:", textStatus);
     console.log("🧠 Image statuses:", imageStatuses);
     console.log("💡 All approvals met?", textStatus === "Approved" && imageStatuses.every(v => v === "Approved"));
-  
 
     if (textStatus === "Approved" && imageStatuses.every(v => v === "Approved")) {
-      console.log(`✅ Approved: ${adName}`);
-
+      const adName = card.querySelector(".ad-name")?.textContent?.replace("Ad Name:", "").trim();
       const region = card.querySelector(".meta:nth-child(1)")?.textContent?.replace("Region:", "").trim();
       const clubCategory = card.querySelector(".meta:nth-child(2)")?.textContent || "";
       const [clubPart, categoryPart] = clubCategory.split("|").map(str => str.trim());
