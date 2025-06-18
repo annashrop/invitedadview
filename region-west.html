@@ -655,7 +655,7 @@ async function sendApprovedAdsToClub() {
     const textStatus = card.querySelector(".text-approval")?.value;
 
     const adName = card.querySelector(".ad-name")?.textContent?.replace("Ad Name:", "").trim();
-    const currentClub = new URLSearchParams(window.location.search).get("club");
+    const currentClub = document.querySelector('.preview-link-button.active')?.textContent?.trim();
     const cardClub = card.querySelector(".meta:nth-child(2)")?.textContent || "";
     const isMatchingClub = cardClub.includes(currentClub);
 
