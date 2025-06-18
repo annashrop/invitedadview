@@ -27,7 +27,7 @@ if (!user) {
   window.location.href = "login.html";
 }
 
-</script>
+</>
 
   <link rel="stylesheet" href="css/styles.css">
   <meta charset="UTF-8">
@@ -310,7 +310,7 @@ textarea:focus, select:focus {
   </div>
 </div>
 
-  <script>
+  <>
 document.addEventListener("DOMContentLoaded", () => {
   const clubParam = new URLSearchParams(window.location.search).get("Club") || "Unknown";
   const dbRef = firebase.database().ref(`approvedAds/${clubParam}`);
@@ -328,9 +328,9 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("Error fetching approved ads:", error);
     });
 });
-</script>
+</>
 
-<script>
+<>
   function renderApprovedAds(ads) {
     const container = document.getElementById("preview-container");
     container.innerHTML = "";
@@ -504,7 +504,7 @@ card.innerHTML += `
     });
 
 
-document.getElementById("sendEdits").addEventListener("click", () => {
+  document.getElementById("sendEdits").addEventListener("click", () => {
   const editAds = [];
   document.querySelectorAll(".preview-card").forEach(card => {
     const imageStatuses = [...card.querySelectorAll("select.image-approval")].map(sel => sel.value);
