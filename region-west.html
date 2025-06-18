@@ -118,9 +118,6 @@ textarea {
   min-height: 80px;
   resize: vertical;
 }
-.preview-card {
-  color: #222222;
-}
    
 .header-wrapper {
   margin-bottom: 40px; /* Adds the blue space between buttons and white cards */
@@ -745,7 +742,8 @@ function sendEditsToAdsTeam() {
   }
 
   editAds.push({ html: card.outerHTML, comment: comments });
-  addHiddenAdName(ad["Ad Name"]);
+  const adName = card.querySelector(".ad-name")?.textContent.replace("Ad Name:", "").trim();
+  addHiddenAdName(adName);
   card.style.transition = "opacity 0.4s ease";
   card.style.opacity = 0;
   setTimeout(() => card.remove(), 400);
