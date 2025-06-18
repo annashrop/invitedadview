@@ -614,7 +614,7 @@ card.innerHTML += `
 
   // On page load, show welcome OR restore section background
   document.addEventListener("DOMContentLoaded", () => {
-  const clubName = new URLSearchParams(window.location.search).get("club") || "Unknown";
+  const clubName = "Canyon Gate";
 const storageKey = `clubApprovedAds_${clubName}`;
 const savedKeys = JSON.parse(localStorage.getItem("removedAds") || "[]");
 
