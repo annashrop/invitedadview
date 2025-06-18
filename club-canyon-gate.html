@@ -314,7 +314,7 @@ textarea:focus, select:focus {
   document.addEventListener("DOMContentLoaded", () => {
     const clubName = "Canyon Gate";
     const savedKeys = JSON.parse(localStorage.getItem("removedAds") || "[]");
-    const dbRef = firebase.database().ref(`approvedAds/${clubName}`);
+    const dbRef = firebase.database().ref(`agencyapprovedAds/${clubName}`);
 
     dbRef.once("value")
       .then(snapshot => {
@@ -476,7 +476,7 @@ textarea:focus, select:focus {
   hour: "numeric",
   minute: "2-digit",
   hour12: true,
-  });
+  
   const savedKeys = JSON.parse(localStorage.getItem("removedAds") || "[]");
   const updatedKeys = [...new Set([...savedKeys, ...approvedAds.map(ad => ad["Ad Name"])])];
   localStorage.setItem("removedAds", JSON.stringify(updatedKeys));
@@ -489,7 +489,7 @@ textarea:focus, select:focus {
   };
   
   console.log("📛 Club Name used in Firebase path:", clubName);
-  firebase.database().ref(`agencyApprovedAds/${clubName}`).set(finalData)
+  firebase.database().ref(`agencyapprovedAds/${clubName}`).set(finalData)
     .then(() => {
       console.log("📦 Snapshot data received:", snapshot.val());
       localStorage.setItem(`clubApprovedAds_${clubName}`, JSON.stringify(approvedAds));
