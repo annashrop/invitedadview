@@ -788,8 +788,13 @@ function showToast(message) {
   setTimeout(() => toast.remove(), 3000);
 }
 
-document.getElementById("sendToClubBtn").addEventListener("click", sendApprovedAdsToClub);
-document.getElementById("sendEdits").addEventListener("click", sendEditsToAdsTeam);
+document.addEventListener("DOMContentLoaded", function () {
+  const clubBtn = document.getElementById("sendToClubBtn");
+  const editsBtn = document.getElementById("sendEdits");
+
+  if (clubBtn) clubBtn.addEventListener("click", sendApprovedAdsToClub);
+  if (editsBtn) editsBtn.addEventListener("click", sendEditsToAdsTeam);
+});
 
   const mainContent = document.querySelector('.main-content');
 
