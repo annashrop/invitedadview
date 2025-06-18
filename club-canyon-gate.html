@@ -310,145 +310,143 @@ textarea:focus, select:focus {
   </div>
 </div>
 
-  <>
-document.addEventListener("DOMContentLoaded", () => {
-  const clubName = "Canyon Gate";
-  const dbRef = firebase.database().ref(`approvedAds/${clubParam}`);
+<script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const clubName = "Canyon Gate";
+    const savedKeys = JSON.parse(localStorage.getItem("removedAds") || "[]");
+    const dbRef = firebase.database().ref(`approvedAds/${clubName}`);
 
-  dbRef.once("value")
-    .then(snapshot => {
-      const data = snapshot.val();
-      if (data && data.ads && Array.isArray(data.ads)) {
-        renderApprovedAds(data.ads);  // ✅ Use your existing function
-      } else {
-        console.log("No approved ads found for this club.");
-      }
-    })
-    .catch(error => {
-      console.error("Error fetching approved ads:", error);
-    });
-});
-</>
-
-<>
-  function renderApprovedAds(ads) {
-    const container = document.getElementById("preview-container");
-    container.innerHTML = "";
-
-    const wrapper = document.createElement("div");
-    wrapper.className = "card-wrapper";
-    container.appendChild(wrapper);
-
-    ads.forEach(ad => {
-      const card = document.createElement("div");
-      card.className = "preview-card";
-      card.dataset.ad = JSON.stringify(ad);
-
-      card.innerHTML = `
-  <div class="meta-section">
-   <div class="meta"><strong>Region:</strong> ${ad['Region'] || 'N/A'}</div>
-<div class="meta"><strong>Club:</strong> ${ad['Club'] || 'N/A'} &nbsp; | &nbsp; <strong>Category:</strong> ${ad['Category'] || 'N/A'}</div>
-<div class="meta ad-name"><strong>Ad Name:</strong> ${ad['Ad Name'] || 'N/A'}</div>
-  <div class="meta-divider"></div>
-  <div class="headline">${ad.Headline || ''}</div>
-  <div class="primary-text">${ad["Primary Text"] || ''}</div>
-`;
-
-["Image_URL_1", "Image_URL_2", "Image_URL_3"].forEach((key, imgIndex) => {
-  const url = ad[key];
-  if (!url || url === '/') return;
-
-  const isCanva = url.includes('canva.com');
-  let imgSrc = '';
-
-  if (isCanva) {
-    imgSrc = url;
-  } else {
-    const isTif = url.toLowerCase().endsWith('.tif');
-    const idMatch = url.match(/I[0-9A-Za-z_.]+/) ||
-                    url.match(/img-get2\/([^/]+)/) ||
-                    url.match(/\/(I[0-9A-Za-z_.]+)\//) ||
-                    url.match(/\/(G[0-9A-Za-z_]+)\//) ||
-                    url.match(/\/(C[0-9A-Za-z_]+)\//) ||
-                    url.match(/\/(I[0-9A-Za-z_.]+)\/[^/]+$/);
-    const imageId = idMatch && (idMatch[1] || idMatch[0]);
-
-    if (!isTif && imageId) {
-      imgSrc = `https://cdn.photoshelter.com/img-get2/${imageId}/fit=1000x750`;
-    }
-  }
-
-  if (imgSrc) {
-    const wrapperDiv = document.createElement("div");
-    wrapperDiv.className = "image-wrapper";
-
-    const img = document.createElement("img");
-    img.className = "card-image";
-    img.src = imgSrc;
-    img.alt = "Ad image";
-
-    const viewDiv = document.createElement("div");
-    viewDiv.className = "view-link";
-    viewDiv.innerHTML = `
-      <a href="#" class="view-image-button" onclick="window.open('${url}', 'ImagePopup', 'width=800,height=600'); return false;">View Full Image ${imgIndex + 1}</a>
-      <div class="approval-row">
-        <label>Image Approval Status:</label>
-        <select class="image-approval">
-          <option value="Pending">Pending</option>
-          <option value="Approved">Approved</option>
-          <option value="Needs Edit">Needs Edit</option>
-        </select>
-      </div>
-    `;
-
-    wrapperDiv.appendChild(img);
-    wrapperDiv.appendChild(viewDiv);
-    card.appendChild(wrapperDiv);
-  }
-});
-
-// Text Approval Toggle
-card.innerHTML += `
-  <div class="approval-row">
-    <label>Ad Text Approval Status:</label>
-    <select class="text-approval">
-      <option value="Pending">Pending</option>
-      <option value="Approved">Approved</option>
-      <option value="Needs Edit">Needs Edit</option>
-    </select>
-  </div>
-  <div class="approval">
-    <label>Reviewer Comments:</label>
-    <textarea placeholder="Optional — add comments if needed.">${ad.reviewerComments || ''}</textarea>
-  </div>
-`;
-
-
-      function updateCardStatus() {
-        const textStatus = card.querySelector('.text-approval')?.value;
-        const imageStatuses = Array.from(card.querySelectorAll('.image-approval')).map(sel => sel.value);
-
-        if (imageStatuses.includes('Needs Edit') || textStatus === 'Needs Edit') {
-          card.style.border = '2px solid #e74c3c';
-          card.style.backgroundColor = '#ffe6e6';
-        } else if (imageStatuses.every(v => v === 'Approved') && textStatus === 'Approved') {
-          card.style.border = '2px solid #2ecc71';
-          card.style.backgroundColor = '#e8f6f0';
+    dbRef.once("value")
+      .then(snapshot => {
+        const data = snapshot.val();
+        if (data && data.ads && Array.isArray(data.ads)) {
+          const filteredAds = data.ads.filter(ad => !savedKeys.includes(ad["Ad Name"]));
+          localStorage.setItem("clubApprovedAds_" + clubName, JSON.stringify(filteredAds));
+          renderApprovedAds(filteredAds);
         } else {
-          card.style.border = '2px solid #000000';
-          card.style.backgroundColor = '#ffffff';
+          console.log("⚠️ No approved ads found for this club.");
         }
-      }
-
-      updateCardStatus();
-
-      card.querySelectorAll('select').forEach(select => {
-        select.addEventListener('change', updateCardStatus);
+      })
+      .catch(error => {
+        console.error("❌ Error fetching approved ads:", error);
       });
 
-      wrapper.appendChild(card);
-    });
-  }
+    function renderApprovedAds(adList) {
+      const container = document.getElementById("preview-container");
+      container.innerHTML = "";
+
+      adList.forEach((ad, index) => {
+        const imageTags = ["Image_URL_1", "Image_URL_2", "Image_URL_3"].map((key, imgIndex) => {
+          const url = ad[key];
+          if (url && url !== "/") {
+            const isCanva = url.includes("canva.com");
+            let imgSrc = "";
+
+            if (isCanva) {
+              imgSrc = url;
+            } else {
+              const isTif = url.toLowerCase().endsWith(".tif");
+              const idMatch = url.match(/I[0-9A-Za-z_.]+/) ||
+                              url.match(/img-get2\/([^/]+)/) ||
+                              url.match(/\/(I[0-9A-Za-z_.]+)\//) ||
+                              url.match(/\/(G[0-9A-Za-z_]+)\//) ||
+                              url.match(/\/(C[0-9A-Za-z_]+)\//) ||
+                              url.match(/\/(I[0-9A-Za-z_.]+)\/[^/]+$/);
+              const imageId = idMatch && (idMatch[1] || idMatch[0]);
+              if (!isTif && imageId) {
+                imgSrc = `https://cdn.photoshelter.com/img-get2/${imageId}/fit=1000x750`;
+              }
+            }
+
+            if (imgSrc) {
+              return `
+                <div class="image-wrapper">
+                  <img class="card-image" src="${imgSrc}" alt="Ad image" />
+                  <div class="view-link">
+                    <a href="#" class="view-image-button" onclick="window.open('${url}', 'ImagePopup', 'width=800,height=600'); return false;">View Full Image ${imgIndex + 1}</a>
+                    <div class="approval-row">
+                      <label>Image Approval Status:</label>
+                      <select class="image-approval">
+                        <option value="Pending">Pending</option>
+                        <option value="Approved">Approved</option>
+                        <option value="Needs Edit">Needs Edit</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              `;
+            }
+          }
+          return "";
+        }).join("");
+
+        const card = document.createElement("div");
+        card.className = "preview-card";
+
+        card.innerHTML = `
+          <div class="card-body">
+            <div class="meta-section">
+              <div class="meta"><strong>Region:</strong> ${ad.Region || "N/A"}</div>
+              <div class="meta"><strong>Club:</strong> ${ad.Club || "N/A"} &nbsp; | &nbsp; <strong>Category:</strong> ${ad.Category || "N/A"}</div>
+              <div class="meta ad-name"><strong>Ad Name:</strong> ${ad["Ad Name"] || "N/A"}</div>
+            </div>
+            <div class="meta-divider"></div>
+            <div class="headline">${ad.Headline || ""}</div>
+            <div class="primary-text">${ad.Body || ""}</div>
+            <div class="image-set">${imageTags}</div>
+            <div class="approval-row">
+              <label>Ad Text Approval Status:</label>
+              <select class="text-approval">
+                <option value="Pending">Pending</option>
+                <option value="Approved">Approved</option>
+                <option value="Needs Edit">Needs Edit</option>
+              </select>
+            </div>
+            <div class="approval">
+              <label>Reviewer Comments:</label>
+              <textarea placeholder="Enter comments here..."></textarea>
+            </div>
+          </div>
+        `;
+
+        // Status styling
+        function updateCardStatus() {
+          const textStatus = card.querySelector(".text-approval")?.value;
+          const imageStatuses = Array.from(card.querySelectorAll(".image-approval")).map(sel => sel.value);
+          const commentBox = card.querySelector("textarea");
+
+          const needsEdit = textStatus === "Needs Edit" || imageStatuses.includes("Needs Edit");
+
+          if (needsEdit) {
+            card.style.border = "2px solid #e74c3c";
+            card.style.backgroundColor = "#ffe6e6";
+            commentBox.required = true;
+            commentBox.placeholder = "Required – please explain what needs edits.";
+          } else if (textStatus === "Approved" && imageStatuses.every(v => v === "Approved")) {
+            card.style.border = "2px solid #2ecc71";
+            card.style.backgroundColor = "#e8f6f0";
+            commentBox.required = false;
+            commentBox.placeholder = "Optional – add comments if needed.";
+          } else {
+            card.style.border = "2px solid #000000";
+            card.style.backgroundColor = "#ffffff";
+            commentBox.required = false;
+            commentBox.placeholder = "Optional – add comments if needed.";
+          }
+        }
+
+        card.querySelectorAll("select").forEach(sel => {
+          sel.addEventListener("change", updateCardStatus);
+        });
+
+        updateCardStatus();
+        container.appendChild(card);
+      });
+    }
+  });
+</script>
+
 
 </script>
 <script>
