@@ -460,6 +460,10 @@ button:hover {
 "></div>
   
 <script>
+  function getHiddenAdNames() {
+  return JSON.parse(localStorage.getItem("hiddenAdNames") || "[]");
+}
+  
  function processCSV(results, fileURL) {
   const data = results.data;
   const hiddenAdNames = getHiddenAdNames().map(name => name.trim());
@@ -627,9 +631,7 @@ button:hover {
 
 
 <script>
-  function getHiddenAdNames() {
-  return JSON.parse(localStorage.getItem("hiddenAdNames") || "[]");
-}
+ 
 
 function addHiddenAdName(adName) {
   const current = getHiddenAdNames();
