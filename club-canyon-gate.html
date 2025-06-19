@@ -433,7 +433,7 @@ textarea:focus, select:focus {
   .then(snapshot => {
     const clubData = snapshot.val();
     if (clubData) {
-      const adsArray = Array.isArray(clubData) ? clubData : Object.values(clubData);
+      const adsArray = clubData.ads || [];
       const filteredAds = adsArray.filter(ad => ad && !savedKeys.includes(ad["Ad Name"]));
       localStorage.setItem("clubApprovedAds_" + clubName, JSON.stringify(filteredAds));
       console.log("✅ Pulled ads from Firebase:", filteredAds);
