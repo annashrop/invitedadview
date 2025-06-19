@@ -614,56 +614,6 @@ textarea:focus, select:focus {
   });
 
   // On page load, show welcome OR restore section background
- <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-  import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyCxokTtUQu8BoCEiF9Tt6uN1Imh6_XRfbA",
-    authDomain: "invitedads.firebaseapp.com",
-    databaseURL: "https://invitedads-default-rtdb.firebaseio.com",
-    projectId: "invitedads",
-    storageBucket: "invitedads.appspot.com",
-    messagingSenderId: "123456789",
-    appId: "1:123456789:web:abc123" // replace with your actual appId
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
-
-  document.addEventListener("DOMContentLoaded", () => {
-    const container = document.getElementById("card-container");
-
-    function renderApprovedAds(ads) {
-      container.innerHTML = ""; // clear existing content
-      ads.forEach(ad => {
-        const card = document.createElement("div");
-        card.className = "card";
-
-        card.innerHTML = `
-          <h3>${ad["Ad Name"] || "No Ad Name"}</h3>
-          <p>${ad["Headline"] || ""}</p>
-          <p>${ad["Primary Text"] || ""}</p>
-          ${ad["Image URLs"] && ad["Image URLs"][0] ? `<img src="${ad["Image URLs"][0]}" alt="Ad Image">` : ""}
-        `;
-
-        container.appendChild(card);
-      });
-    }
-
-    const canyonGateRef = ref(db, "approvedAds/CanyonGate");
-
-    onValue(canyonGateRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        const ads = Object.values(data);
-        renderApprovedAds(ads);
-      } else {
-        container.innerHTML = "<p>No approved ads found.</p>";
-      }
-    });
-  });
-</script>
 
 
 
