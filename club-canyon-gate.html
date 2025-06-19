@@ -426,24 +426,24 @@ textarea:focus, select:focus {
   document.addEventListener("DOMContentLoaded", () => {
     const clubName = "Canyon Gate";
     const savedKeys = JSON.parse(localStorage.getItem("removedAds") || "[]");
-    const dbRef = firebase.database().ref(`approvedAds/Canyon Gate/ads`);
+    const dbRef = firebase.database().ref(`approvedAds/Canyon Gate`);
 
     dbRef.once("value")
-      .then(snapshot => {
-        const data = snapshot.val();
-        if (data) {
-          const adsArray = Array.isArray(data) ? data : Object.values(data);
-          const filteredAds = adsArray.filter(ad => ad && !savedKeys.includes(ad["Ad Name"]));
-          localStorage.setItem("clubApprovedAds_" + clubName, JSON.stringify(filteredAds));
-          console.log("✅ Pulled ads from Firebase:", data);
-          renderApprovedAds(filteredAds);
-        } else {
-          console.log("⚠️ No approved ads found for this club.");
-        }
-      })
-      .catch(error => {
-        console.error("❌ Error fetching approved ads:", error);
-      });
+  .then(snapshot => {
+    const clubData = snapshot.val();
+    if (clubData && clubData.ads) {
+      const adsArray = Array.isArray(clubData.ads) ? clubData.ads : Object.values(clubData.ads);
+      const filteredAds = adsArray.filter(ad => ad && !savedKeys.includes(ad["Ad Name"]));
+      localStorage.setItem("clubApprovedAds_" + clubName, JSON.stringify(filteredAds));
+      console.log("✅ Pulled ads from Firebase:", filteredAds);
+      renderApprovedAds(filteredAds);
+    } else {
+      console.log("⚠️ No approved ads found for this club.");
+    }
+  })
+  .catch(error => {
+    console.error("❌ Error fetching approved ads:", error);
+  });
 
   
 
@@ -492,7 +492,7 @@ textarea:focus, select:focus {
   };
   
   console.log("📛 Club Name used in Firebase path:", clubName);
-  firebase.database().ref(`approvedAds/Canyon Gate/ads`).set(finalData)
+  firebase.database().ref(`approvedAds/Canyon Gate`).set(finalData)
     .then(() => {
       console.log("✅ Ads successfully sent to Firebase.");
       localStorage.setItem(`clubApprovedAds_${clubName}`, JSON.stringify(approvedAds));
