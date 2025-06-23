@@ -334,8 +334,8 @@ textarea:focus, select:focus {
   container.innerHTML = "";
 
   adList.forEach((ad, index) => {
-    const imageTags = ['Image_URL_1', 'Image_URL_2', 'Image_URL_3'].map((key, imgIndex) => {
-  const url = ad[key];
+    const imageTags = ['Image_URL_1', 'Image_URL_2', 'Image_URL_3'].map((key, index) => {
+  const url = row[key] || (index === 0 ? row["Image"] : null);  // only fall back for the first image
   if (url && url !== '/') {
     const isCanva = url.includes('canva.com');
     let imgSrc = '';
