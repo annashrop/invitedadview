@@ -569,7 +569,7 @@ container.appendChild(card);
   textApprovalStatus: card.querySelector(".text-approval")?.value || "",
   imageApprovalStatuses: [...card.querySelectorAll(".image-approval")].map(el => el.value),
   reviewerComments: card.querySelector("textarea")?.value || ""
-};
+  };
 
 
       editAds.push(ad);
@@ -586,8 +586,8 @@ container.appendChild(card);
     showToast("Edits sent to Ads Department.");
   } else {
     showToast("No edits to send.");
-  }
-});
+    }
+  });
 
 
     checkIfNoAdsLeft();
