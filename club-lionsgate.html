@@ -329,98 +329,7 @@ textarea:focus, select:focus {
       });
   });
   
-  function renderApprovedAds(adList) {
-  const container = document.getElementById("preview-container");
-  container.innerHTML = "";
-
-  adList.forEach((ad, index) => {
-    const imageElements = ['Image_URL_1', 'Image_URL_2', 'Image_URL_3']
-      .filter(key => ad[key] && ad[key] !== '/')
-      .map((key, imgIndex) => {
-        const url = ad[key];
-        if (!url || url === "/") return ""; 
-        const isCanva = url.includes('canva.com');
-        let imgSrc = '';
-
-        if (isCanva) {
-          imgSrc = url;
-        } else {
-          const isTif = url.toLowerCase().endsWith('.tif');
-          const idMatch = url.match(/I[0-9A-Za-z_.]+/) ||
-                          url.match(/img-get2\/([^/]+)/) ||
-                          url.match(/\/(I[0-9A-Za-z_.]+)\//) ||
-                          url.match(/\/(G[0-9A-Za-z_]+)\//) ||
-                          url.match(/\/(C[0-9A-Za-z_]+)\//) ||
-                          url.match(/\/(I[0-9A-Za-z_.]+)\/[^/]+$/);
-          const imageId = idMatch && (idMatch[1] || idMatch[0]);
-          if (!isTif && imageId) {
-            imgSrc = `https://cdn.photoshelter.com/img-get2/${imageId}/fit=1000x750`;
-          }
-        }
-
-        if (imgSrc) {
-          return `
-            <div class="image-wrapper">
-              <img class="card-image" src="${imgSrc}" alt="Ad image" />
-              <div class="view-link">
-                <a href="#" class="view-image-button" onclick="window.open('${url}', 'ImagePopup', 'width=800,height=600'); return false;">View Full Image ${imgIndex + 1}</a>
-                <div class="approval-row">
-                  <label>Image Approval Status:</label>
-                  <select class="image-approval">
-                    <option value="Pending">Pending</option>
-                    <option value="Approved">Approved</option>
-                    <option value="Needs Edit">Needs Edit</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-          `;
-        }
-
-        return ""; // if no imgSrc was valid
-      }).join("");
-
-    const card = document.createElement("div");
-    card.className = "preview-card";
-
-    card.innerHTML = `
-      <div class="card-body">
-        <div class="meta-section">
-          <div class="meta"><strong>Region:</strong> ${ad.Region || "N/A"}</div>
-          <div class="meta"><strong>Club:</strong> ${ad.Club || "N/A"} &nbsp; | &nbsp; <strong>Category:</strong> ${ad.Category || "N/A"}</div>
-          <div class="meta ad-name"><strong>Ad Name:</strong> ${ad["Ad Name"] || "N/A"}</div>
-        </div>
-        <div class="meta-divider"></div>
-        <div class="headline">${ad.Headline || ""}</div>
-        <div class="primary-text">${ad.Body || ""}</div>
-        <div class="image-set">${Array.isArray(imageElements) ? imageElements.map(img => img.outerHTML).join("") : ''}</div>
-        <div class="approval-row">
-          <label>Ad Text Approval Status:</label>
-          <select class="text-approval">
-            <option value="Pending">Pending</option>
-            <option value="Approved">Approved</option>
-            <option value="Needs Edit">Needs Edit</option>
-          </select>
-        </div>
-        <div class="approval">
-          <label>Reviewer Comments:</label>
-          <textarea placeholder="Enter comments here..."></textarea>
-        </div>
-      </div>
-    `;
-    
-    const imageSetDiv = card.querySelector('.image-set');
-    card.querySelector('.image-set').innerHTML = imageElements;
-
-    container.appendChild(card);
-  });
-}
-
-  const selects = card.querySelectorAll('select');
-  const commentBox = card.querySelector('textarea');
-
-  
-function updateCardStatus(card) {
+  function updateCardStatus() {
   const textStatus = card.querySelector('.text-approval')?.value;
   const imageStatuses = Array.from(card.querySelectorAll('.image-approval')).map(sel => sel.value);
   const commentBox = card.querySelector('textarea');
@@ -445,15 +354,13 @@ function updateCardStatus(card) {
   }
 }
 
-// Step 2: Add listener to all select elements in this card
 card.querySelectorAll('select').forEach(sel => {
-  sel.addEventListener('change', () => updateCardStatus(card));
+  sel.addEventListener('change', updateCardStatus);
 });
 
+updateCardStatus();
+container.appendChild(card);
 
-updateCardStatus(card);
-card.dataset.ad = JSON.stringify(ad);
-  
 </script>
 
 <script>
