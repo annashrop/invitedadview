@@ -342,20 +342,22 @@ textarea:focus, select:focus {
 
     if (isCanva) {
       imgSrc = url;
-    } else {
-      const isTif = url.toLowerCase().endsWith('.tif');
-      const idMatch = url.match(/I[0-9A-Za-z_.]+/) ||
-                      url.match(/img-get2\/([^/]+)/) ||
-                      url.match(/\/(I[0-9A-Za-z_.]+)\//) ||
-                      url.match(/\/(G[0-9A-Za-z_]+)\//) ||
-                      url.match(/\/(C[0-9A-Za-z_]+)\//) ||
-                      url.match(/\/(I[0-9A-Za-z_.]+)\/[^/]+$/);
+    } 
+    
+   else {
+  const isTif = url.toLowerCase().endsWith('.tif');
+  const idMatch = url.match(/I[0-9A-Za-z_.]+/) ||
+                  url.match(/img-get2\/([^/]+)/) ||
+                  url.match(/\/(I[0-9A-Za-z_.]+)\//) ||
+                  url.match(/\/(G[0-9A-Za-z_]+)\//) ||
+                  url.match(/\/(C[0-9A-Za-z_]+)\//) ||
+                  url.match(/\/(I[0-9A-Za-z_.]+)\/[^/]+$/);
 
-      const imageId = idMatch && (idMatch[1] || idMatch[0]);
-      if (!isTif && imageId) {
-        imgSrc = `https://cdn.photoshelter.com/img-get2/${imageId}/fit=1000x750`;
-      }
-    }
+  const imageId = idMatch && (idMatch[1] || idMatch[0]);
+  if (!isTif && imageId) {
+    imgSrc = `https://cdn.photoshelter.com/img-get2/${imageId}/fit=1000x750`;
+  }
+}
 
         if (imgSrc) {
           return `
