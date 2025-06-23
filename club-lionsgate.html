@@ -393,7 +393,7 @@ textarea:focus, select:focus {
         <div class="meta-divider"></div>
         <div class="headline">${ad.Headline || ""}</div>
         <div class="primary-text">${ad.Body || ""}</div>
-        <div class="image-set">${imageTags}</div>
+        <div class="image-set"></div>
         <div class="approval-row">
           <label>Ad Text Approval Status:</label>
           <select class="text-approval">
@@ -408,6 +408,11 @@ textarea:focus, select:focus {
         </div>
       </div>
     `;
+    
+    const imageSetDiv = card.querySelector('.image-set');
+    imageTags.forEach(imgHTML => {
+      imageSetDiv.insertAdjacentHTML('beforeend', imgHTML);
+    });
 
     container.appendChild(card);
   });
