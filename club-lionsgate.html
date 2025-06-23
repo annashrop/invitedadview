@@ -415,12 +415,13 @@ textarea:focus, select:focus {
     container.appendChild(card);
   });
 }
-</script>
-  <script>
-    function updateCardStatus() {
+
+    const selects = card.querySelectorAll('select');
+const commentBox = card.querySelector('textarea');
+
+function updateCardStatus() {
   const textStatus = card.querySelector('.text-approval')?.value;
   const imageStatuses = Array.from(card.querySelectorAll('.image-approval')).map(sel => sel.value);
-  const commentBox = card.querySelector('textarea');
 
   const needsEdit = textStatus === 'Needs Edit' || imageStatuses.includes('Needs Edit');
 
@@ -442,12 +443,13 @@ textarea:focus, select:focus {
   }
 }
 
-card.querySelectorAll('select').forEach(sel => {
+// Attach event listeners to all selects
+selects.forEach(sel => {
   sel.addEventListener('change', updateCardStatus);
 });
 
-updateCardStatus(); // Apply color immediately
-container.appendChild(card);  
+updateCardStatus(); // run it once on card load
+
 </script>
 
 <script>
