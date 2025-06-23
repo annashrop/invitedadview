@@ -419,11 +419,13 @@ textarea:focus, select:focus {
   const selects = card.querySelectorAll('select');
   const commentBox = card.querySelector('textarea');
 
-  function updateCardStatus() {
-    const textStatus = card.querySelector('.text-approval')?.value;
-    const imageStatuses = Array.from(card.querySelectorAll('.image-approval')).map(sel => sel.value);
+  
+function updateCardStatus(card) {
+  const textStatus = card.querySelector('.text-approval')?.value;
+  const imageStatuses = Array.from(card.querySelectorAll('.image-approval')).map(sel => sel.value);
+  const commentBox = card.querySelector('textarea');
 
-    const needsEdit = textStatus === 'Needs Edit' || imageStatuses.includes('Needs Edit');
+  const needsEdit = textStatus === 'Needs Edit' || imageStatuses.includes('Needs Edit');
 
   if (needsEdit) {
     card.style.border = '2px solid #e74c3c';
@@ -443,12 +445,13 @@ textarea:focus, select:focus {
   }
 }
 
-// Attach event listeners to all selects
-selects.forEach(sel => {
-  sel.addEventListener('change', updateCardStatus);
+// Step 2: Add listener to all select elements in this card
+card.querySelectorAll('select').forEach(sel => {
+  sel.addEventListener('change', () => updateCardStatus(card));
 });
 
-updateCardStatus(); // run it once on card load
+
+updateCardStatus(card);
 
 </script>
 
