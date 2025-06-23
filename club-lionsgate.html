@@ -329,7 +329,8 @@ textarea:focus, select:focus {
       });
   });
   
-  function updateCardStatus() {
+  
+function updateCardStatus(card) {
   const textStatus = card.querySelector('.text-approval')?.value;
   const imageStatuses = Array.from(card.querySelectorAll('.image-approval')).map(sel => sel.value);
   const commentBox = card.querySelector('textarea');
@@ -354,11 +355,13 @@ textarea:focus, select:focus {
   }
 }
 
+// Attach listeners to each dropdown in the card
 card.querySelectorAll('select').forEach(sel => {
-  sel.addEventListener('change', updateCardStatus);
+  sel.addEventListener('change', () => updateCardStatus(card));
 });
 
-updateCardStatus(); // Initial status styling
+// Initial update for pre-filled cards
+updateCardStatus(card);
 container.appendChild(card);
 
 </script>
