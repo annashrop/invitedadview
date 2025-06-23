@@ -432,19 +432,20 @@ textarea:focus, select:focus {
     dbRef.once("value")
   .then(snapshot => {
     const clubData = snapshot.val();
-    if (clubData) {
-      const adsArray = clubData.ads || [];
-      const filteredAds = adsArray.filter(ad => ad && !savedKeys.includes(ad["Ad Name"]));
-      localStorage.setItem("clubApprovedAds_" + clubName, JSON.stringify(filteredAds));
-      console.log("✅ Pulled ads from Firebase:", filteredAds);
-      renderApprovedAds(filteredAds);
-    } else {
-      console.log("⚠️ No approved ads found for this club.");
-    }
+    console.log("clubData from Firebase:", clubData); // 🔍 NEW
+    const adsArray = clubData?.ads || [];
+    console.log("adsArray extracted:", adsArray); // 🔍 NEW
+
+    const savedKeys = JSON.parse(localStorage.getItem("removedAds") || "[]");
+    const filteredAds = adsArray.filter(ad => ad && !savedKeys.includes(ad["Ad Name"]));
+    console.log("Filtered ads to render:", filteredAds); // 🔍 NEW
+
+    renderApprovedAds(filteredAds);
   })
   .catch(error => {
-    console.error("❌ Error fetching approved ads:", error);
+    console.error("Error fetching data from Firebase:", error);
   });
+
 
   
 
