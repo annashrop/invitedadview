@@ -412,7 +412,8 @@ textarea:focus, select:focus {
     container.appendChild(card);
   });
 }
-
+</script>
+  
     function updateCardStatus() {
       const textStatus = card.querySelector(".text-approval")?.value;
       const imageStatuses = Array.from(card.querySelectorAll(".image-approval")).map(sel => sel.value);
@@ -445,7 +446,7 @@ textarea:focus, select:focus {
     updateCardStatus();
     card.dataset.ad = JSON.stringify(ad);
     container.appendChild(card);
-  } 
+  
 </script>
 
   
