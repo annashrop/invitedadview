@@ -410,8 +410,10 @@ textarea:focus, select:focus {
     `;
     
     const imageSetDiv = card.querySelector('.image-set');
-    imageElements.forEach(img => {
-      imageSetDiv.appendChild(img);
+    imageElements.forEach(imgHTML => {
+      const tempDiv = document.createElement("div");
+      tempDiv.innerHTML = imgHTML.trim();
+      imageSetDiv.appendChild(tempDiv.firstChild);
     });
 
     container.appendChild(card);
