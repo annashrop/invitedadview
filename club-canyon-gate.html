@@ -311,6 +311,24 @@ textarea:focus, select:focus {
 </div>
 
 <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    firebase
+      .database()
+      .ref("approvedAds/Canyon Gate")
+      .once("value")
+      .then((snapshot) => {
+        const clubData = snapshot.val();
+        const adsArray = clubData?.ads || [];
+
+        const savedKeys = JSON.parse(localStorage.getItem("removedAds") || "[]");
+        const filteredAds = adsArray.filter(ad => !savedKeys.includes(ad["Ad Name"]));
+
+        console.log("Filtered ads to render:", filteredAds); // 👈 Debug line
+
+        renderApprovedAds(filteredAds); // 👈 This must be INSIDE the .then block
+      });
+  });
+  
   function renderApprovedAds(adList) {
   const container = document.getElementById("preview-container");
   container.innerHTML = "";
@@ -423,20 +441,7 @@ textarea:focus, select:focus {
     container.appendChild(card);
   });
 }
-  
-  firebase
-  .database()
-  .ref("approvedAds/Canyon Gate")
-  .once("value")
-  .then((snapshot) => {
-    const clubData = snapshot.val();
-    const adsArray = clubData?.ads || [];
-    const savedKeys = JSON.parse(localStorage.getItem("removedAds") || "[]");
-
-    const filteredAds = adsArray.filter(ad => !savedKeys.includes(ad["Ad Name"]));
-
-    renderApprovedAds(filteredAds);
-  });
+</script>
 
   
   document.addEventListener("DOMContentLoaded", () => {
