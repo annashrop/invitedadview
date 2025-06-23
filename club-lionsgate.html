@@ -338,6 +338,7 @@ textarea:focus, select:focus {
   .filter(key => ad[key] && ad[key] !== '/')
   .map((key, imgIndex) => {
     const url = ad[key];
+      if (!url || url === "/") return ""; 
     const isCanva = url.includes('canva.com');
     let imgSrc = '';
 
