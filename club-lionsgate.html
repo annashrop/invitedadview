@@ -334,7 +334,7 @@ textarea:focus, select:focus {
   container.innerHTML = "";
 
   adList.forEach((ad, index) => {
-    const imageTags = ['Image_URL_1', 'Image_URL_2', 'Image_URL_3']
+    const imageElements = ['Image_URL_1', 'Image_URL_2', 'Image_URL_3']
       .filter(key => ad[key] && ad[key] !== '/')
       .map((key, imgIndex) => {
         const url = ad[key];
@@ -410,7 +410,7 @@ textarea:focus, select:focus {
     `;
     
     const imageSetDiv = card.querySelector('.image-set');
-    imageTags.forEach(img => {
+    imageElements.forEach(img => {
       imageSetDiv.appendChild(img);
     });
 
