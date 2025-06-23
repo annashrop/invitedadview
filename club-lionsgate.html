@@ -484,7 +484,11 @@ textarea:focus, select:focus {
   document.getElementById("sendToAgencyBtn").addEventListener("click", () => {
     const approvedAds = [];
     document.querySelectorAll(".preview-card").forEach(card => {
-      const allApproved = [...card.querySelectorAll("select")].every(sel => sel.value === "Approved");
+      const textStatus = card.querySelector('.text-approval')?.value;
+      const imageStatuses = [...card.querySelectorAll('.image-approval')].map(sel => sel.value);
+      const allImagesApproved = imageStatuses.every(val => val === "Approved");
+
+      const allApproved = textStatus === "Approved" && allImagesApproved;
 
       if (allApproved) {
         const adData = JSON.parse(card.dataset.ad);
