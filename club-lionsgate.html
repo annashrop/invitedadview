@@ -416,14 +416,14 @@ textarea:focus, select:focus {
   });
 }
 
-const selects = card.querySelectorAll('select');
-const commentBox = card.querySelector('textarea');
+  const selects = card.querySelectorAll('select');
+  const commentBox = card.querySelector('textarea');
 
-function updateCardStatus() {
-  const textStatus = card.querySelector('.text-approval')?.value;
-  const imageStatuses = Array.from(card.querySelectorAll('.image-approval')).map(sel => sel.value);
+  function updateCardStatus() {
+    const textStatus = card.querySelector('.text-approval')?.value;
+    const imageStatuses = Array.from(card.querySelectorAll('.image-approval')).map(sel => sel.value);
 
-  const needsEdit = textStatus === 'Needs Edit' || imageStatuses.includes('Needs Edit');
+    const needsEdit = textStatus === 'Needs Edit' || imageStatuses.includes('Needs Edit');
 
   if (needsEdit) {
     card.style.border = '2px solid #e74c3c';
