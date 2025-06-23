@@ -424,6 +424,21 @@ textarea:focus, select:focus {
   });
 }
   
+  firebase
+  .database()
+  .ref("approvedAds/Canyon Gate")
+  .once("value")
+  .then((snapshot) => {
+    const clubData = snapshot.val();
+    const adsArray = clubData?.ads || [];
+    const savedKeys = JSON.parse(localStorage.getItem("removedAds") || "[]");
+
+    const filteredAds = adsArray.filter(ad => !savedKeys.includes(ad["Ad Name"]));
+
+    renderApprovedAds(filteredAds);
+  });
+
+  
   document.addEventListener("DOMContentLoaded", () => {
     const clubName = "Canyon Gate";
     const savedKeys = JSON.parse(localStorage.getItem("removedAds") || "[]");
