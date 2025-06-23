@@ -334,30 +334,40 @@ textarea:focus, select:focus {
   container.innerHTML = "";
 
   adList.forEach((ad, index) => {
-    const imageTags = ['Image_URL_1', 'Image_URL_2', 'Image_URL_3'].map((key, index) => {
-  const url = row[key] || (index === 0 ? row["Image"] : null);  // only fall back for the first image
-  if (url && url !== '/') {
+  const imageTags = ['Image_URL_1', 'Image_URL_2', 'Image_URL_3']
+  .filter(key => ad[key] && ad[key] !== '/')
+  .map((key, imgIndex) => {
+    const url = ad[key];
     const isCanva = url.includes('canva.com');
     let imgSrc = '';
 
     if (isCanva) {
       imgSrc = url;
-    } 
-    
-  else {
-  const isTif = url.toLowerCase().endsWith('.tif');
-  const idMatch = url.match(/I[0-9A-Za-z_.]+/) ||
-                  url.match(/img-get2\/([^/]+)/) ||
-                  url.match(/\/(I[0-9A-Za-z_.]+)\//) ||
-                  url.match(/\/(G[0-9A-Za-z_]+)\//) ||
-                  url.match(/\/(C[0-9A-Za-z_]+)\//) ||
-                  url.match(/\/(I[0-9A-Za-z_.]+)\/[^/]+$/);
+    } else {
+      const isTif = url.toLowerCase().endsWith('.tif');
+      const idMatch = url.match(/I[0-9A-Za-z_.]+/) ||
+                      url.match(/img-get2\/([^/]+)/) ||
+                      url.match(/\/(I[0-9A-Za-z_.]+)\//) ||
+                      url.match(/\/(G[0-9A-Za-z_]+)\//) ||
+                      url.match(/\/(C[0-9A-Za-z_]+)\//) ||
+                      url.match(/\/(I[0-9A-Za-z_.]+)\/[^/]+$/);
+      const imageId = idMatch && (idMatch[1] || idMatch[0]);
+      if (!isTif && imageId) {
+        imgSrc = `https://cdn.photoshelter.com/img-get2/${imageId}/fit=1000x750`;
+      }
+    }
 
-  const imageId = idMatch && (idMatch[1] || idMatch[0]);
-  if (!isTif && imageId) {
-    imgSrc = `https://cdn.photoshelter.com/img-get2/${imageId}/fit=1000x750`;
-  }
-}
+    if (imgSrc) {
+      const img = document.createElement('img');
+      img.src = imgSrc;
+      img.alt = `Ad Image ${imgIndex + 1}`;
+      img.style.maxWidth = '100%';
+      return img;
+    } else {
+      return null;
+    }
+  }).filter(img => img !== null); // Only include actual images
+
 
         if (imgSrc) {
           return `
