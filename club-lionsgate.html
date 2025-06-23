@@ -393,7 +393,7 @@ textarea:focus, select:focus {
         <div class="meta-divider"></div>
         <div class="headline">${ad.Headline || ""}</div>
         <div class="primary-text">${ad.Body || ""}</div>
-        <div class="image-set">${imageElements.map(img => img.outerHTML).join("")}</div>
+        <div class="image-set">${Array.isArray(imageElements) ? imageElements.map(img => img.outerHTML).join("") : ''}</div>
         <div class="approval-row">
           <label>Ad Text Approval Status:</label>
           <select class="text-approval">
