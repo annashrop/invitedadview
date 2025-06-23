@@ -481,7 +481,8 @@ textarea:focus, select:focus {
   hour: "numeric",
   minute: "2-digit",
   hour12: true,
-  
+  });
+      
   const savedKeys = JSON.parse(localStorage.getItem("removedAds") || "[]");
   const updatedKeys = [...new Set([...savedKeys, ...approvedAds.map(ad => ad["Ad Name"])])];
   localStorage.setItem("removedAds", JSON.stringify(updatedKeys));
