@@ -319,15 +319,18 @@ async function renderApprovedAds(adList) {
   adList.forEach((ad, index) => {
     const card = document.createElement('div');
     card.className = 'preview-card';
-
     card.innerHTML = `
-      <p><strong>Region:</strong> ${ad.Region} <br>
-      <strong>Club:</strong> ${ad.Club} &nbsp; | &nbsp;
-      <strong>Category:</strong> ${ad.Category}</p>
-      <p class="ad-name"><strong>Ad Name:</strong> ${ad["Ad Name"]}</p>
-      <h3 class="headline">${ad.Headline}</h3>
-      <p class="primary-text">${ad["Primary Text"]}</p>
-      <div class="image-wrapper"></div>
+      <p class="meta"><strong>Region:</strong> ${ad.Region || ""} <br>
+      <strong>Club:</strong> ${ad.Club || ""} &nbsp; | &nbsp;
+      <strong>Category:</strong> ${ad.Category || ""}</p>
+      <p class="ad-name"><strong>Ad Name:</strong> ${ad["Ad Name"] || ""}</p>
+      <h3 class="headline">${ad.Headline || ""}</h3>
+      <p class="primary-text">${ad["Primary Text"] || ""}</p>
+      <div class="image-wrapper">
+        ${ad.Image_URL_1 ? `<img class="card-image" src="${ad.Image_URL_1}" alt="Ad Image 1">` : ""}
+        ${ad.Image_URL_2 ? `<img class="card-image" src="${ad.Image_URL_2}" alt="Ad Image 2">` : ""}
+        ${ad.Image_URL_3 ? `<img class="card-image" src="${ad.Image_URL_3}" alt="Ad Image 3">` : ""}
+      </div>
       <div class="dropdown-group">
         <label>Text Review:</label>
         <select class="text-approval">
@@ -350,19 +353,9 @@ async function renderApprovedAds(adList) {
       </div>
     `;
 
-    const imageWrapper = card.querySelector('.image-wrapper');
-    [ad.Image_URL_1, ad.Image_URL_2, ad.Image_URL_3].forEach(url => {
-      if (url) {
-        const img = document.createElement('img');
-        img.src = url;
-        img.className = 'card-image';
-        imageWrapper.appendChild(img);
-      }
-    });
-
     card.dataset.ad = JSON.stringify(ad);
 
-    // Status logic
+    // --- Card logic for color + validation
     function updateCardStatus(card) {
       const textStatus = card.querySelector('.text-approval')?.value;
       const imageStatuses = Array.from(card.querySelectorAll('.image-approval')).map(sel => sel.value);
@@ -388,15 +381,16 @@ async function renderApprovedAds(adList) {
       }
     }
 
-    // Attach listeners
+    // Attach listeners to each select in this card
     card.querySelectorAll('select').forEach(sel => {
       sel.addEventListener('change', () => updateCardStatus(card));
     });
 
-    updateCardStatus(card);
+    updateCardStatus(card); // Initial check
     container.appendChild(card);
   });
 }
+
 
 
 
