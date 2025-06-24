@@ -324,7 +324,7 @@ async function renderApprovedAds(adList) {
 const imageUrls = [ad.Image_URL_1, ad.Image_URL_2, ad.Image_URL_3];
 let imageTags = "";
 
-imageURLs.forEach((url, index) => {
+imageUrls.forEach((url, index) => {
   if (typeof url === 'string' && url.startsWith("http")) {
     imageTags += `
       <img class="card-image" src="${url}" alt="Ad Image ${index + 1}">
