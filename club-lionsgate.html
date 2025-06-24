@@ -319,6 +319,12 @@ async function renderApprovedAds(adList) {
   adList.forEach((ad, index) => {
     const card = document.createElement('div');
     card.className = 'preview-card';
+
+    const imageTags = [ad.Image_URL_1, ad.Image_URL_2, ad.Image_URL_3]
+      .filter(url => url)
+      .map(url => `<img class="card-image" src="${url}" alt="Ad Image">`)
+      .join('');
+  
     card.innerHTML = `
       <p class="meta"><strong>Region:</strong> ${ad.Region || ""} <br>
       <strong>Club:</strong> ${ad.Club || ""} &nbsp; | &nbsp;
