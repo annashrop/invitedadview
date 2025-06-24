@@ -321,18 +321,17 @@ async function renderApprovedAds(adList) {
     card.className = 'preview-card';
 
   console.log("Image URLs:", ad.Image_URL_1, ad.Image_URL_2, ad.Image_URL_3);
- let imageTags = '';
+let imageTags = '';
 if (ad && typeof ad === 'object') {
- const imageUrls = [
-  image.Image_URL_1 || "",
-  image.Image_URL_2 || "",
-  image.Image_URL_3 || ""
-];
+  const imageFields = ['Image_URL_1', 'Image_URL_2', 'Image_URL_3'];
 
-imageDiv.innerHTML = imageUrls
-  .filter(url => url && url.startsWith("http"))
-  .map((url, i) => `<img class="card-image" src="${url}" alt="Ad Image ${i + 1}">`)
-  .join("");
+  for (let i = 0; i < imageFields.length; i++) {
+    const url = ad[imageFields[i]];
+    if (url && url.startsWith("http")) {
+      imageTags += `<img class="card-image" src="${url}" alt="Ad Image ${i + 1}">`;
+    }
+  }
+}
   
     card.innerHTML = `
      <p class="meta"><strong>Region:</strong> ${ad.Region || ""} <br>
