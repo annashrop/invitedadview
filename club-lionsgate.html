@@ -320,24 +320,23 @@ async function renderApprovedAds(adList) {
     const card = document.createElement('div');
     card.className = 'preview-card';
 
-   const imageTags = [
-  ad?.Image_URL_1 || '',
-  ad?.Image_URL_2 || '',
-  ad?.Image_URL_3 || ''
-]
-.filter(url => url)
-.map((url, i) => `<img class="card-image" src="${url}" alt="Ad Image ${i + 1}">`)
-.join('');
+  const imageTags = [
+    ad?.Image_URL_1 || '',
+    ad?.Image_URL_2 || '',
+    ad?.Image_URL_3 || ''
+  ]
+  .filter(url => url)
+  .map((url, i) => `<img class="card-image" src="${url}" alt="Ad Image ${i + 1}">`)
+  .join('');
   
     card.innerHTML = `
-      <p class="meta"><strong>Region:</strong> ${ad.Region || ""} <br>
-      <strong>Club:</strong> ${ad.Club || ""} &nbsp; | &nbsp;
-      <strong>Category:</strong> ${ad.Category || ""}</p>
-      <p class="ad-name"><strong>Ad Name:</strong> ${ad["Ad Name"] || ""}</p>
-      <h3 class="headline">${ad.Headline || ""}</h3>
-      <p class="primary-text">${ad["Primary Text"] || ""}</p>
-      <div class="image-set">${imageTags}</div>
-      <div class="dropdown-group">
+     <p class="meta"><strong>Region:</strong> ${ad.Region || ""} <br>
+    <strong>Club:</strong> ${ad.Club || ""} &nbsp; | &nbsp;
+    <strong>Category:</strong> ${ad.Category || ""}</p>
+    <p class="ad-name"><strong>Ad Name:</strong> ${ad["Ad Name"] || ""}</p>
+    <h3 class="headline-text">${ad.Headline || ""}</h3>
+    <p class="primary-text">${ad["Primary Text"] || ""}</p>
+    <div class="image-set">${imageTags}</div>
         <label>Text Review:</label>
         <select class="text-approval">
           <option value="">Select</option>
