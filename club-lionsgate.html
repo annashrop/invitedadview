@@ -371,7 +371,7 @@ imageURLs.forEach((url, i) => {
     // --- Card logic for color + validation
   function updateCardStatus(card) {
     const textStatus = card.querySelector('.text-approval')?.value;
-    const imageStatuses = Array.from(card.querySelectorAll('select.image-approval-select')).map(sel => sel.value);
+    const imageStatuses = [...card.querySelectorAll("select.image-approval-select")].map(sel => sel.value);
     const commentBox = card.querySelector('textarea');
 
   const allApproved =
