@@ -505,7 +505,7 @@ async function renderApprovedAds(adList) {
         return; // prevent sending without comment
       }
 
-      const ad = {
+  const ad = {
   Region: card.querySelector(".meta strong:nth-child(1)")?.nextSibling?.textContent?.trim() || "",
   Club: card.querySelector(".meta strong:nth-child(2)")?.nextSibling?.textContent?.trim() || "",
   Category: card.querySelector(".meta strong:nth-child(3)")?.nextSibling?.textContent?.trim() || "",
