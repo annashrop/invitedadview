@@ -322,41 +322,31 @@ async function renderApprovedAds(adList) {
 
   console.log("Image URLs:", ad.Image_URL_1, ad.Image_URL_2, ad.Image_URL_3);
 
-let imageTags = '';
+const imageUrls = [ad.Image_URL_1, ad.Image_URL_2, ad.Image_URL_3];
+let imageTags = "";
 
-if (typeof ad === 'object') {
-  const imageUrls = [ad.Image_URL_1, ad.Image_URL_2, ad.Image_URL_3];
-
-  imageUrls.forEach((url, index) => {
-    if (url && typeof url === 'string' && url.startsWith("http")) {
-      imageTags += `<img class="card-image" src="${url}" alt="Ad Image ${index + 1}">`;
-    }
-  });
-}
+imageUrls.forEach((url, index) => {
+  if (url && typeof url === "string" && url.startsWith("http")) {
+    imageTags += `<img class="card-image" src="${url}" alt="Ad Image ${index + 1}" onerror="this.style.display='none'">`;
+  }
+});
 
   
     card.innerHTML = `
-     <p class="meta"><strong>Region:</strong> ${ad.Region || ""} <br>
-    <strong>Club:</strong> ${ad.Club || ""} &nbsp; | &nbsp;
-    <strong>Category:</strong> ${ad.Category || ""}</p>
-    <p class="ad-name"><strong>Ad Name:</strong> ${ad["Ad Name"] || ""}</p>
-    <h3 class="headline-text">${ad.Headline || ""}</h3>
-    <p class="primary-text">${ad["Primary Text"] || ""}</p>
-    <div class="image-set">${imageTags}</div>
-        <label>Text Review:</label>
-        <select class="text-approval">
-          <option value="">Select</option>
-          <option value="Approved">Approved</option>
-          <option value="Needs Edit">Needs Edit</option>
-        </select>
-      </div>
-      <div class="dropdown-group">
-        <label>Image Review:</label>
-        <select class="image-approval">
-          <option value="">Select</option>
-          <option value="Approved">Approved</option>
-          <option value="Needs Edit">Needs Edit</option>
-        </select>
+  <p class="meta"><strong>Region:</strong> ${ad.Region || ""} <br>
+  <strong>Club:</strong> ${ad.Club || ""} &nbsp; | &nbsp;
+  <strong>Category:</strong> ${ad.Category || ""}</p>
+  <p class="ad-name"><strong>Ad Name:</strong> ${ad["Ad Name"] || ""}</p>
+  <h3 class="headline-text">${ad.Headline || ""}</h3>
+  <p class="primary-text">${ad.Body || ""}</p>
+  <div class="image-set">${imageTags}</div>
+  <label>Text Review:</label>
+  <select class="text-approval">
+    <option value="">Select</option>
+    <option value="Approved">Approved</option>
+    <option value="Needs Edits">Needs Edits</option>
+  </select>
+`;
       </div>
       <div class="approval">
         <label>Reviewer Comments:</label>
