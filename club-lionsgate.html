@@ -321,7 +321,7 @@ async function renderApprovedAds(adList) {
 
   console.log("Image URLs:", ad.Image_URL_1, ad.Image_URL_2, ad.Image_URL_3);
 
-const imageUrls = [ad.Image_URL_1, ad.Image_URL_2, ad.Image_URL_3];
+const imageUrls = [ad.Image_URL_1, ad.Image_URL_2, ad.Image_URL_3].filter(url => typeof url === 'string' && url.trim().startsWith("http"));
 let imageTags = "";
 
 imageUrls.forEach((url, index) => {
@@ -378,9 +378,8 @@ imageUrls.forEach((url, index) => {
     // --- Card logic for color + validation
     function updateCardStatus(card) {
       const textStatus = card.querySelector('.text-approval')?.value;
-      const imageStatuses = Array.from(card.querySelectorAll('.image-approval')).map(sel => sel.value);
+      const imageStatuses = Array.from(card.querySelectorAll('select.image-approval-select')).map(sel => sel.value);
       const commentBox = card.querySelector('textarea');
-
       const needsEdit = textStatus === 'Needs Edit' || imageStatuses.includes('Needs Edit');
 
       if (needsEdit) {
