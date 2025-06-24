@@ -448,8 +448,8 @@ imageURLs.forEach((url, i) => {
           const finalData = {
             Region: region || "N/A",
             Club: "Lionsgate",
-            Category: card.querySelector('p strong:nth-child(3)')?.nextSibling?.textContent?.trim() || "N/A",
-            "Ad Name": card.querySelector('p strong:nth-child(4)')?.nextSibling?.textContent?.trim() || "N/A",
+            Category: card.dataset.category || "N/A",
+            "Ad Name": card.dataset.adName || "N/A",
             Headline: card.querySelector(".headline-text")?.textContent || "",
             "Primary Text": card.querySelector(".primary-text")?.textContent || "",
             Image_URL_1: card.querySelectorAll("img")[0]?.src || "",
