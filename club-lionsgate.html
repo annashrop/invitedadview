@@ -313,7 +313,7 @@ textarea:focus, select:focus {
 <script>
   
 async function renderApprovedAds(adList) {
-  const container = document.getElementById('ad-cards');
+  const container = document.getElementById('preview-container');
   container.innerHTML = '';
 
   adList.forEach((ad, index) => {
@@ -348,7 +348,8 @@ async function renderApprovedAds(adList) {
         <textarea placeholder="Enter comments here..." rows="3" style="width:100%;border-radius:6px;"></textarea>
       </div>
     `;
-
+    card.dataset.ad = JSON.stringify(ad);
+    
     // --- Card logic for color + validation
     function updateCardStatus(card) {
       const textStatus = card.querySelector('.text-approval')?.value;
