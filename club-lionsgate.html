@@ -320,10 +320,10 @@ async function renderApprovedAds(adList) {
     const card = document.createElement('div');
     card.className = 'preview-card';
 
-    const imageTags = [ad.Image_URL_1, ad.Image_URL_2, ad.Image_URL_3]
-      .filter(url => url)
-      .map((url, i) => `<img class="card-image" src="${url}" alt="Ad_Image_${i}">`)
-      .join('');
+   const imageTags = [ad.Image_URL_1, ad.Image_URL_2, ad.Image_URL_3]
+  .filter(url => url)
+  .map((url, i) => `<img class="card-image" src="${url}" alt="Ad_Image_${i}">`)
+  .join('');
   
     card.innerHTML = `
       <p class="meta"><strong>Region:</strong> ${ad.Region || ""} <br>
