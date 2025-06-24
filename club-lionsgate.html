@@ -356,6 +356,7 @@ async function renderApprovedAds(adList) {
     `;
 
     card.dataset.ad = JSON.stringify(ad);
+    console.log("AD OBJECT:", ad);
 
     // --- Card logic for color + validation
     function updateCardStatus(card) {
