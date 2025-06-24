@@ -432,66 +432,72 @@ imageURLs.forEach((url, i) => {
 
 
 
- document.getElementById("sendToAgencyBtn").addEventListener("click", () => {
-  const approvedAds = [];
+ document.addEventListener("DOMContentLoaded", () => {
+  const sendToAgencyBtn = document.getElementById("sendToAgencyBtn");
 
-  document.querySelectorAll(".preview-card").forEach(card => {
-    const textStatus = card.querySelector('.text-approval')?.value;
-    const imageStatuses = Array.from(card.querySelectorAll('select.image-approval-select')).map(sel => sel.value);
-    const allApproved = textStatus === "Approved" && imageStatuses.every(val => val === "Approved");
+  if (sendToAgencyBtn) {
+    sendToAgencyBtn.addEventListener("click", () => {
+      const approvedAds = [];
 
-    if (allApproved) {
-      const finalData = {
-        Region: region || "N/A",
-        Club: "Lionsgate",
-        Category: card.querySelector('p strong:nth-child(3)')?.nextSibling?.textContent?.trim() || "N/A",
-        "Ad Name": card.querySelector('p strong:nth-child(4)')?.nextSibling?.textContent?.trim() || "N/A",
-        Headline: card.querySelector(".headline-text")?.textContent || "",
-        "Primary Text": card.querySelector(".primary-text")?.textContent || "",
-        Image_URL_1: card.querySelectorAll("img")[0]?.src || "",
-        Image_URL_2: card.querySelectorAll("img")[1]?.src || "",
-        Image_URL_3: card.querySelectorAll("img")[2]?.src || "",
-        textApprovalStatus: textStatus,
-        imageApprovalStatuses: imageStatuses,
-        reviewerComments: card.querySelector("textarea")?.value || "",
-        Timestamp: new Date().toISOString()
-      };
+      document.querySelectorAll(".preview-card").forEach(card => {
+        const textStatus = card.querySelector('.text-approval')?.value;
+        const imageStatuses = Array.from(card.querySelectorAll('select.image-approval-select')).map(sel => sel.value);
+        const allApproved = textStatus === "Approved" && imageStatuses.every(val => val === "Approved");
 
-      approvedAds.push(finalData);
+        if (allApproved) {
+          const finalData = {
+            Region: region || "N/A",
+            Club: "Lionsgate",
+            Category: card.querySelector('p strong:nth-child(3)')?.nextSibling?.textContent?.trim() || "N/A",
+            "Ad Name": card.querySelector('p strong:nth-child(4)')?.nextSibling?.textContent?.trim() || "N/A",
+            Headline: card.querySelector(".headline-text")?.textContent || "",
+            "Primary Text": card.querySelector(".primary-text")?.textContent || "",
+            Image_URL_1: card.querySelectorAll("img")[0]?.src || "",
+            Image_URL_2: card.querySelectorAll("img")[1]?.src || "",
+            Image_URL_3: card.querySelectorAll("img")[2]?.src || "",
+            textApprovalStatus: textStatus,
+            imageApprovalStatuses: imageStatuses,
+            reviewerComments: card.querySelector("textarea")?.value || "",
+            Timestamp: new Date().toISOString()
+          };
 
-      // Fade & remove
-      card.style.transition = "opacity 0.4s ease";
-      card.style.opacity = 0;
-      setTimeout(() => {
-        card.remove();
-        checkIfNoAdsLeft();
-      }, 400);
-    }
-  });
+          approvedAds.push(finalData);
 
-  if (approvedAds.length > 0) {
-    const now = new Date();
-    const batchKey = `Lionsgate - ${now.toLocaleString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true
-    })}`;
+          // Fade & remove
+          card.style.transition = "opacity 0.4s ease";
+          card.style.opacity = 0;
+          setTimeout(() => {
+            card.remove();
+            checkIfNoAdsLeft();
+          }, 400);
+        }
+      });
 
-    firebase.database().ref(`finalApprovedAds/${batchKey}`).set({
-      ads: approvedAds,
-      timestamp: now.toISOString()
-    }).then(() => {
-      showToast("✅ Final approvals sent to Agency.");
-      console.log("✅ Final approved ads sent to Firebase.");
-    }).catch(error => {
-      console.error("❌ Error writing to Firebase:", error);
-      showToast("❌ Failed to send final approvals.");
+      if (approvedAds.length > 0) {
+        const now = new Date();
+        const batchKey = `Lionsgate - ${now.toLocaleString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: true
+        })}`;
+
+        firebase.database().ref(`finalApprovedAds/${batchKey}`).set({
+          ads: approvedAds,
+          timestamp: now.toISOString()
+        }).then(() => {
+          showToast("✅ Final approvals sent to Agency.");
+          console.log("✅ Final approved ads sent to Firebase.");
+        }).catch(error => {
+          console.error("❌ Error writing to Firebase:", error);
+          showToast("❌ Failed to send final approvals.");
+        });
+      } else {
+        showToast("⚠️ No ads fully approved to send.");
+      }
     });
-  } else {
-    showToast("⚠️ No ads fully approved to send.");
   }
 });
 
