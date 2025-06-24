@@ -475,10 +475,17 @@ async function renderApprovedAds(adList) {
   
 
   const finalData = {
-    clubName,
-    timestamp,
-    ads: approvedAds
-  };
+        Region: region || "N/A",
+        Club: club || "N/A",
+        Category: category || "N/A",
+        "Ad Name": adName || "N/A",
+        Headline: card.querySelector(".headline")?.textContent || "",
+        Body: card.querySelector(".primary-text")?.textContent || "",
+        Image_URL_1: card.querySelectorAll("img")[0]?.src || "",
+        Image_URL_2: card.querySelectorAll("img")[1]?.src || "",
+        Image_URL_3: card.querySelectorAll("img")[2]?.src || "",
+        Timestamp: new Date().toISOString()
+      };
   
   console.log("📛 Club Name used in Firebase path:", clubName);
   firebase.database().ref(`finalApprovedAds/Lionsgate`).set(finalData)
