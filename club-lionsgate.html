@@ -326,7 +326,7 @@ async function renderApprovedAds(adList) {
       <p><strong>Ad Name:</strong> ${ad.name}</p>
       <h3>${ad.header}</h3>
       <p>${ad.body}</p>
-      <img src="${ad.imageUrls?.[0] || ''}" alt="Ad Image" style="width:100%;border-radius:12px;margin-top:10px;"/>
+      img.src = ad.imageUrl || "";
       <div class="dropdown-group">
         <label>Text Review:</label>
         <select class="text-approval">
