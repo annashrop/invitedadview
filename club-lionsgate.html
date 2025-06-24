@@ -311,6 +311,81 @@ textarea:focus, select:focus {
 </div>
 
 <script>
+  
+async function renderApprovedAds(adList) {
+  const container = document.getElementById('ad-cards');
+  container.innerHTML = '';
+
+  adList.forEach((ad, index) => {
+    const card = document.createElement('div');
+    card.className = 'ad-card';
+    card.innerHTML = `
+      <p><strong>Region:</strong> ${ad.region} <br>
+      <strong>Club:</strong> ${ad.club} &nbsp; | &nbsp;
+      <strong>Category:</strong> ${ad.category}</p>
+      <p><strong>Ad Name:</strong> ${ad.name}</p>
+      <h3>${ad.header}</h3>
+      <p>${ad.body}</p>
+      <img src="${ad.imageUrls?.[0] || ''}" alt="Ad Image" style="width:100%;border-radius:12px;margin-top:10px;"/>
+      <div class="dropdown-group">
+        <label>Text Review:</label>
+        <select class="text-approval">
+          <option value="">Select</option>
+          <option value="Approved">Approved</option>
+          <option value="Needs Edit">Needs Edit</option>
+        </select>
+      </div>
+      <div class="dropdown-group">
+        <label>Image Review:</label>
+        <select class="image-approval">
+          <option value="">Select</option>
+          <option value="Approved">Approved</option>
+          <option value="Needs Edit">Needs Edit</option>
+        </select>
+      </div>
+      <div class="approval">
+        <label>Reviewer Comments:</label>
+        <textarea placeholder="Enter comments here..." rows="3" style="width:100%;border-radius:6px;"></textarea>
+      </div>
+    `;
+
+    // --- Card logic for color + validation
+    function updateCardStatus(card) {
+      const textStatus = card.querySelector('.text-approval')?.value;
+      const imageStatuses = Array.from(card.querySelectorAll('.image-approval')).map(sel => sel.value);
+      const commentBox = card.querySelector('textarea');
+
+      const needsEdit = textStatus === 'Needs Edit' || imageStatuses.includes('Needs Edit');
+
+      if (needsEdit) {
+        card.style.border = '2px solid #e74c3c';
+        card.style.backgroundColor = '#ffe6e6';
+        commentBox.required = true;
+        commentBox.placeholder = "Required – please explain what needs edits.";
+      } else if (textStatus === 'Approved' && imageStatuses.every(v => v === 'Approved')) {
+        card.style.border = '2px solid #2ecc71';
+        card.style.backgroundColor = '#e8f6f0';
+        commentBox.required = false;
+        commentBox.placeholder = "Optional – add comments if needed.";
+      } else {
+        card.style.border = '2px solid #000000';
+        card.style.backgroundColor = '#ffffff';
+        commentBox.required = false;
+        commentBox.placeholder = "Optional – add comments if needed.";
+      }
+    }
+
+    // Attach listeners to each select in this card
+    card.querySelectorAll('select').forEach(sel => {
+      sel.addEventListener('change', () => updateCardStatus(card));
+    });
+
+    updateCardStatus(card); // Initial check
+    container.appendChild(card);
+  });
+}
+
+
   document.addEventListener("DOMContentLoaded", () => {
     firebase
       .database()
@@ -330,43 +405,6 @@ textarea:focus, select:focus {
   });
   
   
-function updateCardStatus(card) {
-  const textStatus = card.querySelector('.text-approval')?.value;
-  const imageStatuses = Array.from(card.querySelectorAll('.image-approval')).map(sel => sel.value);
-  const commentBox = card.querySelector('textarea');
-
-  const needsEdit = textStatus === 'Needs Edit' || imageStatuses.includes('Needs Edit');
-
-  if (needsEdit) {
-    card.style.border = '2px solid #e74c3c';
-    card.style.backgroundColor = '#ffe6e6';
-    commentBox.required = true;
-    commentBox.placeholder = "Required – please explain what needs edits.";
-  } else if (textStatus === 'Approved' && imageStatuses.every(v => v === 'Approved')) {
-    card.style.border = '2px solid #2ecc71';
-    card.style.backgroundColor = '#e8f6f0';
-    commentBox.required = false;
-    commentBox.placeholder = "Optional – add comments if needed.";
-  } else {
-    card.style.border = '2px solid #000000';
-    card.style.backgroundColor = '#ffffff';
-    commentBox.required = false;
-    commentBox.placeholder = "Optional – add comments if needed.";
-  }
-}
-
-// Attach listeners to each dropdown in the card
-card.querySelectorAll('select').forEach(sel => {
-  sel.addEventListener('change', () => updateCardStatus(card));
-});
-
-// Initial update for pre-filled cards
-updateCardStatus(card);
-container.appendChild(card);
-
-</script>
-
-<script>
   document.addEventListener("DOMContentLoaded", () => {
     const clubName = "Lionsgate";
     const savedKeys = JSON.parse(localStorage.getItem("removedAds") || "[]");
