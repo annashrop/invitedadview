@@ -322,7 +322,7 @@ async function renderApprovedAds(adList) {
 
     const imageTags = [ad.Image_URL_1, ad.Image_URL_2, ad.Image_URL_3]
       .filter(url => url)
-      .map(url => `<img class="card-image" src="${url}" alt="Ad Image">`)
+      .map((url, i) => `<img class="card-image" src="${url}" alt="Ad_Image_${i}">`)
       .join('');
   
     card.innerHTML = `
