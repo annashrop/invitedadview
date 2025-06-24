@@ -1,0 +1,613 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCLl4jDy3dfN8Ntgjnjt0IieVbPTQywPwE",
+    authDomain: "marketingapprovalportal.firebaseapp.com",
+    databaseURL: "https://marketingapprovalportal-default-rtdb.firebaseio.com",
+    projectId: "marketingapprovalportal",
+    storageBucket: "marketingapprovalportal.appspot.com",
+    messagingSenderId: "324999586351",
+    appId: "1:324999586351:web:2e516d07f8242f13f2cb7a"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+</script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+  <script>
+  const region = "West";
+const user = localStorage.getItem("user");
+if (!user) {
+  window.location.href = "login.html";
+}
+
+</script>
+
+  <link rel="stylesheet" href="css/styles.css">
+  <meta charset="UTF-8">
+  <title>Lionsgate - Club Review</title>
+  <style>
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    padding: 0;
+    color: white;
+  }
+
+ .top-nav {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 20px auto;
+  text-align: center;
+}
+
+   .nav-logo {
+  max-width: 160px;
+  height: auto;
+}
+
+.nav-title {
+  color: white;
+  font-size: 18px;
+  margin-top: 8px;
+}
+    
+.main-container {
+  margin: 0 auto;
+  padding: 20px;
+  max-width: 1000px;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  background-color: #0F2454; /* your navy background */
+}
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 26px;
+      font-weight: 600;
+    }
+    .top-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+    .card-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 30px; /* creates horizontal and vertical spacing */
+}
+
+    .top-buttons button {
+      padding: 12px 20px;
+      font-size: 14px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    #sendToAgencyBtn {
+      background-color: #7baa65;
+      color: white;
+    }
+    #sendEdits {
+      background-color: #e35207;
+      color: white;
+    }
+  
+  .headline {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 10px 0 6px;
+  color: #333;
+}
+
+.primary-text {
+  font-size: 15px;
+  color: #555;
+  margin-bottom: 12px;
+}
+
+ .preview-card {
+  width: 340px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.2s ease;
+  padding: 16px;
+}
+
+.preview-card img.card-image {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+    .image-wrapper {
+    margin-top: 10px;
+  }
+
+  .card-image {
+    width: 100%;
+    max-height: 300px;
+    object-fit: cover;
+    border-radius: 6px;
+    margin-bottom: 10px;
+  }
+    .view-link {
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.approval-row,
+.approval {
+  margin-top: 10px;
+}
+    
+ body {
+  display: flex;
+  flex-direction: column;
+  background-color: #0F2454; /* your navy background */
+}
+    select, textarea {
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  padding: 8px;
+  font-size: 14px;
+  width: 100%;
+  margin-top: 4px;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+}
+
+textarea:focus, select:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+
+.sidebar {
+  width: 240px;
+  background-color: #22326e;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.sidebar h2 {
+  font-size: 22px;
+  margin-bottom: 30px;
+}
+
+.sidebar a {
+  display: block;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 12px 16px;
+  border-radius: 999px;
+  margin-bottom: 14px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.sidebar a:nth-of-type(1) { background-color: #83b573; color: white; }       /* Paid Ads */
+.sidebar a:nth-of-type(2) { background-color: #00a3cf; color: white; }       /* Emails */
+.sidebar a:nth-of-type(3) { background-color: #933b45; color: white; }       /* Landing Page */
+.sidebar a:nth-of-type(4) { background-color: #e35205; color: white; }       /* Coming Soon */
+.sidebar a:nth-of-type(5) { background-color: #ffffff; color: #22326e; }     /* Coming Soon (white) */
+
+.sidebar a:hover {
+  transform: scale(1.03);
+  opacity: 0.9;
+}
+
+
+.logout-button {
+  margin-top: auto;
+  background-color: #ff6f3c;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.logout-button:hover {
+  background-color: #e35205;
+}
+.main-container {
+  margin: 0 auto;
+  padding: 20px;
+  max-width: 1000px;
+}
+.main-content {
+  margin-left: 240px;
+  flex-grow: 1;
+  /* background-color: #f4f6fb; */ /* remove or comment this out */
+  padding: 40px;
+  height: 100vh;
+  overflow-y: auto;
+  transition: background-color 0.3s ease;
+}
+.welcome-container {
+  text-align: center;
+  margin-top: 100px;
+  color: white;
+}
+
+.welcome-container h1 {
+  font-size: 36px;
+  margin-bottom: 10px;
+}
+
+.welcome-container p {
+  font-size: 18px;
+  opacity: 0.9;
+}
+.card-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px;
+}
+  </style>
+</head>
+<body>
+<div class="sidebar">
+  <h2>Club Dashboard</h2>
+  <a href="club-canyon-gate.html" id="paid-ads-btn">Paid Ads</a>
+  <a href="#" id="emails-btn">Emails</a>
+  <a href="#" id="landing-btn">Landing Pages</a>
+  <a href="#">[Coming Soon!]</a>
+  <a href="#">[Coming Soon!]</a>
+  <button class="logout-button" onclick="logout()">Logout</button>
+</div>
+
+
+<div class="main-content">
+  <div class="top-nav">
+    <img class="nav-logo" src="https://www.invitedclubs.com/globalassets/.invited-corporate-site/_logos/invited-logo_500px-wide.png" alt="Invited Logo" />
+    <div class="nav-title">Ad Review Portal – Club View</div>
+  </div>
+
+  <div class="main-container">
+    <h1>Lionsgate Ad Approvals</h1>
+    <div class="top-buttons">
+      <button id="sendToAgencyBtn">Send Final Approvals</button>
+      <button id="sendEdits">Send Edits to Ads Department</button>
+    </div>
+    <div id="preview-container">
+      <div id="no-ads-message" style="display:none; text-align:center; font-size:18px; color:#888; margin-top:40px;">
+        🎉 All ads have been reviewed!
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+async function renderApprovedAds(adList) {
+  const container = document.getElementById('preview-container');
+  container.innerHTML = '';
+
+  adList.forEach((ad, index) => {
+    const card = document.createElement('div');
+    card.className = 'preview-card';
+
+  console.log("Image URLs:", ad.Image_URL_1, ad.Image_URL_2, ad.Image_URL_3);
+
+const imageURLs = [ad.Image_URL_1, ad.Image_URL_2, ad.Image_URL_3];
+let imageTags = "";
+
+imageURLs.forEach((url, i) => {
+  if (typeof url === "string" && url.trim().startsWith("http")) {
+    imageTags += `
+      <img class="card-image" src="${url}" alt="Ad Image ${i + 1}">
+      <div class="image-approval">
+        <label>Image Review:</label>
+        <select class="image-approval-select">
+          <option value="">Select</option>
+          <option value="Approved">Approved</option>
+          <option value="Needs Edits">Needs Edits</option>
+        </select>
+      </div>
+    `;
+  }
+});
+
+
+  
+    card.innerHTML = `
+  <p class="meta"><strong>Region:</strong> ${ad.Region || ""} <br>
+  <strong>Club:</strong> ${ad.Club || ""} &nbsp; | &nbsp;
+  <strong>Category:</strong> ${ad.Category || ""}</p>
+  <p class="ad-name"><strong>Ad Name:</strong> ${ad["Ad Name"] || ""}</p>
+  <h3 class="headline-text">${ad.Headline || ""}</h3>
+  <p class="primary-text">${ad.Body || ""}</p>
+  <div class="image-set">${imageTags}</div>
+  <label>Text Review:</label>
+  <select class="text-approval">
+    <option value="">Select</option>
+    <option value="Approved">Approved</option>
+    <option value="Needs Edits">Needs Edits</option>
+  </select>
+`;
+      
+   card.innerHTML += `
+    <div class="approval-box">
+    <label>Reviewer Comments:</label>
+    <textarea placeholder="Enter comments here..." rows="3" style="width:100%;border-radius:6px;"></textarea>
+    </div>
+`;
+
+    card.dataset.ad = JSON.stringify(ad);
+    console.log("AD OBJECT:", ad);
+
+    // --- Card logic for color + validation
+  function updateCardStatus(card) {
+    const textStatus = card.querySelector('.text-approval')?.value;
+    const imageStatuses = Array.from(card.querySelectorAll('select.image-approval-select')).map(sel => sel.value);
+    const commentBox = card.querySelector('textarea');
+
+  const allApproved =
+    textStatus === "Approved" &&
+    imageStatuses.every(status => status === "Approved") &&
+    commentBox.value.trim() === "";
+
+  const anyNeedsEdit =
+    textStatus === "Needs Edits" ||
+    imageStatuses.includes("Needs Edits") ||
+    commentBox.value.trim().length > 0;
+
+  if (allApproved) {
+    card.style.backgroundColor = "#d4edda"; // ✅ green
+  } else if (anyNeedsEdit) {
+    card.style.backgroundColor = "#f8d7da"; // ❌ red
+  } else {
+    card.style.backgroundColor = ""; // reset
+  }
+}
+
+    // Attach listeners to each select in this card
+    card.querySelectorAll('select').forEach(sel => {
+      sel.addEventListener('change', () => updateCardStatus(card));
+    });
+
+    updateCardStatus(card); // Initial check
+    container.appendChild(card);
+  });
+}
+        
+  
+ document.addEventListener("DOMContentLoaded", () => {
+  const clubName = "Lionsgate";
+  const savedKeys = JSON.parse(localStorage.getItem("removedAds") || "[]");
+  const dbRef = firebase.database().ref(`approvedAds/${clubName}`);
+
+  dbRef.once("value")
+    .then(snapshot => {
+      const clubData = snapshot.val();
+      console.log("clubData from Firebase:", clubData);
+      const adsArray = clubData?.ads || [];
+      console.log("adsArray extracted:", adsArray);
+
+      const filteredAds = adsArray.filter(ad => ad && !savedKeys.includes(ad["Ad Name"]));
+      console.log("Filtered ads to render:", filteredAds);
+
+      renderApprovedAds(filteredAds);
+    })
+    .catch(error => {
+      console.error("Error fetching data from Firebase:", error);
+    });
+});
+
+
+  
+
+
+
+
+ document.getElementById("sendToAgencyBtn").addEventListener("click", () => {
+  const approvedAds = [];
+
+  document.querySelectorAll(".preview-card").forEach(card => {
+    const textStatus = card.querySelector('.text-approval')?.value;
+    const imageStatuses = [...card.querySelectorAll('.image-approval')].map(sel => sel.value);
+    const allApproved = textStatus === "Approved" && imageStatuses.every(val => val === "Approved");
+
+    if (allApproved) {
+      const finalData = {
+        Region: region || "N/A",
+        Club: "Lionsgate",
+        Category: card.querySelector('p strong:nth-child(3)')?.nextSibling?.textContent?.trim() || "N/A",
+        "Ad Name": card.querySelector('p strong:nth-child(4)')?.nextSibling?.textContent?.trim() || "N/A",
+        Headline: card.querySelector(".headline-text")?.textContent || "",
+        "Primary Text": card.querySelector(".primary-text")?.textContent || "",
+        Image_URL_1: card.querySelectorAll("img")[0]?.src || "",
+        Image_URL_2: card.querySelectorAll("img")[1]?.src || "",
+        Image_URL_3: card.querySelectorAll("img")[2]?.src || "",
+        textApprovalStatus: textStatus,
+        imageApprovalStatuses: imageStatuses,
+        reviewerComments: card.querySelector("textarea")?.value || "",
+        Timestamp: new Date().toISOString()
+      };
+
+      approvedAds.push(finalData);
+
+      // Fade & remove
+      card.style.transition = "opacity 0.4s ease";
+      card.style.opacity = 0;
+      setTimeout(() => {
+        card.remove();
+        checkIfNoAdsLeft();
+      }, 400);
+    }
+  });
+
+  if (approvedAds.length > 0) {
+    const now = new Date();
+    const batchKey = `Lionsgate - ${now.toLocaleString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true
+    })}`;
+
+    firebase.database().ref(`finalApprovedAds/${batchKey}`).set({
+      ads: approvedAds,
+      timestamp: now.toISOString()
+    }).then(() => {
+      showToast("✅ Final approvals sent to Agency.");
+      console.log("✅ Final approved ads sent to Firebase.");
+    }).catch(error => {
+      console.error("❌ Error writing to Firebase:", error);
+      showToast("❌ Failed to send final approvals.");
+    });
+  } else {
+    showToast("⚠️ No ads fully approved to send.");
+  }
+});
+
+
+
+
+  document.getElementById("sendEdits").addEventListener("click", () => {
+  const editAds = [];
+  document.querySelectorAll(".preview-card").forEach(card => {
+    const imageStatuses = [...card.querySelectorAll("select.image-approval")].map(sel => sel.value);
+    const textStatus = card.querySelector("select.text-approval")?.value;
+    const needsEdit = imageStatuses.some(v => v === "Needs Edit" || v === "Declined") ||
+                      textStatus === "Needs Edit" || textStatus === "Declined";
+
+    if (needsEdit) {
+      const commentBox = card.querySelector("textarea");
+      const comments = commentBox?.value.trim();
+
+      if (!comments) {
+        commentBox.style.border = "2px solid red";
+        commentBox.placeholder = "Comment required before submitting edits.";
+        return; // prevent sending without comment
+      }
+
+  const ad = {
+  Region: card.querySelector(".meta strong:nth-child(1)")?.nextSibling?.textContent?.trim() || "",
+  Club: card.querySelector(".meta strong:nth-child(2)")?.nextSibling?.textContent?.trim() || "",
+  Category: card.querySelector(".meta strong:nth-child(3)")?.nextSibling?.textContent?.trim() || "",
+  "Ad Name": card.querySelector(".ad-name")?.textContent?.replace("Ad Name: ", "") || "",
+  Headline: card.querySelector(".headline")?.textContent || "",
+  "Primary Text": card.querySelector(".primary-text")?.textContent || "",
+  Image_URL_1: card.querySelectorAll(".card-image")[0]?.src || "",
+  Image_URL_2: card.querySelectorAll(".card-image")[1]?.src || "",
+  Image_URL_3: card.querySelectorAll(".card-image")[2]?.src || "",
+  textApprovalStatus: card.querySelector(".text-approval")?.value || "",
+  imageApprovalStatuses: [...card.querySelectorAll(".image-approval")].map(el => el.value),
+  reviewerComments: card.querySelector("textarea")?.value || ""
+  };
+
+
+      editAds.push(ad);
+
+      // Fade and remove the card after submitting
+      card.style.transition = "opacity 0.4s ease";
+      card.style.opacity = 0;
+      setTimeout(() => card.remove(), 400);
+    }
+  });
+
+  if (editAds.length > 0) {
+    localStorage.setItem("adsNeedingEdits", JSON.stringify(editAds));
+    showToast("Edits sent to Ads Department.");
+  } else {
+    showToast("No edits to send.");
+    }
+  });
+
+
+    checkIfNoAdsLeft();
+
+  const showToast = (message) => {
+    const toast = document.createElement("div");
+    toast.textContent = message;
+    toast.style.position = "fixed";
+    toast.style.bottom = "20px";
+    toast.style.left = "50%";
+    toast.style.transform = "translateX(-50%)";
+    toast.style.backgroundColor = "#333";
+    toast.style.color = "#fff";
+    toast.style.padding = "12px 20px";
+    toast.style.borderRadius = "6px";
+    toast.style.zIndex = "9999";
+    toast.style.fontSize = "14px";
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+  };
+
+  function checkIfNoAdsLeft() {
+    if (document.querySelectorAll('.preview-card').length === 0) {
+      document.getElementById('no-ads-message').style.display = 'block';
+    }
+  }
+
+  
+
+
+  const mainContent = document.querySelector('.main-content');
+
+  function hideWelcome() {
+    const welcomeEl = document.getElementById("welcome-message");
+    if (welcomeEl) welcomeEl.style.display = "none";
+  }
+
+  document.getElementById('paid-ads-btn')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    localStorage.setItem("activeSection", "paid");
+    mainContent.style.backgroundColor = '#83b573';
+    hideWelcome();
+  });
+
+  document.getElementById('emails-btn')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    localStorage.setItem("activeSection", "emails");
+    mainContent.style.backgroundColor = '#00a3cf';
+    hideWelcome();
+  });
+
+  document.getElementById('landing-btn')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    localStorage.setItem("activeSection", "landing");
+    mainContent.style.backgroundColor = '#933b45';
+    hideWelcome();
+  });
+
+  // On page load, show welcome OR restore section background
+
+</script> 
+</body>
+</html>
