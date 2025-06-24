@@ -481,7 +481,7 @@ async function renderApprovedAds(adList) {
   };
   
   console.log("📛 Club Name used in Firebase path:", clubName);
-  firebase.database().ref(`approvedAds/Lionsgate`).set(finalData)
+  firebase.database().ref(`finalApprovedAds/Lionsgate`).set(finalData)
     .then(() => {
       console.log("✅ Ads successfully sent to Firebase.");
       localStorage.setItem(`clubApprovedAds_${clubName}`, JSON.stringify(approvedAds));
