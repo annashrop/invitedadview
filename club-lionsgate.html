@@ -440,7 +440,7 @@ async function renderApprovedAds(adList) {
         Club: "Lionsgate",
         Category: card.querySelector('p strong:nth-child(3)')?.nextSibling?.textContent?.trim() || "N/A",
         "Ad Name": card.querySelector('p strong:nth-child(4)')?.nextSibling?.textContent?.trim() || "N/A",
-        Headline: card.querySelector(".headline")?.textContent || "",
+        Headline: card.querySelector(".headline-text")?.textContent || "",
         "Primary Text": card.querySelector(".primary-text")?.textContent || "",
         Image_URL_1: card.querySelectorAll("img")[0]?.src || "",
         Image_URL_2: card.querySelectorAll("img")[1]?.src || "",
