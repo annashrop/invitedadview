@@ -311,228 +311,203 @@ textarea:focus, select:focus {
 </div>
 
 <script>
-  document.addEventListener("DOMContentLoaded", () => {
-    firebase
-      .database()
-      .ref("approvedAds/Canyon Gate")
-      .once("value")
-      .then((snapshot) => {
-        const clubData = snapshot.val();
-        const adsArray = clubData?.ads || [];
-
-        const savedKeys = JSON.parse(localStorage.getItem("removedAds") || "[]");
-        const filteredAds = adsArray.filter(ad => !savedKeys.includes(ad["Ad Name"]));
-
-        console.log("Filtered ads to render:", filteredAds); // 👈 Debug line
-
-        renderApprovedAds(filteredAds); // 👈 This must be INSIDE the .then block
-      });
-  });
-  
-  function renderApprovedAds(adList) {
-  const container = document.getElementById("preview-container");
-  container.innerHTML = "";
+async function renderApprovedAds(adList) {
+  const container = document.getElementById('preview-container');
+  container.innerHTML = '';
 
   adList.forEach((ad, index) => {
-    const imageTags = ['Image_URL_1', 'Image_URL_2', 'Image_URL_3'].map((key, imgIndex) => {
-  const url = ad[key];
-  if (url && url !== '/') {
-    const isCanva = url.includes('canva.com');
-    let imgSrc = '';
+    const card = document.createElement('div');
+    card.className = 'preview-card';
 
-    if (isCanva) {
-      imgSrc = url;
-    } 
-    
-  else {
-  const isTif = url.toLowerCase().endsWith('.tif');
-  const idMatch = url.match(/I[0-9A-Za-z_.]+/) ||
-                  url.match(/img-get2\/([^/]+)/) ||
-                  url.match(/\/(I[0-9A-Za-z_.]+)\//) ||
-                  url.match(/\/(G[0-9A-Za-z_]+)\//) ||
-                  url.match(/\/(C[0-9A-Za-z_]+)\//) ||
-                  url.match(/\/(I[0-9A-Za-z_.]+)\/[^/]+$/);
+  console.log("Image URLs:", ad.Image_URL_1, ad.Image_URL_2, ad.Image_URL_3);
 
-  const imageId = idMatch && (idMatch[1] || idMatch[0]);
-  if (!isTif && imageId) {
-    imgSrc = `https://cdn.photoshelter.com/img-get2/${imageId}/fit=1000x750`;
+const imageURLs = [ad.Image_URL_1, ad.Image_URL_2, ad.Image_URL_3];
+let imageTags = "";
+
+imageURLs.forEach((url, i) => {
+  if (typeof url === "string" && url.trim().startsWith("http")) {
+    imageTags += `
+      <img class="card-image" src="${url}" alt="Ad Image ${i + 1}">
+      <div class="image-approval">
+        <label>Image Review:</label>
+        <select class="image-approval-select">
+          <option value="">Select</option>
+          <option value="Approved">Approved</option>
+          <option value="Needs Edits">Needs Edits</option>
+        </select>
+      </div>
+    `;
+  }
+});
+
+
+  
+    card.innerHTML = `
+  <p class="meta"><strong>Region:</strong> ${ad.Region || ""} <br>
+  <strong>Club:</strong> ${ad.Club || ""} &nbsp; | &nbsp;
+  <strong>Category:</strong> ${ad.Category || ""}</p>
+  <p class="ad-name"><strong>Ad Name:</strong> ${ad["Ad Name"] || ""}</p>
+  <h3 class="headline-text">${ad.Headline || ""}</h3>
+  <p class="primary-text">${ad.Body || ""}</p>
+  <div class="image-set">${imageTags}</div>
+  <label>Text Review:</label>
+  <select class="text-approval">
+    <option value="">Select</option>
+    <option value="Approved">Approved</option>
+    <option value="Needs Edits">Needs Edits</option>
+  </select>
+`;
+      
+   card.innerHTML += `
+    <div class="approval-box">
+    <label>Reviewer Comments:</label>
+    <textarea placeholder="Enter comments here..." rows="3" style="width:100%;border-radius:6px;"></textarea>
+    </div>
+`;
+
+    card.dataset.ad = JSON.stringify(ad);
+    console.log("AD OBJECT:", ad);
+
+    // --- Card logic for color + validation
+  function updateCardStatus(card) {
+    const textStatus = card.querySelector('.text-approval')?.value;
+    const imageStatuses = [...card.querySelectorAll("select.image-approval-select")].map(sel => sel.value);
+    const commentBox = card.querySelector('textarea');
+
+  const allApproved =
+    textStatus === "Approved" &&
+    imageStatuses.every(status => status === "Approved") &&
+    commentBox.value.trim() === "";
+
+  const anyNeedsEdit =
+    textStatus === "Needs Edits" ||
+    imageStatuses.includes("Needs Edits") ||
+    commentBox.value.trim().length > 0;
+
+  if (allApproved) {
+    card.style.backgroundColor = "#d4edda"; // ✅ green
+  } else if (anyNeedsEdit) {
+    card.style.backgroundColor = "#f8d7da"; // ❌ red
+  } else {
+    card.style.backgroundColor = ""; // reset
   }
 }
 
-        if (imgSrc) {
-          return `
-            <div class="image-wrapper">
-              <img class="card-image" src="${imgSrc}" alt="Ad image" />
-              <div class="view-link">
-                <a href="#" class="view-image-button" onclick="window.open('${url}', 'ImagePopup', 'width=800,height=600'); return false;">View Full Image ${imgIndex + 1}</a>
-                <div class="approval-row">
-                  <label>Image Approval Status:</label>
-                  <select class="image-approval">
-                    <option value="Pending">Pending</option>
-                    <option value="Approved">Approved</option>
-                    <option value="Needs Edit">Needs Edit</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-          `;
-        }
-      }
-      return "";
-    }).join("");
-
-    const card = document.createElement("div");
-    card.className = "preview-card";
-
-    card.innerHTML = `
-      <div class="card-body">
-        <div class="meta-section">
-          <div class="meta"><strong>Region:</strong> ${ad.Region || "N/A"}</div>
-          <div class="meta"><strong>Club:</strong> ${ad.Club || "N/A"} &nbsp; | &nbsp; <strong>Category:</strong> ${ad.Category || "N/A"}</div>
-          <div class="meta ad-name"><strong>Ad Name:</strong> ${ad["Ad Name"] || "N/A"}</div>
-        </div>
-        <div class="meta-divider"></div>
-        <div class="headline">${ad.Headline || ""}</div>
-        <div class="primary-text">${ad.Body || ""}</div>
-        <div class="image-set">${imageTags}</div>
-        <div class="approval-row">
-          <label>Ad Text Approval Status:</label>
-          <select class="text-approval">
-            <option value="Pending">Pending</option>
-            <option value="Approved">Approved</option>
-            <option value="Needs Edit">Needs Edit</option>
-          </select>
-        </div>
-        <div class="approval">
-          <label>Reviewer Comments:</label>
-          <textarea placeholder="Enter comments here..."></textarea>
-        </div>
-      </div>
-    `;
-
-    function updateCardStatus() {
-      const textStatus = card.querySelector(".text-approval")?.value;
-      const imageStatuses = Array.from(card.querySelectorAll(".image-approval")).map(sel => sel.value);
-      const commentBox = card.querySelector("textarea");
-
-      const needsEdit = textStatus === "Needs Edit" || imageStatuses.includes("Needs Edit");
-
-      if (needsEdit) {
-        card.style.border = "2px solid #e74c3c";
-        card.style.backgroundColor = "#ffe6e6";
-        commentBox.required = true;
-        commentBox.placeholder = "Required – please explain what needs edits.";
-      } else if (textStatus === "Approved" && imageStatuses.every(v => v === "Approved")) {
-        card.style.border = "2px solid #2ecc71";
-        card.style.backgroundColor = "#e8f6f0";
-        commentBox.required = false;
-        commentBox.placeholder = "Optional – add comments if needed.";
-      } else {
-        card.style.border = "2px solid #000000";
-        card.style.backgroundColor = "#ffffff";
-        commentBox.required = false;
-        commentBox.placeholder = "Optional – add comments if needed.";
-      }
-    }
-
-    card.querySelectorAll("select").forEach(sel => {
-      sel.addEventListener("change", updateCardStatus);
+    // Attach listeners to each select in this card
+    card.querySelectorAll('select').forEach(sel => {
+      sel.addEventListener('change', () => updateCardStatus(card));
     });
 
-    updateCardStatus();
-    card.dataset.ad = JSON.stringify(ad);
+    updateCardStatus(card); // Initial check
     container.appendChild(card);
-
-</script>
-
-  
-  document.addEventListener("DOMContentLoaded", () => {
-    const clubName = "Canyon Gate";
-    const savedKeys = JSON.parse(localStorage.getItem("removedAds") || "[]");
-    const dbRef = firebase.database().ref(`approvedAds/Canyon Gate`);
-
-    dbRef.once("value")
-  .then(snapshot => {
-    const clubData = snapshot.val();
-    console.log("clubData from Firebase:", clubData); // 🔍 NEW
-    const adsArray = clubData?.ads || [];
-    console.log("adsArray extracted:", adsArray); // 🔍 NEW
-
-    const savedKeys = JSON.parse(localStorage.getItem("removedAds") || "[]");
-    const filteredAds = adsArray.filter(ad => ad && !savedKeys.includes(ad["Ad Name"]));
-    console.log("Filtered ads to render:", filteredAds); // 🔍 NEW
-
-    renderApprovedAds(filteredAds);
-  })
-  .catch(error => {
-    console.error("Error fetching data from Firebase:", error);
   });
-
-
+}
+        
   
-
-
-
-
-  document.getElementById("sendToAgencyBtn").addEventListener("click", () => {
-    const approvedAds = [];
-    document.querySelectorAll(".preview-card").forEach(card => {
-      const allApproved = [...card.querySelectorAll("select")].every(sel => sel.value === "Approved");
-
-      if (allApproved) {
-        const adData = JSON.parse(card.dataset.ad);
-        approvedAds.push(adData);
-
-        // Fade out & remove card
-        card.style.transition = "opacity 0.4s ease";
-        card.style.opacity = 0;
-        setTimeout(() => {
-          card.remove();
-          checkIfNoAdsLeft();
-        }, 400);
-      }
-    });
-
-    if (approvedAds.length > 0) {
+ document.addEventListener("DOMContentLoaded", () => {
   const clubName = "Canyon Gate";
-  const now = new Date();
-  const timestamp = now.toLocaleString("en-US", {
-  month: "short",
-  day: "numeric",
-  year: "numeric",
-  hour: "numeric",
-  minute: "2-digit",
-  hour12: true,
-  });
-      
   const savedKeys = JSON.parse(localStorage.getItem("removedAds") || "[]");
-  const updatedKeys = [...new Set([...savedKeys, ...approvedAds.map(ad => ad["Ad Name"])])];
-  localStorage.setItem("removedAds", JSON.stringify(updatedKeys));
-  
+  const dbRef = firebase.database().ref(`approvedAds/${clubName}`);
 
-  const finalData = {
-    clubName,
-    timestamp,
-    ads: approvedAds
-  };
-  
-  console.log("📛 Club Name used in Firebase path:", clubName);
-  firebase.database().ref(`approvedAds/Canyon Gate`).set(finalData)
-    .then(() => {
-      console.log("✅ Ads successfully sent to Firebase.");
-      localStorage.setItem(`clubApprovedAds_${clubName}`, JSON.stringify(approvedAds));
-      showToast("Ads sent to Agency.");
+  dbRef.once("value")
+    .then(snapshot => {
+      const clubData = snapshot.val();
+      console.log("clubData from Firebase:", clubData);
+      const adsArray = clubData?.ads || [];
+      console.log("adsArray extracted:", adsArray);
+
+      const filteredAds = adsArray.filter(ad => ad && !savedKeys.includes(ad["Ad Name"]));
+      console.log("Filtered ads to render:", filteredAds);
+
+      renderApprovedAds(filteredAds);
     })
     .catch(error => {
-      console.error("Error writing to Firebase:", error);
-      showToast("Failed to send to Agency.");
+      console.error("Error fetching data from Firebase:", error);
     });
+});
+
+
+  
+
+
+
+
+ document.addEventListener("DOMContentLoaded", () => {
+  const sendToAgencyBtn = document.getElementById("sendToAgencyBtn");
+
+  if (sendToAgencyBtn) {
+    sendToAgencyBtn.addEventListener("click", () => {
+      const approvedAds = [];
+
+      document.querySelectorAll(".preview-card").forEach(card => {
+        const textStatus = card.querySelector('.text-approval')?.value;
+        const imageStatuses = Array.from(card.querySelectorAll('select.image-approval-select')).map(sel => sel.value);
+        const allApproved = textStatus === "Approved" && imageStatuses.every(val => val === "Approved");
+
+        if (allApproved) {
+          const finalData = {
+            Region: region || "N/A",
+            Club: "Canyon Gate",
+            Category: card.dataset.category || "N/A",
+            "Ad Name": card.dataset.adName || "N/A",
+            Headline: card.querySelector(".headline-text")?.textContent || "",
+            "Primary Text": card.querySelector(".primary-text")?.textContent || "",
+            Image_URL_1: card.querySelectorAll("img")[0]?.src || "",
+            Image_URL_2: card.querySelectorAll("img")[1]?.src || "",
+            Image_URL_3: card.querySelectorAll("img")[2]?.src || "",
+            textApprovalStatus: textStatus,
+            imageApprovalStatuses: imageStatuses,
+            reviewerComments: card.querySelector("textarea")?.value || "",
+            Timestamp: new Date().toISOString()
+          };
+
+          approvedAds.push(finalData);
+
+          // Fade & remove
+          card.style.transition = "opacity 0.4s ease";
+          card.style.opacity = 0;
+          setTimeout(() => {
+            card.remove();
+            checkIfNoAdsLeft();
+          }, 400);
+        }
+      });
+
+      if (approvedAds.length > 0) {
+        const now = new Date();
+        const batchKey = `Canyon Gate - ${now.toLocaleString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: true
+        })}`;
+
+        firebase.database().ref(`finalApprovedAds/${batchKey}`).set({
+          ads: approvedAds,
+          timestamp: now.toISOString()
+        }).then(() => {
+          showToast("✅ Final approvals sent to Agency.");
+          console.log("✅ Final approved ads sent to Firebase.");
+        }).catch(error => {
+          console.error("❌ Error writing to Firebase:", error);
+          showToast("❌ Failed to send final approvals.");
+        });
+      } else {
+        showToast("⚠️ No ads fully approved to send.");
+      }
+    });
+  }
+});
+
+
 
 
   document.getElementById("sendEdits").addEventListener("click", () => {
   const editAds = [];
   document.querySelectorAll(".preview-card").forEach(card => {
-    const imageStatuses = [...card.querySelectorAll("select.image-approval")].map(sel => sel.value);
+     const imageStatuses = Array.from(card.querySelectorAll('select.image-approval-select')).map(sel => sel.value);
     const textStatus = card.querySelector("select.text-approval")?.value;
     const needsEdit = imageStatuses.some(v => v === "Needs Edit" || v === "Declined") ||
                       textStatus === "Needs Edit" || textStatus === "Declined";
@@ -547,7 +522,7 @@ textarea:focus, select:focus {
         return; // prevent sending without comment
       }
 
-      const ad = {
+  const ad = {
   Region: card.querySelector(".meta strong:nth-child(1)")?.nextSibling?.textContent?.trim() || "",
   Club: card.querySelector(".meta strong:nth-child(2)")?.nextSibling?.textContent?.trim() || "",
   Category: card.querySelector(".meta strong:nth-child(3)")?.nextSibling?.textContent?.trim() || "",
@@ -560,7 +535,7 @@ textarea:focus, select:focus {
   textApprovalStatus: card.querySelector(".text-approval")?.value || "",
   imageApprovalStatuses: [...card.querySelectorAll(".image-approval")].map(el => el.value),
   reviewerComments: card.querySelector("textarea")?.value || ""
-};
+  };
 
 
       editAds.push(ad);
@@ -577,8 +552,8 @@ textarea:focus, select:focus {
     showToast("Edits sent to Ads Department.");
   } else {
     showToast("No edits to send.");
-  }
-});
+    }
+  });
 
 
     checkIfNoAdsLeft();
@@ -639,7 +614,6 @@ textarea:focus, select:focus {
 
   // On page load, show welcome OR restore section background
 
-
-
+</script> 
 </body>
 </html>
