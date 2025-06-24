@@ -326,11 +326,7 @@ async function renderApprovedAds(adList) {
       <p class="ad-name"><strong>Ad Name:</strong> ${ad["Ad Name"] || ""}</p>
       <h3 class="headline">${ad.Headline || ""}</h3>
       <p class="primary-text">${ad["Primary Text"] || ""}</p>
-      <div class="image-wrapper">
-        ${ad.Image_URL_1 ? `<img class="card-image" src="${ad.Image_URL_1}" alt="Ad Image 1">` : ""}
-        ${ad.Image_URL_2 ? `<img class="card-image" src="${ad.Image_URL_2}" alt="Ad Image 2">` : ""}
-        ${ad.Image_URL_3 ? `<img class="card-image" src="${ad.Image_URL_3}" alt="Ad Image 3">` : ""}
-      </div>
+      <div class="image-set">${imageTags}</div>
       <div class="dropdown-group">
         <label>Text Review:</label>
         <select class="text-approval">
