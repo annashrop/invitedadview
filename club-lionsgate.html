@@ -457,47 +457,34 @@ async function renderApprovedAds(adList) {
       }
     });
 
-    if (approvedAds.length > 0) {
+   if (approvedAds.length > 0) {
   const clubName = "Lionsgate";
   const now = new Date();
   const timestamp = now.toLocaleString("en-US", {
-  month: "short",
-  day: "numeric",
-  year: "numeric",
-  hour: "numeric",
-  minute: "2-digit",
-  hour12: true,
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true
   });
-      
-  const savedKeys = JSON.parse(localStorage.getItem("removedAds") || "[]");
-  const updatedKeys = [...new Set([...savedKeys, ...approvedAds.map(ad => ad["Ad Name"])])];
-  localStorage.setItem("removedAds", JSON.stringify(updatedKeys));
-  
 
-  const finalData = {
-        Region: region || "N/A",
-        Club: club || "N/A",
-        Category: category || "N/A",
-        "Ad Name": adName || "N/A",
-        Headline: card.querySelector(".headline")?.textContent || "",
-        Body: card.querySelector(".primary-text")?.textContent || "",
-        Image_URL_1: card.querySelectorAll("img")[0]?.src || "",
-        Image_URL_2: card.querySelectorAll("img")[1]?.src || "",
-        Image_URL_3: card.querySelectorAll("img")[2]?.src || "",
-        Timestamp: new Date().toISOString()
-      };
-  
-  console.log("📛 Club Name used in Firebase path:", clubName);
-  firebase.database().ref(`finalApprovedAds/Lionsgate`).set(finalData)
-    .then(() => {
-      console.log("✅ Ads successfully sent to Firebase.");
-      localStorage.setItem(`clubApprovedAds_${clubName}`, JSON.stringify(approvedAds));
-      showToast("Ads sent to Agency.");
-    })
-    .catch(error => {
-      console.error("Error writing to Firebase:", error);
-      showToast("Failed to send to Agency.");
-    });
+  const batchKey = `${clubName} - ${timestamp}`;
+
+  firebase.database().ref(`finalApprovedAds/${batchKey}`).set({
+    ads: approvedAds,
+    timestamp: new Date().toISOString()
+  })
+  .then(() => {
+    console.log("✅ Final approved ads sent to Firebase.");
+    showToast("✅ Final approvals sent to Agency.");
+  })
+  .catch(error => {
+    console.error("❌ Error writing to Firebase:", error);
+    showToast("❌ Failed to send final approvals.");
+  });
+}
+
 
 
   document.getElementById("sendEdits").addEventListener("click", () => {
