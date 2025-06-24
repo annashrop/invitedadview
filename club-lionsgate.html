@@ -393,50 +393,29 @@ async function renderApprovedAds(adList) {
     container.appendChild(card);
   });
 }
-
-
-
-
-  document.addEventListener("DOMContentLoaded", () => {
-    firebase
-      .database()
-      .ref("approvedAds/Lionsgate")
-      .once("value")
-      .then((snapshot) => {
-        const clubData = snapshot.val();
-        const adsArray = clubData?.ads || [];
-
-        const savedKeys = JSON.parse(localStorage.getItem("removedAds") || "[]");
-        const filteredAds = adsArray.filter(ad => !savedKeys.includes(ad["Ad Name"]));
-
-        console.log("Filtered ads to render:", filteredAds); // 👈 Debug line
-
-        renderApprovedAds(filteredAds); // 👈 This must be INSIDE the .then block
-      });
-  });
         
   
-  document.addEventListener("DOMContentLoaded", () => {
-    const clubName = "Lionsgate";
-    const savedKeys = JSON.parse(localStorage.getItem("removedAds") || "[]");
-    const dbRef = firebase.database().ref(`approvedAds/Lionsgate`);
+ document.addEventListener("DOMContentLoaded", () => {
+  const clubName = "Lionsgate";
+  const savedKeys = JSON.parse(localStorage.getItem("removedAds") || "[]");
+  const dbRef = firebase.database().ref(`approvedAds/${clubName}`);
 
-    dbRef.once("value")
-  .then(snapshot => {
-    const clubData = snapshot.val();
-    console.log("clubData from Firebase:", clubData); // 🔍 NEW
-    const adsArray = clubData?.ads || [];
-    console.log("adsArray extracted:", adsArray); // 🔍 NEW
+  dbRef.once("value")
+    .then(snapshot => {
+      const clubData = snapshot.val();
+      console.log("clubData from Firebase:", clubData);
+      const adsArray = clubData?.ads || [];
+      console.log("adsArray extracted:", adsArray);
 
-    const savedKeys = JSON.parse(localStorage.getItem("removedAds") || "[]");
-    const filteredAds = adsArray.filter(ad => ad && !savedKeys.includes(ad["Ad Name"]));
-    console.log("Filtered ads to render:", filteredAds); // 🔍 NEW
+      const filteredAds = adsArray.filter(ad => ad && !savedKeys.includes(ad["Ad Name"]));
+      console.log("Filtered ads to render:", filteredAds);
 
-    renderApprovedAds(filteredAds);
-  })
-  .catch(error => {
-    console.error("Error fetching data from Firebase:", error);
-  });
+      renderApprovedAds(filteredAds);
+    })
+    .catch(error => {
+      console.error("Error fetching data from Firebase:", error);
+    });
+});
 
 
   
