@@ -324,9 +324,19 @@ async function renderApprovedAds(adList) {
 const imageUrls = [ad.Image_URL_1, ad.Image_URL_2, ad.Image_URL_3];
 let imageTags = "";
 
-imageUrls.forEach((url, index) => {
-  if (url && typeof url === "string" && url.startsWith("http")) {
-    imageTags += `<img class="card-image" src="${url}" alt="Ad Image ${index + 1}" onerror="this.style.display='none'">`;
+imageURLs.forEach((url, index) => {
+  if (typeof url === 'string' && url.startsWith("http")) {
+    imageTags += `
+      <img class="card-image" src="${url}" alt="Ad Image ${index + 1}">
+      <div class="image-approval">
+        <label>Image Review:</label>
+        <select class="image-approval">
+          <option value="">Select</option>
+          <option value="Approved">Approved</option>
+          <option value="Needs Edits">Needs Edits</option>
+        </select>
+      </div>
+    `;
   }
 });
 
@@ -352,6 +362,14 @@ imageUrls.forEach((url, index) => {
     <label>Reviewer Comments:</label>
     <textarea placeholder="Enter comments here..." rows="3" style="width:100%;border-radius:6px;"></textarea>
     </div>
+    <div class="image-approval">
+    <label>Image Review:</label>
+    <select class="image-approval">
+      <option value="">Select</option>
+      <option value="Approved">Approved</option>
+      <option value="Needs Edits">Needs Edits</option>
+    </select>
+  </div>
 `;
 
     card.dataset.ad = JSON.stringify(ad);
