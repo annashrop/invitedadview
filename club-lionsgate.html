@@ -318,7 +318,7 @@ async function renderApprovedAds(adList) {
 
   adList.forEach((ad, index) => {
     const card = document.createElement('div');
-    card.className = 'ad-card';
+    card.className = 'preview-card';
     card.innerHTML = `
       <p><strong>Region:</strong> ${ad.region} <br>
       <strong>Club:</strong> ${ad.club} &nbsp; | &nbsp;
