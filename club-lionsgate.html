@@ -319,14 +319,15 @@ async function renderApprovedAds(adList) {
   adList.forEach((ad, index) => {
     const card = document.createElement('div');
     card.className = 'preview-card';
+
     card.innerHTML = `
-      <p><strong>Region:</strong> ${ad.region} <br>
-      <strong>Club:</strong> ${ad.club} &nbsp; | &nbsp;
-      <strong>Category:</strong> ${ad.category}</p>
-      <p><strong>Ad Name:</strong> ${ad.name}</p>
-      <h3>${ad.header}</h3>
-      <p>${ad.body}</p>
-      img.src = ad.imageUrl || "";
+      <p><strong>Region:</strong> ${ad.Region} <br>
+      <strong>Club:</strong> ${ad.Club} &nbsp; | &nbsp;
+      <strong>Category:</strong> ${ad.Category}</p>
+      <p class="ad-name"><strong>Ad Name:</strong> ${ad["Ad Name"]}</p>
+      <h3 class="headline">${ad.Headline}</h3>
+      <p class="primary-text">${ad["Primary Text"]}</p>
+      <div class="image-wrapper"></div>
       <div class="dropdown-group">
         <label>Text Review:</label>
         <select class="text-approval">
@@ -348,9 +349,20 @@ async function renderApprovedAds(adList) {
         <textarea placeholder="Enter comments here..." rows="3" style="width:100%;border-radius:6px;"></textarea>
       </div>
     `;
+
+    const imageWrapper = card.querySelector('.image-wrapper');
+    [ad.Image_URL_1, ad.Image_URL_2, ad.Image_URL_3].forEach(url => {
+      if (url) {
+        const img = document.createElement('img');
+        img.src = url;
+        img.className = 'card-image';
+        imageWrapper.appendChild(img);
+      }
+    });
+
     card.dataset.ad = JSON.stringify(ad);
-    
-    // --- Card logic for color + validation
+
+    // Status logic
     function updateCardStatus(card) {
       const textStatus = card.querySelector('.text-approval')?.value;
       const imageStatuses = Array.from(card.querySelectorAll('.image-approval')).map(sel => sel.value);
@@ -376,15 +388,16 @@ async function renderApprovedAds(adList) {
       }
     }
 
-    // Attach listeners to each select in this card
+    // Attach listeners
     card.querySelectorAll('select').forEach(sel => {
       sel.addEventListener('change', () => updateCardStatus(card));
     });
 
-    updateCardStatus(card); // Initial check
+    updateCardStatus(card);
     container.appendChild(card);
   });
 }
+
 
 
   document.addEventListener("DOMContentLoaded", () => {
