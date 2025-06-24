@@ -320,6 +320,7 @@ async function renderApprovedAds(adList) {
     const card = document.createElement('div');
     card.className = 'preview-card';
 
+  console.log("Image URLs:", ad.Image_URL_1, ad.Image_URL_2, ad.Image_URL_3);
   const imageTags = [
     ad?.Image_URL_1 || '',
     ad?.Image_URL_2 || '',
