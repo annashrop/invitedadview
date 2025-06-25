@@ -433,6 +433,11 @@ card.innerHTML = `
 </script>
 
 <script>
+  function getHiddenAdNames() {
+  const data = localStorage.getItem("hiddenAdNames");
+  return data ? JSON.parse(data) : [];
+}
+  
 function addHiddenAdName(adName) {
   const current = getHiddenAdNames();
   const cleanName = (adName || "").trim();
@@ -441,6 +446,7 @@ function addHiddenAdName(adName) {
     localStorage.setItem("hiddenAdNames", JSON.stringify(current));
   }
 }
+ 
    const showToast = (message) => {
     const toast = document.createElement("div");
     toast.textContent = message;
