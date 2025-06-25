@@ -84,7 +84,7 @@ function createBatchElement(batch, index) {
   const exportBtn = document.createElement("button");
   exportBtn.className = "export-btn";
   exportBtn.textContent = "Export to CSV";
-  exportBtn.onclick = () => exportToCSV(batch.ads, batch.clubName, batch.timestamp);
+  exportBtn.onclick = () => exportToCSV(batch.ads, batch.clubName, batch.timestamp, batchDiv);
 
   const checkboxDiv = document.createElement("div");
   checkboxDiv.className = "checkbox-row";
@@ -117,8 +117,7 @@ function createBatchElement(batch, index) {
     exportBtn.addEventListener("click", () => {
   exportToCSV(batch.ads, batch.name, batchContainer);  // batchContainer is the DOM element
 });
-    
-function exportToCSV(cards, groupKey, containerElement) {
+function exportToCSV(cards, clubName, timestamp, containerElement) {
   const headers = [
     "Region",
     "Club",
@@ -155,9 +154,10 @@ function exportToCSV(cards, groupKey, containerElement) {
 
   const csvContent = headers.join(",") + "\n" + rows.map(r => r.map(v => `"${v}"`).join(",")).join("\n");
 
-  // Sanitize the groupKey for filename
-  const sanitizedKey = (groupKey || "Export").replace(/[^\w\s-]/g, "").replace(/\s+/g, " ").trim();
-  const fileName = `${sanitizedKey}.csv`;
+  // Use club name and timestamp for the file name
+  const safeClub = (clubName || "UnknownClub").replace(/[^\w\s-]/g, "").replace(/\s+/g, "_");
+  const safeTime = (timestamp || "Now").replace(/[^\w\s-]/g, "").replace(/\s+/g, "_");
+  const fileName = `${safeClub}_${safeTime}.csv`;
 
   const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
@@ -170,11 +170,12 @@ function exportToCSV(cards, groupKey, containerElement) {
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
 
-  // Change row background color to light green
+  // ✅ Mark the card green
   if (containerElement) {
     containerElement.style.backgroundColor = "#e6ffe6";
   }
 }
+
 
 
 // Load from Firebase
