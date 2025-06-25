@@ -414,20 +414,25 @@ card.innerHTML = `
   const dbRef = firebase.database().ref(`approvedAds/${clubName}`);
 
   dbRef.once("value")
-    .then(snapshot => {
-      const clubData = snapshot.val();
-      console.log("clubData from Firebase:", clubData);
-      const adsArray = clubData?.ads || [];
-      console.log("adsArray extracted:", adsArray);
+  .then(snapshot => {
+    const clubData = snapshot.val();
+    const clubDataArray = clubData?.ads || [];
 
-      const filteredAds = adsArray.filter(ad => ad && !savedKeys.includes(ad["Ad Name"]));
-      console.log("Filtered ads to render:", filteredAds);
+    // 🧠 Get list of ads previously hidden (approved or sent for edits)
+    const savedKeys = JSON.parse(localStorage.getItem("hiddenAdNames")) || [];
 
-      renderApprovedAds(filteredAds);
-    })
-    .catch(error => {
-      console.error("Error fetching data from Firebase:", error);
-    });
+    console.log("📦 ClubData from Firebase:", clubData);
+    console.log("🧠 Saved ad names:", savedKeys);
+
+    // 🧼 Filter out ads that were already handled
+    const filteredAds = clubDataArray.filter(ad => !savedKeys.includes(ad["Ad Name"]));
+
+    console.log("🎯 Filtered ads to render:", filteredAds);
+    renderApprovedAds(filteredAds);
+  })
+  .catch(error => {
+    console.error("❌ Error fetching data from Firebase:", error);
+  });
 });
 
 </script>
