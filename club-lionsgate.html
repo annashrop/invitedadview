@@ -611,7 +611,7 @@ async function sendFinalApprovalsToAgency() {
 
     if (sendBtn) {
       console.log("🔗 Binding Send to Agency button");
-      sendBtn.addEventListener("click", sendApprovedAdsToAgency); // must match the name of your function
+      sendBtn.addEventListener("click", sendFinalApprovalsToAgency); // must match the name of your function
     } else {
       console.warn("⚠️ sendToAgencyBtn not found in DOM");
     }
