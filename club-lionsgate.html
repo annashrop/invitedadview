@@ -340,14 +340,9 @@ imageURLs.forEach((url, i) => {
   }
 });
   
-const metaText = card.querySelector(".meta")?.innerText || "";
-const regionMatch = metaText.match(/Region:\s*(.*?)\s*Club:/);
-const clubMatch = metaText.match(/Club:\s*(.*?)\s*\|/);
-const categoryMatch = metaText.match(/Category:\s*(.*)/);
-
-const region = regionMatch?.[1]?.trim() || "N/A";
-const club = clubMatch?.[1]?.trim() || "N/A";
-const category = categoryMatch?.[1]?.trim() || "N/A";
+const region = ad.Region || "N/A";
+const club = ad.Club || "N/A";
+const category = ad.Category || "N/A";
 
 card.innerHTML = `
   <p class="meta">
