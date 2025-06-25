@@ -114,9 +114,7 @@ function createBatchElement(batch, index) {
   batchesContainer.appendChild(batchDiv);
 }
  
-    exportBtn.addEventListener("click", () => {
-  exportToCSV(batch.ads, batch.name, batchContainer);  // batchContainer is the DOM element
-});
+    
 function exportToCSV(cards, clubName, timestamp, containerElement) {
   const headers = [
     "Region",
@@ -154,7 +152,7 @@ function exportToCSV(cards, clubName, timestamp, containerElement) {
 
   const csvContent = headers.join(",") + "\n" + rows.map(r => r.map(v => `"${v}"`).join(",")).join("\n");
 
-  // Use club name and timestamp for the file name
+  // 🔐 Safe file name from club name + timestamp
   const safeClub = (clubName || "UnknownClub").replace(/[^\w\s-]/g, "").replace(/\s+/g, "_");
   const safeTime = (timestamp || "Now").replace(/[^\w\s-]/g, "").replace(/\s+/g, "_");
   const fileName = `${safeClub}_${safeTime}.csv`;
@@ -170,12 +168,11 @@ function exportToCSV(cards, clubName, timestamp, containerElement) {
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
 
-  // ✅ Mark the card green
+  // ✅ Visually mark the batch as exported
   if (containerElement) {
     containerElement.style.backgroundColor = "#e6ffe6";
   }
 }
-
 
 
 // Load from Firebase
