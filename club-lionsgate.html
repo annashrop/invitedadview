@@ -441,6 +441,22 @@ function addHiddenAdName(adName) {
     localStorage.setItem("hiddenAdNames", JSON.stringify(current));
   }
 }
+   const showToast = (message) => {
+    const toast = document.createElement("div");
+    toast.textContent = message;
+    toast.style.position = "fixed";
+    toast.style.bottom = "20px";
+    toast.style.left = "50%";
+    toast.style.transform = "translateX(-50%)";
+    toast.style.backgroundColor = "#333";
+    toast.style.color = "#fff";
+    toast.style.padding = "12px 20px";
+    toast.style.borderRadius = "6px";
+    toast.style.zIndex = "9999";
+    toast.style.fontSize = "14px";
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+  };
 
 async function sendFinalApprovalsToAgency() {
   const adCards = document.querySelectorAll(".preview-card");
@@ -452,9 +468,8 @@ async function sendFinalApprovalsToAgency() {
 
     if (textStatus === "Approved" && imageStatuses.every(v => v === "Approved")) {
       const adName = card.querySelector(".ad-name")?.textContent?.replace("Ad Name:", "").trim();
-      const metaText = card.querySelector(".meta")?.innerText || "";
       const regionMatch = metaText.match(/Region:\s*(.*)\s*Club:/);
-      const clubMatch = metaText.match(/Club:\s*(.*)\s*\|/);
+      const clubMatch = metaText.match(/Club:\s*(.*?)\s*Category:/);
       const categoryMatch = metaText.match(/Category:\s*(.*)/);
 
       const region = regionMatch?.[1]?.trim() || "N/A";
@@ -571,22 +586,7 @@ document.getElementById("sendToAgencyBtn").addEventListener("click", sendFinalAp
 
     checkIfNoAdsLeft();
 
-  const showToast = (message) => {
-    const toast = document.createElement("div");
-    toast.textContent = message;
-    toast.style.position = "fixed";
-    toast.style.bottom = "20px";
-    toast.style.left = "50%";
-    toast.style.transform = "translateX(-50%)";
-    toast.style.backgroundColor = "#333";
-    toast.style.color = "#fff";
-    toast.style.padding = "12px 20px";
-    toast.style.borderRadius = "6px";
-    toast.style.zIndex = "9999";
-    toast.style.fontSize = "14px";
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 3000);
-  };
+
 
   function checkIfNoAdsLeft() {
     if (document.querySelectorAll('.preview-card').length === 0) {
