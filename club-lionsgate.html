@@ -603,6 +603,29 @@ async function sendFinalApprovalsToAgency() {
     if (welcomeEl) welcomeEl.style.display = "none";
   }
 
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const sendBtn = document.getElementById("sendToAgencyBtn");
+    const editsBtn = document.getElementById("sendEdits");
+
+    if (sendBtn) {
+      console.log("🔗 Binding Send to Agency button");
+      sendBtn.addEventListener("click", sendApprovedAdsToAgency); // must match the name of your function
+    } else {
+      console.warn("⚠️ sendToAgencyBtn not found in DOM");
+    }
+
+    if (editsBtn) {
+      console.log("🔗 Binding Send Edits button");
+      editsBtn.addEventListener("click", sendEditsToAdsTeam);
+    } else {
+      console.warn("⚠️ sendEdits not found in DOM");
+    }
+  });
+
+</script>
+  <script>
   document.getElementById('paid-ads-btn')?.addEventListener('click', (e) => {
     e.preventDefault();
     localStorage.setItem("activeSection", "paid");
@@ -626,27 +649,5 @@ async function sendFinalApprovalsToAgency() {
 
   // On page load, show welcome OR restore section background
 </script>
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const sendBtn = document.getElementById("sendToAgencyBtn");
-    const editsBtn = document.getElementById("sendEdits");
-
-    if (sendBtn) {
-      console.log("🔗 Binding Send to Agency button");
-      sendBtn.addEventListener("click", sendApprovedAdsToAgency); // must match the name of your function
-    } else {
-      console.warn("⚠️ sendToAgencyBtn not found in DOM");
-    }
-
-    if (editsBtn) {
-      console.log("🔗 Binding Send Edits button");
-      editsBtn.addEventListener("click", sendEditsToAdsTeam);
-    } else {
-      console.warn("⚠️ sendEdits not found in DOM");
-    }
-  });
-
-
-</script> 
 </body>
 </html>
