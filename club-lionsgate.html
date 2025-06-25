@@ -348,8 +348,7 @@ const categoryMatch = metaText.match(/Category:\s*(.*)/);
 const region = regionMatch?.[1]?.trim() || "N/A";
 const club = clubMatch?.[1]?.trim() || "N/A";
 const category = categoryMatch?.[1]?.trim() || "N/A";
-
-card.innerHTML = `
+`
   card.innerHTML = `
   <p class="meta">
     <strong>Region:</strong> ${ad.Region || "N/A"}<br>
