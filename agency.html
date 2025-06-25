@@ -68,50 +68,51 @@
 
   <script>
     const batchesContainer = document.getElementById("batches");
-    const allBatches = JSON.parse(localStorage.getItem("agencyFinalApproved") || "[]");
+    firebase.initializeApp(firebaseConfig);
+const dbRef = firebase.database().ref("finalApprovedAds");
 
-    function createBatchElement(batch, index) {
-      const batchDiv = document.createElement("div");
-      batchDiv.className = "batch";
+function createBatchElement(batch, index) {
+  const batchDiv = document.createElement("div");
+  batchDiv.className = "batch";
 
-      const header = document.createElement("div");
-      header.className = "batch-header";
-      header.textContent = `${batch.clubName} – ${batch.timestamp}`;
+  const header = document.createElement("div");
+  header.className = "batch-header";
+  header.textContent = `${batch.clubName} – ${batch.timestamp}`;
 
-      const exportBtn = document.createElement("button");
-      exportBtn.className = "export-btn";
-      exportBtn.textContent = "Export to CSV";
-      exportBtn.onclick = () => exportToCSV(batch.ads, batch.clubName, batch.timestamp);
+  const exportBtn = document.createElement("button");
+  exportBtn.className = "export-btn";
+  exportBtn.textContent = "Export to CSV";
+  exportBtn.onclick = () => exportToCSV(batch.ads, batch.clubName, batch.timestamp);
 
-      const checkboxDiv = document.createElement("div");
-      checkboxDiv.className = "checkbox-row";
+  const checkboxDiv = document.createElement("div");
+  checkboxDiv.className = "checkbox-row";
 
-      const downloadedCheckbox = document.createElement("input");
-      downloadedCheckbox.type = "checkbox";
-      downloadedCheckbox.id = `downloaded-${index}`;
-      const downloadedLabel = document.createElement("label");
-      downloadedLabel.htmlFor = downloadedCheckbox.id;
-      downloadedLabel.textContent = "Downloaded";
+  const downloadedCheckbox = document.createElement("input");
+  downloadedCheckbox.type = "checkbox";
+  downloadedCheckbox.id = `downloaded-${index}`;
+  const downloadedLabel = document.createElement("label");
+  downloadedLabel.htmlFor = downloadedCheckbox.id;
+  downloadedLabel.textContent = "Downloaded";
 
-      const liveCheckbox = document.createElement("input");
-      liveCheckbox.type = "checkbox";
-      liveCheckbox.id = `live-${index}`;
-      const liveLabel = document.createElement("label");
-      liveLabel.htmlFor = liveCheckbox.id;
-      liveLabel.textContent = "Ads Live";
+  const liveCheckbox = document.createElement("input");
+  liveCheckbox.type = "checkbox";
+  liveCheckbox.id = `live-${index}`;
+  const liveLabel = document.createElement("label");
+  liveLabel.htmlFor = liveCheckbox.id;
+  liveLabel.textContent = "Ads Live";
 
-      checkboxDiv.appendChild(downloadedCheckbox);
-      checkboxDiv.appendChild(downloadedLabel);
-      checkboxDiv.appendChild(liveCheckbox);
-      checkboxDiv.appendChild(liveLabel);
+  checkboxDiv.appendChild(downloadedCheckbox);
+  checkboxDiv.appendChild(downloadedLabel);
+  checkboxDiv.appendChild(liveCheckbox);
+  checkboxDiv.appendChild(liveLabel);
 
-      batchDiv.appendChild(header);
-      batchDiv.appendChild(exportBtn);
-      batchDiv.appendChild(checkboxDiv);
-      batchesContainer.appendChild(batchDiv);
-    }
+  batchDiv.appendChild(header);
+  batchDiv.appendChild(exportBtn);
+  batchDiv.appendChild(checkboxDiv);
+  batchesContainer.appendChild(batchDiv);
+}
 
- function exportToCSV(cards, clubName, timestamp) {
+function exportToCSV(cards, clubName, timestamp) {
   const headers = [
     "Region",
     "Club",
@@ -155,10 +156,12 @@
   link.click();
 }
 
+// Load from Firebase
+firebase.database().ref("finalApprovedAds").once("value").then(snapshot => {
+  const allBatches = Object.values(snapshot.val() || {});
+  allBatches.forEach(createBatchElement);
+});
 
-
-
-    allBatches.forEach(createBatchElement);
   </script>
 </body>
 </html>
