@@ -339,13 +339,20 @@ imageURLs.forEach((url, i) => {
     `;
   }
 });
-
-
   
-    card.innerHTML = `
-  <p class="meta"><strong>Region:</strong> ${ad.Region || ""} <br>
-  <strong>Club:</strong> ${ad.Club || ""} &nbsp; | &nbsp;
-  <strong>Category:</strong> ${ad.Category || ""}</p>
+const metaText = card.querySelector(".meta")?.innerText || "";
+const regionMatch = metaText.match(/Region:\s*(.*)\s*Club:/);
+const clubMatch = metaText.match(/Club:\s*(.*)\s*\|/);
+const categoryMatch = metaText.match(/Category:\s*(.*)/);
+
+const region = regionMatch?.[1]?.trim() || "N/A";
+const club = clubMatch?.[1]?.trim() || "N/A";
+const category = categoryMatch?.[1]?.trim() || "N/A";
+
+card.innerHTML = `
+  <p class="meta"><strong>Region:</strong> ${region} <br>
+  <strong>Club:</strong> ${club} &nbsp; | &nbsp;
+  <strong>Category:</strong> ${category}</p>
   <p class="ad-name"><strong>Ad Name:</strong> ${ad["Ad Name"] || ""}</p>
   <h3 class="headline-text">${ad.Headline || ""}</h3>
   <p class="primary-text">${ad.Body || ""}</p>
@@ -357,12 +364,12 @@ imageURLs.forEach((url, i) => {
     <option value="Needs Edits">Needs Edits</option>
   </select>
 `;
-      
-   card.innerHTML += `
-    <div class="approval-box">
+
+card.innerHTML += `
+  <div class="approval-box">
     <label>Reviewer Comments:</label>
     <textarea placeholder="Enter comments here..." rows="3" style="width:100%;border-radius:6px;"></textarea>
-    </div>
+  </div>
 `;
 
     card.dataset.ad = JSON.stringify(ad);
