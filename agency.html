@@ -149,11 +149,12 @@ function exportToCSV(cards, clubName, timestamp) {
 
   const csvContent = headers.join(",") + "\n" + rows.map(r => r.map(v => `"${v}"`).join(",")).join("\n");
 
-  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
   const link = document.createElement("a");
-  link.href = URL.createObjectURL(blob);
-  link.download = `${clubName.replace(/\s+/g, "_")}_${timestamp.replace(/[^\w]/g, "_")}.csv`;
+  link.href = url;
+  link.download = `${groupKey}.csv`; // <-- use Firebase batch name as-is
+  document.body.appendChild(link);
   link.click();
+  document.body.removeChild(link);
 }
 
 // Load from Firebase
