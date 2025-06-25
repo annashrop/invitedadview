@@ -177,7 +177,7 @@ function exportToCSV(cards, clubName, timestamp, containerElement) {
 
 // Load from Firebase
 firebase.database().ref("finalApprovedAds").once("value").then(snapshot => {
-  const allBatches = Object.values(snapshot.val() || {});
+  const allBatches = Object.values(snapshot.val() || {}).reverse();
   allBatches.forEach(createBatchElement);
 });
    
