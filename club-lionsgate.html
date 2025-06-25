@@ -450,16 +450,19 @@ async function sendFinalApprovalsToAgency() {
   const approvedAds = [];
 
   adCards.forEach(card => {
-    const imageStatuses = Array.from(card.querySelectorAll(".image-approval")).map(sel => sel.value);
+    const imageStatuses = Array.from(card.querySelectorAll(".image-approval-select")).map(sel => sel.value);
     const textStatus = card.querySelector(".text-approval")?.value;
 
     if (textStatus === "Approved" && imageStatuses.every(v => v === "Approved")) {
       const adName = card.querySelector(".ad-name")?.textContent?.replace("Ad Name:", "").trim();
-      const region = card.querySelector(".meta:nth-child(1)")?.textContent?.replace("Region:", "").trim();
-      const clubCategory = card.querySelector(".meta:nth-child(2)")?.textContent || "";
-      const [clubPart, categoryPart] = clubCategory.split("|").map(str => str.trim());
-      const club = clubPart?.replace("Club:", "").trim();
-      const category = categoryPart?.replace("Category:", "").trim();
+      const metaText = card.querySelector(".meta")?.innerText || "";
+      const regionMatch = metaText.match(/Region:\s*(.*)\s*Club:/);
+      const clubMatch = metaText.match(/Club:\s*(.*)\s*\|/);
+      const categoryMatch = metaText.match(/Category:\s*(.*)/);
+
+      const region = regionMatch?.[1]?.trim() || "N/A";
+      const club = clubMatch?.[1]?.trim() || "N/A";
+      const category = categoryMatch?.[1]?.trim() || "N/A";
 
       const ad = {
         Region: region || "N/A",
@@ -520,7 +523,7 @@ document.getElementById("sendToAgencyBtn").addEventListener("click", sendFinalAp
   document.getElementById("sendEdits").addEventListener("click", () => {
   const editAds = [];
   document.querySelectorAll(".preview-card").forEach(card => {
-     const imageStatuses = Array.from(card.querySelectorAll('select.image-approval-select')).map(sel => sel.value);
+    const imageStatuses = Array.from(card.querySelectorAll('select.image-approval-select')).map(sel => sel.value);
     const textStatus = card.querySelector("select.text-approval")?.value;
     const needsEdit = imageStatuses.some(v => v === "Needs Edit" || v === "Declined") ||
                       textStatus === "Needs Edit" || textStatus === "Declined";
