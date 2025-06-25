@@ -65,8 +65,10 @@
 <body>
   <h1>Agency View – Approved Ads</h1>
   <div id="batches"></div>
+  
 
   <script>
+   
     const batchesContainer = document.getElementById("batches");
     firebase.initializeApp(firebaseConfig);
 const dbRef = firebase.database().ref("finalApprovedAds");
@@ -111,8 +113,12 @@ function createBatchElement(batch, index) {
   batchDiv.appendChild(checkboxDiv);
   batchesContainer.appendChild(batchDiv);
 }
-
-function exportToCSV(cards, groupKey) {
+ 
+    exportBtn.addEventListener("click", () => {
+  exportToCSV(batch.ads, batch.name, batchContainer);  // batchContainer is the DOM element
+});
+    
+function exportToCSV(cards, groupKey, containerElement) {
   const headers = [
     "Region",
     "Club",
@@ -149,21 +155,34 @@ function exportToCSV(cards, groupKey) {
 
   const csvContent = headers.join(",") + "\n" + rows.map(r => r.map(v => `"${v}"`).join(",")).join("\n");
 
+  // Sanitize the groupKey for filename
+  const sanitizedKey = (groupKey || "Export").replace(/[^\w\s-]/g, "").replace(/\s+/g, " ").trim();
+  const fileName = `${sanitizedKey}.csv`;
+
   const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
+
   const link = document.createElement("a");
   link.href = url;
-  link.download = `${groupKey || "ads"}.csv`;
+  link.download = fileName;
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+
+  // Change row background color to light green
+  if (containerElement) {
+    containerElement.style.backgroundColor = "#e6ffe6";
+  }
 }
+
 
 // Load from Firebase
 firebase.database().ref("finalApprovedAds").once("value").then(snapshot => {
   const allBatches = Object.values(snapshot.val() || {});
   allBatches.forEach(createBatchElement);
 });
+   
 
   </script>
 </body>
