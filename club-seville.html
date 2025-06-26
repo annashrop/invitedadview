@@ -316,7 +316,7 @@ textarea:focus, select:focus {
     <h1>Seville Ad Approvals</h1>
     <div class="top-buttons">
       <button id="sendToAgencyBtn">Send Final Approvals</button>
-      <button id="sendEdits">Send Edits to Ads Department</button>
+      <button id="sendEditsToAdsTeam">Send Feedback to Ads Department</button>
     </div>
     <div id="preview-container">
       <div id="no-ads-message" style="display:none; text-align:center; font-size:18px; color:#888; margin-top:40px;">
@@ -635,7 +635,7 @@ async function sendFinalApprovalsToAgency() {
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     const sendBtn = document.getElementById("sendToAgencyBtn");
-    const editsBtn = document.getElementById("sendEdits");
+    const editsBtn = document.getElementById("sendEditsToAdsTeam");
 
     if (sendBtn) {
       console.log("🔗 Binding Send to Agency button");
