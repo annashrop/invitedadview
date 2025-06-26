@@ -409,6 +409,9 @@
         });
       
     });
+    document.addEventListener("DOMContentLoaded", () => {
+    loadHawkeDownloadStatus();
+});
   </script>
   <!-- Place this right before the closing </body> -->
 
@@ -463,7 +466,7 @@
 </script>
 <script>
  function loadHawkeDownloadStatus() {
-  const statusBox = document.getElementById("hawke-status-box");
+  const statusBox = document.getElementById("hawkeStatusBox");
   statusBox.innerHTML = "Loading...";
 
   firebase.database().ref("finalApprovedAds").once("value").then(snapshot => {
