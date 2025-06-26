@@ -555,70 +555,66 @@ async function sendFinalApprovalsToAgency() {
     showToast("❌ Failed to send ads. Try again.");
   }
 }
+</script>
+<script>
 async function sendAdsNeedingEdits() {
-  const cards = document.querySelectorAll(".preview-card");
-  const edits = [];
+  const adCards = document.querySelectorAll(".preview-card");
+  const adsNeedingEdits = [];
 
-  cards.forEach((card) => {
-    const imageStatus = card.querySelector(".image-status").value;
-    const textStatus = card.querySelector(".text-status").value;
-    const comment = card.querySelector("textarea").value.trim();
+  adCards.forEach(card => {
+    const imageStatuses = Array.from(card.querySelectorAll(".image-approval-select")).map(sel => sel.value);
+    const textStatus = card.querySelector(".text-approval")?.value;
 
-    if (
-      (imageStatus === "Needs Edits" || textStatus === "Needs Edits") &&
-      comment
-    ) {
-      const adName = card.querySelector(".ad-name").textContent;
-      const region = card.querySelector(".region-name").textContent;
-      const club = card.querySelector(".club-name").textContent;
-      const category = card.querySelector(".category-name").textContent;
-      const headline = card.querySelector(".headline").textContent;
-      const body = card.querySelector(".body").textContent;
-      const images = Array.from(
-        card.querySelectorAll(".image-preview")
-      ).map((img) => img.src);
+    const isEdit = textStatus !== "Approved" || imageStatuses.some(status => status !== "Approved");
 
-      edits.push({
-        region,
-        club,
-        category,
-        adName,
-        headline,
-        body,
-        imageStatus,
-        textStatus,
-        comments: comment,
-        images,
-        timestamp: new Date().toISOString(),
-      });
+    if (isEdit) {
+      const adName = card.querySelector(".ad-name")?.textContent?.replace("Ad Name:", "").trim();
+      const club = card.querySelector(".meta:nth-child(1)")?.textContent?.replace("Club:", "").trim();
+      const category = card.querySelector(".meta:nth-child(2)")?.textContent?.replace("Category:", "").trim();
+
+      const ad = {
+        Club: club || "N/A",
+        Category: category || "N/A",
+        "Ad Name": adName || "N/A",
+        Headline: card.querySelector(".headline")?.textContent || "",
+        Body: card.querySelector(".primary-text")?.textContent || "",
+        Image_URL_1: card.querySelectorAll("img")[0]?.src || "",
+        Image_URL_2: card.querySelectorAll("img")[1]?.src || "",
+        Image_URL_3: card.querySelectorAll("img")[2]?.src || "",
+        ImageApprovals: imageStatuses,
+        TextApproval: textStatus,
+        Timestamp: new Date().toISOString()
+      };
+
+      adsNeedingEdits.push(ad);
+
+      // Optional: visually fade card out
+      card.style.transition = "opacity 0.4s ease";
+      card.style.opacity = 0;
+      setTimeout(() => card.remove(), 400);
     }
   });
 
-  if (edits.length === 0) {
-    showToast("⚠️ No edits to send.");
+  console.log("📝 Ads needing edits:", adsNeedingEdits);
+
+  if (adsNeedingEdits.length === 0) {
+    showToast("⚠️ No ads needing edits were found.");
     return;
   }
 
   try {
-    await firebase
-      .database()
-      .ref("adsNeedingEdits")
-      .push({ ads: edits, timestamp: new Date().toISOString() });
+    await firebase.database().ref("adsNeedingEdits").push({
+      ads: adsNeedingEdits,
+      timestamp: new Date().toISOString()
+    });
+    console.log("✅ Sent ads needing edits to Firebase");
     showToast("✏️ Edits sent to Ads Department.");
+    checkIfNoAdsLeft();
   } catch (error) {
-    console.error("Error sending edits:", error);
-    showToast("❌ Failed to send edits.");
+    console.error("🔥 Firebase write failed:", error);
+    showToast("❌ Failed to send edits. Try again.");
   }
 }
-  if (editsToAdsBtn) {
-  console.log("📩 Binding Send Edits to Ads button");
-  editsToAdsBtn.addEventListener("click", sendAdsNeedingEdits);
-} else {
-  console.error("❌ sendEditsToAdsTeam not found in DOM");
-}
-});
-
-</script>
 
 
 <script>
@@ -708,12 +704,11 @@ document.addEventListener("DOMContentLoaded", function () {
   } else {
     console.warn("⚠️ sendToAgencyBtn not found in DOM");
   }
-
+ 
   if (editsBtn) {
-    console.log("🔗 Binding Send Edits button");
     editsBtn.addEventListener("click", sendAdsNeedingEdits);
   } else {
-    console.error("❌ sendEditsToAdsTeam not found in DOM");
+    console.warn("⚠️ sendEditsToAdsTeam button not found in DOM");
   }
 });
 
