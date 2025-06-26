@@ -24,6 +24,7 @@
 
   // ✅ Initialize Firebase
   firebase.initializeApp(firebaseConfig);
+  const database = firebase.database();
 </script>
 
   <meta charset="UTF-8">
@@ -447,34 +448,18 @@
 </script>
 <script>
   const statusList = document.getElementById("downloadStatusList");
+  const statusRef = firebase.database().ref("agencyApprovedBatches");
 
-  firebase.database().ref("finalApprovedAds").once("value").then(snapshot => {
-    const data = snapshot.val() || {};
-    const entries = Object.entries(data);
+  statusRef.on("value", (snapshot) => {
+    statusList.innerHTML = "";
+    snapshot.forEach((childSnapshot) => {
+      const batchName = childSnapshot.key;
+      const data = childSnapshot.val();
+      const status = data.downloaded ? "✅ Downloaded" : "❌ Not Downloaded";
+      const color = data.downloaded ? "green" : "red";
 
-    if (entries.length === 0) {
-      statusList.innerHTML = "<li>No batches found.</li>";
-      return;
-    }
-
-    // Sort by timestamp descending (most recent first)
-    entries.sort((a, b) => {
-      const timeA = new Date(a[0].split(" – ")[1] || "").getTime();
-      const timeB = new Date(b[0].split(" – ")[1] || "").getTime();
-      return timeB - timeA;
-    });
-
-    entries.forEach(([batchName, batchData]) => {
       const li = document.createElement("li");
-      const downloaded = batchData.downloaded === true;
-
-      li.innerHTML = `
-        <strong>${batchName}</strong> –
-        <span style="color: ${downloaded ? 'green' : 'red'}; font-weight: bold;">
-          ${downloaded ? 'Downloaded' : 'Not Downloaded'}
-        </span>
-      `;
-
+      li.innerHTML = `<strong>${batchName}</strong>: <span style="color:${color}; font-weight:600">${status}</span>`;
       statusList.appendChild(li);
     });
   });
