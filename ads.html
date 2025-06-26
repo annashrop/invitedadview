@@ -365,10 +365,11 @@
 
 
 <script>
-  // Auth: Sign in anonymously
-  firebase.auth().signInAnonymously().catch((error) => {
-    console.error("Auth error:", error.message);
-  });
+  import { signInAnonymously } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+
+signInAnonymously(auth).catch((error) => {
+  console.error("Auth error:", error.message);
+});
 
   async function uploadCSV() {
     const fileInput = document.getElementById('csvFile');
@@ -412,8 +413,9 @@
 
 </script>
 <script>
-firebase.auth().onAuthStateChanged(function(user) {
-  if (user) {
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+const auth = getAuth();
+onAuthStateChanged(auth, (user) => {
     const statusList = document.getElementById("downloadStatusList");
 
     firebase.database().ref("finalApprovedAds").once("value").then(snapshot => {
