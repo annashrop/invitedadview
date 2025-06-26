@@ -156,7 +156,23 @@ body {
   text-align: center;
   margin-bottom: 12px;
 }
+.view-image-button {
+  display: inline-block;
+  background-color: #22326e;
+  color: white;
+  padding: 6px 12px;
+  margin-bottom: 6px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
 
+.view-image-button:hover {
+  background-color: #1a244f;
+}
 .approval-row,
 .approval {
   margin-top: 10px;
@@ -329,7 +345,7 @@ imageURLs.forEach((url, i) => {
     imageTags += `
       <img class="card-image" src="${url}" alt="Ad Image ${i + 1}">
       <div class="image-approval">
-        <label>Image Review:</label>
+        <label>Image Approval Status:</label>
         <select class="image-approval-select">
           <option value="">Select</option>
           <option value="Approved">Approved</option>
@@ -339,30 +355,34 @@ imageURLs.forEach((url, i) => {
     `;
   }
 });
-
-
   
-    card.innerHTML = `
-  <p class="meta"><strong>Region:</strong> ${ad.Region || ""} <br>
-  <strong>Club:</strong> ${ad.Club || ""} &nbsp; | &nbsp;
-  <strong>Category:</strong> ${ad.Category || ""}</p>
+const region = ad.Region || "N/A";
+const club = ad.Club || "N/A";
+const category = ad.Category || "N/A";
+
+card.innerHTML = `
+  <p class="meta">
+    <strong>Region:</strong> ${region}<br>
+    <strong>Club:</strong> ${club} &nbsp; &nbsp;
+    <strong>Category:</strong> ${category}
+  </p>
+
   <p class="ad-name"><strong>Ad Name:</strong> ${ad["Ad Name"] || ""}</p>
   <h3 class="headline-text">${ad.Headline || ""}</h3>
   <p class="primary-text">${ad.Body || ""}</p>
   <div class="image-set">${imageTags}</div>
+
   <label>Text Review:</label>
   <select class="text-approval">
     <option value="">Select</option>
     <option value="Approved">Approved</option>
     <option value="Needs Edits">Needs Edits</option>
   </select>
-`;
-      
-   card.innerHTML += `
-    <div class="approval-box">
+
+  <div class="approval-box">
     <label>Reviewer Comments:</label>
     <textarea placeholder="Enter comments here..." rows="3" style="width:100%;border-radius:6px;"></textarea>
-    </div>
+  </div>
 `;
 
     card.dataset.ad = JSON.stringify(ad);
@@ -410,104 +430,139 @@ imageURLs.forEach((url, i) => {
   const dbRef = firebase.database().ref(`approvedAds/${clubName}`);
 
   dbRef.once("value")
-    .then(snapshot => {
-      const clubData = snapshot.val();
-      console.log("clubData from Firebase:", clubData);
-      const adsArray = clubData?.ads || [];
-      console.log("adsArray extracted:", adsArray);
+  .then(snapshot => {
+    const clubData = snapshot.val();
+    const clubDataArray = clubData?.ads || [];
 
-      const filteredAds = adsArray.filter(ad => ad && !savedKeys.includes(ad["Ad Name"]));
-      console.log("Filtered ads to render:", filteredAds);
+    // 🧠 Get list of ads previously hidden (approved or sent for edits)
+    const savedKeys = JSON.parse(localStorage.getItem("hiddenAdNames")) || [];
 
-      renderApprovedAds(filteredAds);
-    })
-    .catch(error => {
-      console.error("Error fetching data from Firebase:", error);
-    });
+    console.log("📦 ClubData from Firebase:", clubData);
+    console.log("🧠 Saved ad names:", savedKeys);
+
+    // 🧼 Filter out ads that were already handled
+    const filteredAds = clubDataArray.filter(ad => !savedKeys.includes(ad["Ad Name"]));
+
+    console.log("🎯 Filtered ads to render:", filteredAds);
+    renderApprovedAds(filteredAds);
+  })
+  .catch(error => {
+    console.error("❌ Error fetching data from Firebase:", error);
+  });
 });
 
+</script>
 
+<script>
+  function getHiddenAdNames() {
+  const data = localStorage.getItem("hiddenAdNames");
+  return data ? JSON.parse(data) : [];
+}
   
-
-
-
-
- document.addEventListener("DOMContentLoaded", () => {
-  const sendToAgencyBtn = document.getElementById("sendToAgencyBtn");
-
-  if (sendToAgencyBtn) {
-    sendToAgencyBtn.addEventListener("click", () => {
-      const approvedAds = [];
-
-      document.querySelectorAll(".preview-card").forEach(card => {
-        const textStatus = card.querySelector('.text-approval')?.value;
-        const imageStatuses = Array.from(card.querySelectorAll('select.image-approval-select')).map(sel => sel.value);
-        const allApproved = textStatus === "Approved" && imageStatuses.every(val => val === "Approved");
-
-        if (allApproved) {
-          const finalData = {
-            Region: region || "N/A",
-            Club: "Canyon Gate",
-            Category: card.dataset.category || "N/A",
-            "Ad Name": card.dataset.adName || "N/A",
-            Headline: card.querySelector(".headline-text")?.textContent || "",
-            "Primary Text": card.querySelector(".primary-text")?.textContent || "",
-            Image_URL_1: card.querySelectorAll("img")[0]?.src || "",
-            Image_URL_2: card.querySelectorAll("img")[1]?.src || "",
-            Image_URL_3: card.querySelectorAll("img")[2]?.src || "",
-            textApprovalStatus: textStatus,
-            imageApprovalStatuses: imageStatuses,
-            reviewerComments: card.querySelector("textarea")?.value || "",
-            Timestamp: new Date().toISOString()
-          };
-
-          approvedAds.push(finalData);
-
-          // Fade & remove
-          card.style.transition = "opacity 0.4s ease";
-          card.style.opacity = 0;
-          setTimeout(() => {
-            card.remove();
-            checkIfNoAdsLeft();
-          }, 400);
-        }
-      });
-
-      if (approvedAds.length > 0) {
-        const now = new Date();
-        const batchKey = `Canyon Gate - ${now.toLocaleString("en-US", {
-          month: "short",
-          day: "numeric",
-          year: "numeric",
-          hour: "numeric",
-          minute: "2-digit",
-          hour12: true
-        })}`;
-
-        firebase.database().ref(`finalApprovedAds/${batchKey}`).set({
-          ads: approvedAds,
-          timestamp: now.toISOString()
-        }).then(() => {
-          showToast("✅ Final approvals sent to Agency.");
-          console.log("✅ Final approved ads sent to Firebase.");
-        }).catch(error => {
-          console.error("❌ Error writing to Firebase:", error);
-          showToast("❌ Failed to send final approvals.");
-        });
-      } else {
-        showToast("⚠️ No ads fully approved to send.");
-      }
-    });
+function addHiddenAdName(adName) {
+  const current = getHiddenAdNames();
+  const cleanName = (adName || "").trim();
+  if (cleanName && !current.includes(cleanName)) {
+    current.push(cleanName);
+    localStorage.setItem("hiddenAdNames", JSON.stringify(current));
   }
-});
+}
+ 
+   const showToast = (message) => {
+    const toast = document.createElement("div");
+    toast.textContent = message;
+    toast.style.position = "fixed";
+    toast.style.bottom = "20px";
+    toast.style.left = "50%";
+    toast.style.transform = "translateX(-50%)";
+    toast.style.backgroundColor = "#333";
+    toast.style.color = "#fff";
+    toast.style.padding = "12px 20px";
+    toast.style.borderRadius = "6px";
+    toast.style.zIndex = "9999";
+    toast.style.fontSize = "14px";
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+  };
+
+async function sendFinalApprovalsToAgency() {
+  const adCards = document.querySelectorAll(".preview-card");
+  const approvedAds = [];
+
+  adCards.forEach(card => {
+    const imageStatuses = Array.from(card.querySelectorAll(".image-approval-select")).map(sel => sel.value);
+    const textStatus = card.querySelector(".text-approval")?.value;
+
+    if (textStatus === "Approved" && imageStatuses.every(v => v === "Approved")) {
+      const adName = card.querySelector(".ad-name")?.textContent?.replace("Ad Name:", "").trim();
+      const metaText = card.querySelector(".meta")?.innerText || "";
+      const regionMatch = metaText.match(/Region:\s*(.*)\s*Club:/);
+      const clubMatch = metaText.match(/Club:\s*(.*?)\s*Category:/);
+      const categoryMatch = metaText.match(/Category:\s*(.*)/);
+
+      const region = regionMatch?.[1]?.trim() || "N/A";
+      const club = clubMatch?.[1]?.trim() || "N/A";
+      const category = categoryMatch?.[1]?.trim() || "N/A";
+
+      const ad = {
+        Region: region || "N/A",
+        Club: club || "N/A",
+        Category: category || "N/A",
+        "Ad Name": adName || "N/A",
+        Headline: card.querySelector(".headline-text")?.textContent || "",
+        "Primary Text": card.querySelector(".primary-text")?.textContent || "",
+        Image_URL_1: card.querySelectorAll("img")[0]?.src || "",
+        Image_URL_2: card.querySelectorAll("img")[1]?.src || "",
+        Image_URL_3: card.querySelectorAll("img")[2]?.src || "",
+        Timestamp: new Date().toISOString()
+      };
+
+      approvedAds.push(ad);
+      addHiddenAdName(ad["Ad Name"]);
+      card.style.transition = "opacity 0.4s ease";
+      card.style.opacity = 0;
+      setTimeout(() => card.remove(), 400);
+    }
+  });
+
+  if (approvedAds.length === 0) {
+    showToast("⚠️ No fully approved ads found.");
+    return;
+  }
+
+  const clubName = approvedAds[0].Club || "UnknownClub";
+  const now = new Date();
+  const batchKey = `${clubName} - ${now.toLocaleString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true
+  })}`;
+  const payload = { ads: approvedAds, timestamp: now.toISOString() };
+
+  try {
+    await firebase.database().ref(`finalApprovedAds/${batchKey}`).set(payload);
+    showToast("✅ Final approvals sent to Agency.");
+    console.log("✅ Final approved ads sent to Firebase.");
+    checkIfNoAdsLeft();
+  } catch (error) {
+    console.error("🔥 Firebase write failed:", error);
+    showToast("❌ Failed to send ads. Try again.");
+  }
+}
+
+</script>
 
 
+<script>
 
 
-  document.getElementById("sendEdits").addEventListener("click", () => {
+  document.getElementById("sendEditsToAdsTeam").addEventListener("click", () => {
   const editAds = [];
   document.querySelectorAll(".preview-card").forEach(card => {
-     const imageStatuses = Array.from(card.querySelectorAll('select.image-approval-select')).map(sel => sel.value);
+    const imageStatuses = Array.from(card.querySelectorAll('select.image-approval-select')).map(sel => sel.value);
     const textStatus = card.querySelector("select.text-approval")?.value;
     const needsEdit = imageStatuses.some(v => v === "Needs Edit" || v === "Declined") ||
                       textStatus === "Needs Edit" || textStatus === "Declined";
@@ -527,7 +582,7 @@ imageURLs.forEach((url, i) => {
   Club: card.querySelector(".meta strong:nth-child(2)")?.nextSibling?.textContent?.trim() || "",
   Category: card.querySelector(".meta strong:nth-child(3)")?.nextSibling?.textContent?.trim() || "",
   "Ad Name": card.querySelector(".ad-name")?.textContent?.replace("Ad Name: ", "") || "",
-  Headline: card.querySelector(".headline")?.textContent || "",
+  Headline: card.querySelector(".headline-text")?.textContent || "",
   "Primary Text": card.querySelector(".primary-text")?.textContent || "",
   Image_URL_1: card.querySelectorAll(".card-image")[0]?.src || "",
   Image_URL_2: card.querySelectorAll(".card-image")[1]?.src || "",
@@ -558,22 +613,7 @@ imageURLs.forEach((url, i) => {
 
     checkIfNoAdsLeft();
 
-  const showToast = (message) => {
-    const toast = document.createElement("div");
-    toast.textContent = message;
-    toast.style.position = "fixed";
-    toast.style.bottom = "20px";
-    toast.style.left = "50%";
-    toast.style.transform = "translateX(-50%)";
-    toast.style.backgroundColor = "#333";
-    toast.style.color = "#fff";
-    toast.style.padding = "12px 20px";
-    toast.style.borderRadius = "6px";
-    toast.style.zIndex = "9999";
-    toast.style.fontSize = "14px";
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 3000);
-  };
+
 
   function checkIfNoAdsLeft() {
     if (document.querySelectorAll('.preview-card').length === 0) {
@@ -591,6 +631,29 @@ imageURLs.forEach((url, i) => {
     if (welcomeEl) welcomeEl.style.display = "none";
   }
 
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const sendBtn = document.getElementById("sendToAgencyBtn");
+    const editsBtn = document.getElementById("sendEdits");
+
+    if (sendBtn) {
+      console.log("🔗 Binding Send to Agency button");
+      sendBtn.addEventListener("click", sendFinalApprovalsToAgency); // must match the name of your function
+    } else {
+      console.warn("⚠️ sendToAgencyBtn not found in DOM");
+    }
+
+    if (editsBtn) {
+      console.log("🔗 Binding Send Edits button");
+      editsBtn.addEventListener("click", sendEditsToAdsTeam);
+    } else {
+      console.warn("⚠️ sendEdits not found in DOM");
+    }
+  });
+
+</script>
+  <script>
   document.getElementById('paid-ads-btn')?.addEventListener('click', (e) => {
     e.preventDefault();
     localStorage.setItem("activeSection", "paid");
@@ -613,7 +676,6 @@ imageURLs.forEach((url, i) => {
   });
 
   // On page load, show welcome OR restore section background
-
-</script> 
+</script>
 </body>
 </html>
