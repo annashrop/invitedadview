@@ -714,13 +714,13 @@ async function sendApprovedAdsToClub() {
 <script>
 
     
-function sendEditsToAdsTeam() {
- const adCards = document.querySelectorAll('.preview-card');
-  let editAds = [];
+ async function sendAdsNeedingEdits() {
+    const adCards = document.querySelectorAll(".preview-card");
+    const edits = [];
 
-  adCards.forEach(card => {
-    const imageStatus = card.querySelector('.image-approval')?.value;
-    const textStatus = card.querySelector('.text-approval')?.value;
+    adCards.forEach(card => {
+      const textStatus = card.querySelector(".text-approval")?.value;
+      const imageStatuses = Array.from(card.querySelectorAll(".image-approval")).map(sel => sel.value);
 
 
   if (imageStatus === 'Needs Edit' || textStatus === 'Needs Edit' || 
