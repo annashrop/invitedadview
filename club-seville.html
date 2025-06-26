@@ -327,6 +327,8 @@ textarea:focus, select:focus {
 </div>
 
 <script>
+ 
+    
 async function renderApprovedAds(adList) {
   const container = document.getElementById('preview-container');
   container.innerHTML = '';
@@ -485,6 +487,9 @@ function addHiddenAdName(adName) {
     setTimeout(() => toast.remove(), 3000);
   };
 
+document.addEventListener("DOMContentLoaded", function () {
+const editsBtn = document.getElementById("sendEdits");
+    
 async function sendFinalApprovalsToAgency() {
   const adCards = document.querySelectorAll(".preview-card");
   const approvedAds = [];
@@ -607,6 +612,13 @@ async function sendAdsNeedingEdits() {
     showToast("❌ Failed to send edits.");
   }
 }
+  if (editsBtn) {
+    console.log("📩 Binding Send Edits button");
+    editsBtn.addEventListener("click", sendAdsNeedingEdits);
+  } else {
+    console.error("❌ Send Edits button not found in DOM");
+  }
+});
 
 </script>
 
