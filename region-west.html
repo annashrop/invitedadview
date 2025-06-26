@@ -782,7 +782,7 @@ function showToast(message) {
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     const sendBtn = document.getElementById("sendToClubBtn");
-    const editsBtn = document.getElementById("sendEdits");
+    const sendEditsBtn = document.getElementById("sendEdits");
 
     if (sendBtn) {
       console.log("🔗 Binding Send Approved button");
@@ -791,11 +791,11 @@ function showToast(message) {
       console.warn("⚠️ sendToClubBtn not found in DOM");
     }
 
-    if (sendEditsBtn) {
-    sendEditsBtn.addEventListener("click", sendAdsNeedingEdits);
-  } else {
-    console.error("❌ sendEditsBtn not found in DOM");
-  }
+    if (editsBtn) {
+  editsBtn.addEventListener("click", sendAdsNeedingEdits);
+} else {
+  console.error("❌ editsBtn not found in DOM");
+}
   });
 </script>
 <script>
