@@ -502,13 +502,8 @@
     });
 }
 
-// Run this function after auth or window load
 window.onload = function () {
-  firebase.auth().onAuthStateChanged(user => {
-    if (user) {
-      loadHawkeDownloadStatus();
-    }
-  });
+  loadHawkeDownloadStatus();
 };
 
 </script>
