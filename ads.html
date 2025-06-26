@@ -223,6 +223,44 @@
     #attention-section {
       margin-top: 60px;
     }
+    .status-window {
+  background-color: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 16px;
+  max-height: 300px;
+  overflow-y: auto;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  margin-top: 20px;
+  width: 100%;
+  max-width: 600px;
+}
+
+.status-window h3 {
+  margin-top: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.status-list {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.status-list li {
+  padding: 8px 0;
+  border-bottom: 1px solid #e2e2e2;
+}
+
+.status-list li:last-child {
+  border-bottom: none;
+}
+    .status-window {
+  margin-left: auto;
+  margin-right: auto;
+}
   </style>
 </head>
 <body>
@@ -257,9 +295,9 @@
   </div>
 <div id="ads-needing-edits" class="ads-needing-edit">
 </div>
-<div id="downloadStatusSection" style="margin-top: 40px;">
+<div class="status-window">
   <h3>Hawke Download Status</h3>
-  <ul id="downloadStatusList" style="list-style: none; padding: 0;"></ul>
+  <ul id="downloadStatusList" class="status-list"></ul>
 </div>
 
   <script>
