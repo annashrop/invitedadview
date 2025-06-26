@@ -888,13 +888,15 @@ async function sendEditsToAdsTeam() {
   const payload = { ads: editsNeeded, timestamp: new Date().toISOString() };
 
   try {
-    await firebase.database().ref(`adsNeedingEdits/${clubName}`).set(payload);
-    console.log("✅ Edits sent to Firebase");
-    showToast(`✏️ Edits sent for ${clubName}`);
-  } catch (error) {
-    console.error("🔥 Failed to send edits:", error);
-    showToast("❌ Could not send edits. Try again.");
-  }
+      await firebase.database().ref("adsNeedingEdits/region-west").push({
+        ads: edits,
+        timestamp: new Date().toISOString()
+      });
+      showToast("✅ Ads needing edits sent to Ads Team");
+    } catch (err) {
+      console.error("🔥 Failed to write to Firebase:", err);
+      showToast("❌ Error sending edits. Try again.");
+    }
 }
 
  
