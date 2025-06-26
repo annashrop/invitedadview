@@ -702,20 +702,12 @@ async function sendAdsNeedingEdits() {
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     const sendBtn = document.getElementById("sendToAgencyBtn");
-    const editsBtn = document.getElementById("sendEditsToAdsTeam");
-
+    
     if (sendBtn) {
       console.log("🔗 Binding Send to Agency button");
       sendBtn.addEventListener("click", sendFinalApprovalsToAgency); // must match the name of your function
     } else {
       console.warn("⚠️ sendToAgencyBtn not found in DOM");
-    }
-
-    if (editsBtn) {
-      console.log("🔗 Binding Send Edits button");
-      editsBtn.addEventListener("click", sendEditsToAdsTeam);
-    } else {
-      console.warn("⚠️ sendEdits not found in DOM");
     }
   });
 
