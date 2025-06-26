@@ -431,7 +431,7 @@ button:hover {
       <div class="header-wrapper">
         <div class="top-buttons">
           <button id="sendToClubBtn" style="background-color: #7baa65; color: white; padding: 10px; border: none; border-radius: 6px;">Send Approved Ads to Club</button>
-          <button id="sendEdits" style="background-color: #e35205; color: white; padding: 10px; border: none; border-radius: 6px;">Send Feedback to Ads Team</button>
+          <button id="sendEditstoAdsTeam" style="background-color: #e35205; color: white; padding: 10px; border: none; border-radius: 6px;">Send Feedback to Ads Team</button>
         </div>
       </div>
       <div id="preview-container"></div>
@@ -838,6 +838,64 @@ window.addEventListener("DOMContentLoaded", () => {
     mainContent.style.backgroundColor = '#22326e';
   }
 });
+  
+async function sendEditsToAdsTeam() {
+  const adCards = document.querySelectorAll(".preview-card");
+  const editsNeeded = [];
+
+  adCards.forEach(card => {
+    const imageStatuses = Array.from(card.querySelectorAll(".image-approval")).map(sel => sel.value);
+    const textStatus = card.querySelector(".text-approval")?.value;
+
+    const needsEdit = textStatus === "Needs Edit" || imageStatuses.some(status => status === "Needs Edit");
+
+    if (needsEdit) {
+      const adName = card.querySelector(".ad-name")?.textContent?.replace("Ad Name:", "").trim();
+      const region = card.querySelector(".meta:nth-child(1)")?.textContent?.replace("Region:", "").trim();
+      const clubCategory = card.querySelector(".meta:nth-child(2)")?.textContent || "";
+      const [clubPart, categoryPart] = clubCategory.split("|").map(str => str.trim());
+      const club = clubPart?.replace("Club:", "").trim();
+      const category = categoryPart?.replace("Category:", "").trim();
+
+      const ad = {
+        Region: region || "N/A",
+        Club: club || "N/A",
+        Category: category || "N/A",
+        "Ad Name": adName || "N/A",
+        Headline: card.querySelector(".headline")?.textContent || "",
+        Body: card.querySelector(".primary-text")?.textContent || "",
+        Image_URL_1: card.querySelectorAll("img")[0]?.src || "",
+        Image_URL_2: card.querySelectorAll("img")[1]?.src || "",
+        Image_URL_3: card.querySelectorAll("img")[2]?.src || "",
+        textApprovalStatus: textStatus,
+        imageApprovalStatuses: imageStatuses,
+        reviewerComments: card.querySelector(".comment-box")?.value || "",
+        Timestamp: new Date().toISOString()
+      };
+
+      editsNeeded.push(ad);
+    }
+  });
+
+  console.log("🛠️ Edits to submit:", editsNeeded);
+
+  if (editsNeeded.length === 0) {
+    showToast("⚠️ No ads marked 'Needs Edit'");
+    return;
+  }
+
+  const clubName = editsNeeded[0].Club || "UnknownClub";
+  const payload = { ads: editsNeeded, timestamp: new Date().toISOString() };
+
+  try {
+    await firebase.database().ref(`adsNeedingEdits/${clubName}`).set(payload);
+    console.log("✅ Edits sent to Firebase");
+    showToast(`✏️ Edits sent for ${clubName}`);
+  } catch (error) {
+    console.error("🔥 Failed to send edits:", error);
+    showToast("❌ Could not send edits. Try again.");
+  }
+}
 
  
 
