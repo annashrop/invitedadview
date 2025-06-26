@@ -686,22 +686,6 @@ async function sendAdsNeedingEdits() {
     if (welcomeEl) welcomeEl.style.display = "none";
   }
 
-  function showToast(message) {
-  const toast = document.createElement("div");
-  toast.textContent = message;
-  toast.style.position = "fixed";
-  toast.style.bottom = "20px";
-  toast.style.right = "20px";
-  toast.style.backgroundColor = "#4CAF50";
-  toast.style.color = "white";
-  toast.style.padding = "12px 20px";
-  toast.style.borderRadius = "5px";
-  toast.style.boxShadow = "0 2px 6px rgba(0,0,0,0.2)";
-  toast.style.zIndex = "1000";
-  document.body.appendChild(toast);
-  setTimeout(() => toast.remove(), 3000);
-}
-
 </script>
 <script>
   document.addEventListener("DOMContentLoaded", function () {
