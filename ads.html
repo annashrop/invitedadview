@@ -463,38 +463,41 @@
 </script>
 <script>
  function loadHawkeDownloadStatus() {
-  const statusBox = document.getElementById("hawkeStatusBox");
-  const ref = firebase.database().ref("finalApprovedAds");
+  const statusBox = document.getElementById("hawke-status-box");
+  statusBox.innerHTML = "Loading...";
 
-  ref.once("value")
-    .then(snapshot => {
-      statusBox.innerHTML = ""; // Clear any existing content
+  firebase.database().ref("finalApprovedAds").once("value").then(snapshot => {
+    const batches = [];
 
-      if (!snapshot.exists()) {
-        statusBox.innerHTML = "<p>No final approved ads found.</p>";
-        return;
+    snapshot.forEach(batchSnap => {
+      const batchKey = batchSnap.key;
+      const batchData = batchSnap.val();
+
+      const timestamp = batchData.timestamp || batchData.ads?.timestamp || "";
+      const downloaded = batchData.downloaded || batchData.ads?.downloaded || false;
+
+      if (timestamp) {
+        batches.push({
+          name: batchKey,
+          timestamp: new Date(timestamp),
+          downloaded: downloaded === true
+        });
       }
-
-      snapshot.forEach(batchSnap => {
-        const batchName = batchSnap.key;
-        const batchData = batchSnap.val();
-        const downloaded = batchData.downloaded === true; // check flag
-
-        const div = document.createElement("div");
-        div.className = downloaded ? "downloaded-true" : "downloaded-false";
-        div.textContent = `${batchName} — ${downloaded ? "Downloaded" : "Not Downloaded"}`;
-        statusBox.appendChild(div);
-      });
-    })
-    .catch(error => {
-      console.error("Error loading Hawke status:", error);
-      statusBox.innerHTML = "<p>Error loading status.</p>";
     });
-}
 
-window.onload = function () {
-  loadHawkeDownloadStatus();
-};
+    // Sort by timestamp DESCENDING (newest first)
+    batches.sort((a, b) => b.timestamp - a.timestamp);
+
+    // Clear old status and render sorted batches
+    statusBox.innerHTML = "";
+    batches.forEach(batch => {
+      const div = document.createElement("div");
+      div.className = batch.downloaded ? "downloaded-true" : "downloaded-false";
+      div.textContent = `${batch.name} — ${batch.downloaded ? "Downloaded" : "Not Downloaded"}`;
+      statusBox.appendChild(div);
+    });
+  });
+}
 
 </script>
 
