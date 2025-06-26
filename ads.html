@@ -407,26 +407,46 @@
     reader.readAsBinaryString(file);
   }
 
-  firebase.database().ref("finalApprovedAds").once("value").then(snapshot => {
-  const allBatches = snapshot.val() || {};
-  
-  Object.entries(allBatches).forEach(([batchKey, ads]) => {
-    const isDownloaded = ads.metadata?.downloaded || false;
+</script>
+<script>
+firebase.auth().onAuthStateChanged(function(user) {
+  if (user) {
+    const statusList = document.getElementById("downloadStatusList");
 
-    // create row
-    const div = document.createElement("div");
-    div.className = "ad-card";
-    div.textContent = batchKey + (isDownloaded ? " ✅ Downloaded" : " ❌ Not Downloaded");
+    firebase.database().ref("finalApprovedAds").once("value").then(snapshot => {
+      const data = snapshot.val() || {};
+      const entries = Object.entries(data);
 
-    // color
-    if (isDownloaded) {
-      div.style.backgroundColor = "#d4edda"; // light green
-    }
+      if (entries.length === 0) {
+        statusList.innerHTML = "<li>No batches found.</li>";
+        return;
+      }
 
-    document.getElementById("adsThatNeedYourAttention").appendChild(div);
-  });
+      // Sort by timestamp descending (most recent first)
+      entries.sort((a, b) => {
+        const timeA = new Date(a[0].split(" – ")[1] || "").getTime();
+        const timeB = new Date(b[0].split(" – ")[1] || "").getTime();
+        return timeB - timeA;
+      });
+
+      entries.forEach(([batchName, batchData]) => {
+        const li = document.createElement("li");
+        const downloaded = batchData.downloaded === true;
+
+        li.innerHTML = `
+          <strong>${batchName}</strong> – 
+          <span style="color: ${downloaded ? 'green' : 'red'}; font-weight: bold;">
+            ${downloaded ? 'Downloaded' : 'Not Downloaded'}
+          </span>
+        `;
+
+        statusList.appendChild(li);
+      });
+    });
+  } else {
+    console.warn("Not logged in – cannot fetch download status");
+  }
 });
 </script>
-
 </body>
 </html>
