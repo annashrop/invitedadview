@@ -360,21 +360,6 @@
       const editSection = document.getElementById("ads-needing-edits");
       const storedEdits = JSON.parse(localStorage.getItem("adsNeedingEdits") || "[]");
 
-      if (storedEdits.length > 0) {
-        storedEdits.forEach(({ html }) => {
-          const wrapper = document.createElement("div");
-            wrapper.className = "ad-card"; // 💡 this applies your styles
-            wrapper.innerHTML = `
-               <h3>${ad.adName}</h3>
-    <img src="${ad.imageUrls[0]}" />
-    <p><strong>Text Status:</strong> ${ad.textApprovalStatus || "N/A"}</p>
-    <p><strong>Image Statuses:</strong> ${(ad.imageApprovalStatuses || []).join(", ")}</p>
-    <p><strong>Reviewer Comments:</strong> ${ad.reviewerComments || "None"}</p>
-  `;
-            editSection.appendChild(wrapper);
-        ;
-        });
-
         document.getElementById("downloadEditsBtn").style.display = "inline-block";
         document.getElementById("clearEditCountBtn").style.display = "inline-block";
         document.getElementById("clearEditCSVBtn").style.display = "inline-block";
