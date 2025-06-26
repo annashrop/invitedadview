@@ -791,10 +791,10 @@ function showToast(message) {
       console.warn("⚠️ sendToClubBtn not found in DOM");
     }
 
-    if (editsBtn) {
-  editsBtn.addEventListener("click", sendAdsNeedingEdits);
+    if (sendEditsBtn) {
+      sendEditsBtn.addEventListener("click", sendAdsNeedingEdits);
 } else {
-  console.error("❌ editsBtn not found in DOM");
+  console.error("❌ sendEditsBtn not found in DOM");
 }
   });
 </script>
