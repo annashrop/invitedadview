@@ -407,6 +407,21 @@
     reader.readAsBinaryString(file);
   }
 
+  firebase.database().ref("finalApprovedAds").once("value").then(snapshot => {
+  const allBatches = snapshot.val() || {};
+  Object.entries(allBatches).forEach(([batchKey, batchData]) => {
+    const isDownloaded = batchData.downloaded === true;
+    const statusText = isDownloaded ? "✅ Downloaded" : "⏳ Not Yet Downloaded";
+
+    const row = document.createElement("div");
+    row.className = "batch-row";
+    row.innerHTML = `
+      <strong>${batchKey}</strong><br>
+      Status: <span style="color: ${isDownloaded ? 'green' : 'red'};">${statusText}</span>
+    `;
+    document.getElementById("downloadStatus").appendChild(row);
+  });
+});
 </script>
 
 </body>
