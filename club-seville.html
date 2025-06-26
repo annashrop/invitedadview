@@ -487,9 +487,7 @@ function addHiddenAdName(adName) {
     setTimeout(() => toast.remove(), 3000);
   };
 
-document.addEventListener("DOMContentLoaded", function () {
-const editsBtn = document.getElementById("sendEdits");
-    
+
 async function sendFinalApprovalsToAgency() {
   const adCards = document.querySelectorAll(".preview-card");
   const approvedAds = [];
@@ -627,7 +625,7 @@ async function sendAdsNeedingEdits() {
 
 
   document.getElementById("sendEditsToAdsTeam").addEventListener("click", () => {
-  const editAds = [];
+  const sendEditsBtn = document.getElementById("sendEdits");
   document.querySelectorAll(".preview-card").forEach(card => {
     const imageStatuses = Array.from(card.querySelectorAll('select.image-approval-select')).map(sel => sel.value);
     const textStatus = card.querySelector("select.text-approval")?.value;
@@ -702,15 +700,22 @@ async function sendAdsNeedingEdits() {
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     const sendBtn = document.getElementById("sendToAgencyBtn");
-    
-    if (sendBtn) {
-      console.log("🔗 Binding Send to Agency button");
-      sendBtn.addEventListener("click", sendFinalApprovalsToAgency); // must match the name of your function
+    const sendEditsBtn = document.getElementById("sendEdits");
+
+    if (sendFinalBtn) {
+      console.log("✅ Binding Send to Agency button");
+      sendFinalBtn.addEventListener("click", sendApprovedAdsToAgency); // Make sure this matches your actual function name
     } else {
-      console.warn("⚠️ sendToAgencyBtn not found in DOM");
+      console.warn("❌ sendFinalBtn not found");
+    }
+
+    if (sendEditsBtn) {
+      console.log("✅ Binding Send Edits button");
+      sendEditsBtn.addEventListener("click", sendAdsNeedingEdits);
+    } else {
+      console.warn("❌ sendEditsBtn not found");
     }
   });
-
 </script>
   <script>
   document.getElementById('paid-ads-btn')?.addEventListener('click', (e) => {
