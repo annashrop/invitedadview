@@ -448,7 +448,7 @@
 </script>
 <script>
   const statusList = document.getElementById("downloadStatusList");
-  const statusRef = firebase.database().ref("agencyApprovedBatches");
+  const statusRef = firebase.database().ref("finalApprovedAds");
 
   statusRef.on("value", (snapshot) => {
     statusList.innerHTML = "";
