@@ -258,7 +258,7 @@
 <div id="ads-needing-edits" class="ads-needing-edit">
 </div>
 <div id="downloadStatusSection" style="margin-top: 40px;">
-  <h3>Agency Download Status</h3>
+  <h3>Hawke Download Status</h3>
   <ul id="downloadStatusList" style="list-style: none; padding: 0;"></ul>
 </div>
 
@@ -364,13 +364,7 @@
 
 
 
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js"></script>
-<script>
-  const auth = firebase.auth();
-  auth.signInAnonymously().catch((error) => {
-    console.error("Auth error:", error.message);
-  });
-</script>
+
 <script>
   async function uploadCSV() {
     const fileInput = document.getElementById('csvFile');
@@ -414,7 +408,6 @@
 
 </script>
 <script>
-firebase.auth().onAuthStateChanged((user) => {
   const statusList = document.getElementById("downloadStatusList");
 
   firebase.database().ref("finalApprovedAds").once("value").then(snapshot => {
