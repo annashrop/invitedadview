@@ -838,24 +838,24 @@ window.addEventListener("DOMContentLoaded", () => {
     mainContent.style.backgroundColor = '#22326e';
   }
 });
-  
-async function sendEditsToAdsTeam() {
+</script>
+<script>
+async function sendAdsNeedingEdits() {
   const adCards = document.querySelectorAll(".preview-card");
-  const editsNeeded = [];
+  const adsNeedingEdits = [];
 
   adCards.forEach(card => {
     const imageStatuses = Array.from(card.querySelectorAll(".image-approval")).map(sel => sel.value);
     const textStatus = card.querySelector(".text-approval")?.value;
 
-    const needsEdit = textStatus === "Needs Edit" || imageStatuses.some(status => status === "Needs Edit");
-
-    if (needsEdit) {
+    if (textStatus === "Needs Edit" || imageStatuses.some(status => status === "Needs Edit")) {
       const adName = card.querySelector(".ad-name")?.textContent?.replace("Ad Name:", "").trim();
       const region = card.querySelector(".meta:nth-child(1)")?.textContent?.replace("Region:", "").trim();
       const clubCategory = card.querySelector(".meta:nth-child(2)")?.textContent || "";
       const [clubPart, categoryPart] = clubCategory.split("|").map(str => str.trim());
       const club = clubPart?.replace("Club:", "").trim();
       const category = categoryPart?.replace("Category:", "").trim();
+      const comments = card.querySelector("textarea")?.value || "";
 
       const ad = {
         Region: region || "N/A",
@@ -867,39 +867,36 @@ async function sendEditsToAdsTeam() {
         Image_URL_1: card.querySelectorAll("img")[0]?.src || "",
         Image_URL_2: card.querySelectorAll("img")[1]?.src || "",
         Image_URL_3: card.querySelectorAll("img")[2]?.src || "",
-        textApprovalStatus: textStatus,
-        imageApprovalStatuses: imageStatuses,
-        reviewerComments: card.querySelector(".comment-box")?.value || "",
+        Comments: comments,
         Timestamp: new Date().toISOString()
       };
 
-      editsNeeded.push(ad);
+      adsNeedingEdits.push(ad);
+
+      card.style.transition = "opacity 0.4s ease";
+      card.style.opacity = 0;
+      setTimeout(() => card.remove(), 400);
     }
   });
 
-  console.log("🛠️ Edits to submit:", editsNeeded);
+  if (adsNeedingEdits.length === 0) {
+    showToast("⚠️ No ads marked for edits.");
+    return;
+  }
 
-  if (edits.length === 0) {
-      showToast("⚠️ No ads marked 'Needs Edit'.");
-      return;
-    }
-
-  const clubName = editsNeeded[0].Club || "UnknownClub";
-  const payload = { ads: editsNeeded, timestamp: new Date().toISOString() };
+  const clubName = adsNeedingEdits[0].Club || "UnknownClub";
+  const payload = { ads: adsNeedingEdits, timestamp: new Date().toISOString() };
 
   try {
-      await firebase.database().ref("adsNeedingEdits/region-west").push({
-        ads: edits,
-        timestamp: new Date().toISOString()
-      });
-      showToast("✅ Ads needing edits sent to Ads Team");
-    } catch (err) {
-      console.error("🔥 Failed to write to Firebase:", err);
-      showToast("❌ Error sending edits. Try again.");
-    }
+    await firebase.database().ref(`adsNeedingEdits/${clubName}`).set(payload);
+    console.log("✅ Firebase write success for edits");
+    showToast(`✏️ Edits sent to Ads Team for ${clubName}`);
+  } catch (error) {
+    console.error("🔥 Firebase write failed for edits:", error);
+    showToast("❌ Failed to send edits. Try again.");
+  }
 }
 
- 
 
 </script>
 </body>
