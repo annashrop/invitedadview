@@ -552,6 +552,61 @@ async function sendFinalApprovalsToAgency() {
     showToast("❌ Failed to send ads. Try again.");
   }
 }
+async function sendAdsNeedingEdits() {
+  const cards = document.querySelectorAll(".preview-card");
+  const edits = [];
+
+  cards.forEach((card) => {
+    const imageStatus = card.querySelector(".image-status").value;
+    const textStatus = card.querySelector(".text-status").value;
+    const comment = card.querySelector("textarea").value.trim();
+
+    if (
+      (imageStatus === "Needs Edits" || textStatus === "Needs Edits") &&
+      comment
+    ) {
+      const adName = card.querySelector(".ad-name").textContent;
+      const region = card.querySelector(".region-name").textContent;
+      const club = card.querySelector(".club-name").textContent;
+      const category = card.querySelector(".category-name").textContent;
+      const headline = card.querySelector(".headline").textContent;
+      const body = card.querySelector(".body").textContent;
+      const images = Array.from(
+        card.querySelectorAll(".image-preview")
+      ).map((img) => img.src);
+
+      edits.push({
+        region,
+        club,
+        category,
+        adName,
+        headline,
+        body,
+        imageStatus,
+        textStatus,
+        comments: comment,
+        images,
+        timestamp: new Date().toISOString(),
+      });
+    }
+  });
+
+  if (edits.length === 0) {
+    showToast("⚠️ No edits to send.");
+    return;
+  }
+
+  try {
+    await firebase
+      .database()
+      .ref("adsNeedingEdits")
+      .push({ ads: edits, timestamp: new Date().toISOString() });
+    showToast("✏️ Edits sent to Ads Department.");
+  } catch (error) {
+    console.error("Error sending edits:", error);
+    showToast("❌ Failed to send edits.");
+  }
+}
 
 </script>
 
@@ -630,6 +685,22 @@ async function sendFinalApprovalsToAgency() {
     const welcomeEl = document.getElementById("welcome-message");
     if (welcomeEl) welcomeEl.style.display = "none";
   }
+
+  function showToast(message) {
+  const toast = document.createElement("div");
+  toast.textContent = message;
+  toast.style.position = "fixed";
+  toast.style.bottom = "20px";
+  toast.style.right = "20px";
+  toast.style.backgroundColor = "#4CAF50";
+  toast.style.color = "white";
+  toast.style.padding = "12px 20px";
+  toast.style.borderRadius = "5px";
+  toast.style.boxShadow = "0 2px 6px rgba(0,0,0,0.2)";
+  toast.style.zIndex = "1000";
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+}
 
 </script>
 <script>
