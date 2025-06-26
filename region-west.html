@@ -879,10 +879,10 @@ async function sendEditsToAdsTeam() {
 
   console.log("🛠️ Edits to submit:", editsNeeded);
 
-  if (editsNeeded.length === 0) {
-    showToast("⚠️ No ads marked 'Needs Edit'");
-    return;
-  }
+  if (edits.length === 0) {
+      showToast("⚠️ No ads marked 'Needs Edit'.");
+      return;
+    }
 
   const clubName = editsNeeded[0].Club || "UnknownClub";
   const payload = { ads: editsNeeded, timestamp: new Date().toISOString() };
