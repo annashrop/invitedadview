@@ -157,13 +157,20 @@ function exportToCSV(cards, batchKey) {
 
 
 // ✅ STEP 2: Update the batch rendering logic
+
 firebase.database().ref("finalApprovedAds").once("value").then(snapshot => {
   const allBatches = snapshot.val() || {};
-  Object.entries(allBatches).reverse().forEach(([batchKey, batchData]) => {
+
+  const sortedEntries = Object.entries(allBatches)
+    .filter(([key, value]) => value.timestamp) // make sure timestamp exists
+    .sort((a, b) => new Date(b[1].timestamp) - new Date(a[1].timestamp)); // sort DESC
+
+  sortedEntries.forEach(([batchKey, batchData]) => {
     const isDownloaded = batchData.downloaded === true;
     createBatchElement(batchKey, batchData.ads, isDownloaded);
   });
 });
+
 
 function createBatchElement(batchKey, ads, isDownloaded) {
   const container = document.createElement("div");
