@@ -331,7 +331,16 @@
   <h3>Hawke Download Status</h3>
   <div id="hawkeStatusBox" class="status-box"></div>
 </div>
-
+<div id="hawkeDownloadStatus" style="
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px;
+  max-height: 300px;
+  overflow-y: auto;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+">
+</div>
   <script>
     const user = localStorage.getItem("user");
     if (!user) {
