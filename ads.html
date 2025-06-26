@@ -413,45 +413,41 @@ signInAnonymously(auth).catch((error) => {
 
 </script>
 <script>
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
-const auth = getAuth();
-onAuthStateChanged(auth, (user) => {
-    const statusList = document.getElementById("downloadStatusList");
+firebase.auth().onAuthStateChanged((user) => {
+  const statusList = document.getElementById("downloadStatusList");
 
-    firebase.database().ref("finalApprovedAds").once("value").then(snapshot => {
-      const data = snapshot.val() || {};
-      const entries = Object.entries(data);
+  firebase.database().ref("finalApprovedAds").once("value").then(snapshot => {
+    const data = snapshot.val() || {};
+    const entries = Object.entries(data);
 
-      if (entries.length === 0) {
-        statusList.innerHTML = "<li>No batches found.</li>";
-        return;
-      }
+    if (entries.length === 0) {
+      statusList.innerHTML = "<li>No batches found.</li>";
+      return;
+    }
 
-      // Sort by timestamp descending (most recent first)
-      entries.sort((a, b) => {
-        const timeA = new Date(a[0].split(" – ")[1] || "").getTime();
-        const timeB = new Date(b[0].split(" – ")[1] || "").getTime();
-        return timeB - timeA;
-      });
-
-      entries.forEach(([batchName, batchData]) => {
-        const li = document.createElement("li");
-        const downloaded = batchData.downloaded === true;
-
-        li.innerHTML = `
-          <strong>${batchName}</strong> – 
-          <span style="color: ${downloaded ? 'green' : 'red'}; font-weight: bold;">
-            ${downloaded ? 'Downloaded' : 'Not Downloaded'}
-          </span>
-        `;
-
-        statusList.appendChild(li);
-      });
+    // Sort by timestamp descending (most recent first)
+    entries.sort((a, b) => {
+      const timeA = new Date(a[0].split(" – ")[1] || "").getTime();
+      const timeB = new Date(b[0].split(" – ")[1] || "").getTime();
+      return timeB - timeA;
     });
-  } else {
-    console.warn("Not logged in – cannot fetch download status");
-  }
+
+    entries.forEach(([batchName, batchData]) => {
+      const li = document.createElement("li");
+      const downloaded = batchData.downloaded === true;
+
+      li.innerHTML = `
+        <strong>${batchName}</strong> –
+        <span style="color: ${downloaded ? 'green' : 'red'}; font-weight: bold;">
+          ${downloaded ? 'Downloaded' : 'Not Downloaded'}
+        </span>
+      `;
+
+      statusList.appendChild(li);
+    });
+  });
 });
 </script>
+
 </body>
 </html>
