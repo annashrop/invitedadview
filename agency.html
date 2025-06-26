@@ -60,6 +60,13 @@
     .checkbox-row label {
       margin-right: 15px;
     }
+    .downloaded {
+  background-color: #d4edda !important;
+  border-left: 6px solid green;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+}
   </style>
 </head>
 <body>
@@ -115,34 +122,17 @@ function createBatchElement(batch, index) {
 }
  
     
-function exportToCSV(cards, clubName, timestamp, containerElement) {
+function exportToCSV(cards, batchKey) {
   const headers = [
-    "Region",
-    "Club",
-    "Category",
-    "Ad Name",
-    "Headline",
-    "Primary Text",
-    "Image URL 1",
-    "Image URL 2",
-    "Image URL 3",
-    "Ad Text Approval Status",
-    "Image 1 Approval Status",
-    "Image 2 Approval Status",
-    "Image 3 Approval Status",
-    "Reviewer Comments"
+    "Region", "Club", "Category", "Ad Name", "Headline", "Primary Text",
+    "Image URL 1", "Image URL 2", "Image URL 3", "Ad Text Approval Status",
+    "Image 1 Approval Status", "Image 2 Approval Status", "Image 3 Approval Status", "Reviewer Comments"
   ];
 
   const rows = cards.map(card => [
-    card.Region || "",
-    card.Club || "",
-    card.Category || "",
-    card["Ad Name"] || "",
-    card.Headline || "",
-    card["Primary Text"] || "",
-    card["Image_URL_1"] || "",
-    card["Image_URL_2"] || "",
-    card["Image_URL_3"] || "",
+    card.Region || "", card.Club || "", card.Category || "",
+    card["Ad Name"] || "", card.Headline || "", card["Primary Text"] || "",
+    card["Image_URL_1"] || "", card["Image_URL_2"] || "", card["Image_URL_3"] || "",
     card.textApprovalStatus || "",
     card.imageApprovalStatuses?.[0] || "",
     card.imageApprovalStatuses?.[1] || "",
@@ -151,35 +141,46 @@ function exportToCSV(cards, clubName, timestamp, containerElement) {
   ]);
 
   const csvContent = headers.join(",") + "\n" + rows.map(r => r.map(v => `"${v}"`).join(",")).join("\n");
-
-  // 🔐 Safe file name from club name + timestamp
-  const safeClub = (clubName || "UnknownClub").replace(/[^\w\s-]/g, "").replace(/\s+/g, "_");
-  const safeTime = (timestamp || "Now").replace(/[^\w\s-]/g, "").replace(/\s+/g, "_");
-  const fileName = `${safeClub}_${safeTime}.csv`;
-
-  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const blob = new Blob([csvContent], { type: "text/csv" });
   const url = URL.createObjectURL(blob);
 
   const link = document.createElement("a");
   link.href = url;
-  link.download = `${clubName}-${timestamp}.csv`;
+  link.download = `${batchKey}.csv`;
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
-  URL.revokeObjectURL(url);
 
-  // ✅ Visually mark the batch as exported
-  if (containerElement) {
-    containerElement.style.backgroundColor = "#e6ffe6";
-  }
+  // ✅ Save download status to Firebase
+  firebase.database().ref(`finalApprovedAds/${batchKey}/downloaded`).set(true);
 }
 
 
-// Load from Firebase
+// ✅ STEP 2: Update the batch rendering logic
 firebase.database().ref("finalApprovedAds").once("value").then(snapshot => {
-  const allBatches = Object.values(snapshot.val() || {}).reverse();
-  allBatches.forEach(createBatchElement);
+  const allBatches = snapshot.val() || {};
+  Object.entries(allBatches).reverse().forEach(([batchKey, batchData]) => {
+    const isDownloaded = batchData.downloaded === true;
+    createBatchElement(batchKey, batchData.ads, isDownloaded);
+  });
 });
+
+function createBatchElement(batchKey, ads, isDownloaded) {
+  const container = document.createElement("div");
+  container.className = "batch-container";
+  if (isDownloaded) container.classList.add("downloaded");
+
+  container.innerHTML = `<h3>${batchKey}</h3>`;
+  const exportBtn = document.createElement("button");
+  exportBtn.textContent = "Export to CSV";
+  exportBtn.addEventListener("click", () => {
+    exportToCSV(ads, batchKey);
+    container.classList.add("downloaded");
+  });
+
+  container.appendChild(exportBtn);
+  document.getElementById("batches").appendChild(container);
+}
    
 
   </script>
