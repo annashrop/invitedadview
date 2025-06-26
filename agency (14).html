@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+  <script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCLl4jDy3dfN8Ntgjnjt0IieVbPTQywPwE",
+    authDomain: "marketingapprovalportal.firebaseapp.com",
+    databaseURL: "https://marketingapprovalportal-default-rtdb.firebaseio.com",
+    projectId: "marketingapprovalportal",
+    storageBucket: "marketingapprovalportal.appspot.com",
+    messagingSenderId: "324999586351",
+    appId: "1:324999586351:web:2e516d07f8242f13f2cb7a"
+  };
+  const user = localStorage.getItem("user");
+
+  if (!user) {
+    // User didn’t come through login
+    window.location.href = "login.html";
+  }
+</script>
+
+  <meta charset="UTF-8" />
+  <title>Agency View</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f4f4;
+      padding: 20px;
+    }
+    h1 {
+      color: #22326e;
+    }
+    .batch {
+      background-color: #ffffff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    .batch-header {
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: #22326e;
+    }
+    button.export-btn {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+    .checkbox-row {
+      margin-top: 10px;
+    }
+    .checkbox-row label {
+      margin-right: 15px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Agency View – Approved Ads</h1>
+  <div id="batches"></div>
+  
+
+  <script>
+   
+    const batchesContainer = document.getElementById("batches");
+    firebase.initializeApp(firebaseConfig);
+const dbRef = firebase.database().ref("finalApprovedAds");
+
+function createBatchElement(batch, index) {
+  const batchDiv = document.createElement("div");
+  batchDiv.className = "batch";
+
+  const header = document.createElement("div");
+  header.className = "batch-header";
+  header.textContent = `${batch.clubName} – ${batch.timestamp}`;
+
+  const exportBtn = document.createElement("button");
+  exportBtn.className = "export-btn";
+  exportBtn.textContent = "Export to CSV";
+  exportBtn.onclick = () => exportToCSV(batch.ads, batch.clubName, batch.timestamp, batchDiv);
+
+  const checkboxDiv = document.createElement("div");
+  checkboxDiv.className = "checkbox-row";
+
+  const downloadedCheckbox = document.createElement("input");
+  downloadedCheckbox.type = "checkbox";
+  downloadedCheckbox.id = `downloaded-${index}`;
+  const downloadedLabel = document.createElement("label");
+  downloadedLabel.htmlFor = downloadedCheckbox.id;
+  downloadedLabel.textContent = "Downloaded";
+
+  const liveCheckbox = document.createElement("input");
+  liveCheckbox.type = "checkbox";
+  liveCheckbox.id = `live-${index}`;
+  const liveLabel = document.createElement("label");
+  liveLabel.htmlFor = liveCheckbox.id;
+  liveLabel.textContent = "Ads Live";
+
+  checkboxDiv.appendChild(downloadedCheckbox);
+  checkboxDiv.appendChild(downloadedLabel);
+  checkboxDiv.appendChild(liveCheckbox);
+  checkboxDiv.appendChild(liveLabel);
+
+  batchDiv.appendChild(header);
+  batchDiv.appendChild(exportBtn);
+  batchDiv.appendChild(checkboxDiv);
+  batchesContainer.appendChild(batchDiv);
+}
+ 
+    
+function exportToCSV(cards, clubName, timestamp, containerElement) {
+  const headers = [
+    "Region",
+    "Club",
+    "Category",
+    "Ad Name",
+    "Headline",
+    "Primary Text",
+    "Image URL 1",
+    "Image URL 2",
+    "Image URL 3",
+    "Ad Text Approval Status",
+    "Image 1 Approval Status",
+    "Image 2 Approval Status",
+    "Image 3 Approval Status",
+    "Reviewer Comments"
+  ];
+
+  const rows = cards.map(card => [
+    card.Region || "",
+    card.Club || "",
+    card.Category || "",
+    card["Ad Name"] || "",
+    card.Headline || "",
+    card["Primary Text"] || "",
+    card["Image_URL_1"] || "",
+    card["Image_URL_2"] || "",
+    card["Image_URL_3"] || "",
+    card.textApprovalStatus || "",
+    card.imageApprovalStatuses?.[0] || "",
+    card.imageApprovalStatuses?.[1] || "",
+    card.imageApprovalStatuses?.[2] || "",
+    card.reviewerComments || ""
+  ]);
+
+  const csvContent = headers.join(",") + "\n" + rows.map(r => r.map(v => `"${v}"`).join(",")).join("\n");
+
+  // 🔐 Safe file name from club name + timestamp
+  const safeClub = (clubName || "UnknownClub").replace(/[^\w\s-]/g, "").replace(/\s+/g, "_");
+  const safeTime = (timestamp || "Now").replace(/[^\w\s-]/g, "").replace(/\s+/g, "_");
+  const fileName = `${safeClub}_${safeTime}.csv`;
+
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `${clubName}-${timestamp}.csv`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+
+  // ✅ Visually mark the batch as exported
+  if (containerElement) {
+    containerElement.style.backgroundColor = "#e6ffe6";
+  }
+}
+
+
+// Load from Firebase
+firebase.database().ref("finalApprovedAds").once("value").then(snapshot => {
+  const allBatches = Object.values(snapshot.val() || {}).reverse();
+  allBatches.forEach(createBatchElement);
+});
+   
+
+  </script>
+</body>
+</html>
