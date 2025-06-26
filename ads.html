@@ -409,17 +409,21 @@
 
   firebase.database().ref("finalApprovedAds").once("value").then(snapshot => {
   const allBatches = snapshot.val() || {};
-  Object.entries(allBatches).forEach(([batchKey, batchData]) => {
-    const isDownloaded = batchData.downloaded === true;
-    const statusText = isDownloaded ? "✅ Downloaded" : "⏳ Not Yet Downloaded";
+  
+  Object.entries(allBatches).forEach(([batchKey, ads]) => {
+    const isDownloaded = ads.metadata?.downloaded || false;
 
-    const row = document.createElement("div");
-    row.className = "batch-row";
-    row.innerHTML = `
-      <strong>${batchKey}</strong><br>
-      Status: <span style="color: ${isDownloaded ? 'green' : 'red'};">${statusText}</span>
-    `;
-    document.getElementById("downloadStatus").appendChild(row);
+    // create row
+    const div = document.createElement("div");
+    div.className = "ad-card";
+    div.textContent = batchKey + (isDownloaded ? " ✅ Downloaded" : " ❌ Not Downloaded");
+
+    // color
+    if (isDownloaded) {
+      div.style.backgroundColor = "#d4edda"; // light green
+    }
+
+    document.getElementById("adsThatNeedYourAttention").appendChild(div);
   });
 });
 </script>
