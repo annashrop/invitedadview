@@ -790,12 +790,11 @@ function showToast(message) {
       console.warn("⚠️ sendToClubBtn not found in DOM");
     }
 
-    if (editsBtn) {
-      console.log("🔗 Binding Send Edits button");
-      editsBtn.addEventListener("click", sendEditsToAdsTeam);
-    } else {
-      console.warn("⚠️ sendEdits not found in DOM");
-    }
+    if (sendEditsBtn) {
+    sendEditsBtn.addEventListener("click", sendAdsNeedingEdits);
+  } else {
+    console.error("❌ sendEditsBtn not found in DOM");
+  }
   });
 </script>
 <script>
