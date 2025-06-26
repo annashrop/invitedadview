@@ -449,22 +449,45 @@
 
 </script>
 <script>
-  const statusList = document.getElementById("downloadStatusList");
-  const statusRef = firebase.database().ref("finalApprovedAds");
+ function loadHawkeDownloadStatus() {
+  const statusBox = document.getElementById("hawkeStatusBox");
+  const ref = firebase.database().ref("finalApprovedAds");
 
-  statusRef.on("value", (snapshot) => {
-    statusList.innerHTML = "";
-    snapshot.forEach((childSnapshot) => {
-      const batchName = childSnapshot.key;
-      const data = childSnapshot.val();
-      const status = data.downloaded ? "✅ Downloaded" : "❌ Not Downloaded";
-      const color = data.downloaded ? "green" : "red";
+  ref.once("value")
+    .then(snapshot => {
+      statusBox.innerHTML = ""; // Clear any existing content
 
-      const li = document.createElement("li");
-      li.innerHTML = `<strong>${batchName}</strong>: <span style="color:${color}; font-weight:600">${status}</span>`;
-      statusList.appendChild(li);
+      if (!snapshot.exists()) {
+        statusBox.innerHTML = "<p>No final approved ads found.</p>";
+        return;
+      }
+
+      snapshot.forEach(batchSnap => {
+        const batchName = batchSnap.key;
+        const batchData = batchSnap.val();
+        const downloaded = batchData.downloaded === true; // check flag
+
+        const div = document.createElement("div");
+        div.className = downloaded ? "downloaded-true" : "downloaded-false";
+        div.textContent = `${batchName} — ${downloaded ? "Downloaded" : "Not Downloaded"}`;
+        statusBox.appendChild(div);
+      });
+    })
+    .catch(error => {
+      console.error("Error loading Hawke status:", error);
+      statusBox.innerHTML = "<p>Error loading status.</p>";
     });
+}
+
+// Run this function after auth or window load
+window.onload = function () {
+  firebase.auth().onAuthStateChanged(user => {
+    if (user) {
+      loadHawkeDownloadStatus();
+    }
   });
+};
+
 </script>
 
 </body>
