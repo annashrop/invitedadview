@@ -698,24 +698,25 @@ async function sendAdsNeedingEdits() {
 
 </script>
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const sendBtn = document.getElementById("sendToAgencyBtn");
-    const sendEditsBtn = document.getElementById("sendEdits");
+document.addEventListener("DOMContentLoaded", function () {
+  const sendBtn = document.getElementById("sendToAgencyBtn");
+  const editsBtn = document.getElementById("sendEditsToAdsTeam");
 
-    if (sendFinalBtn) {
-      console.log("✅ Binding Send to Agency button");
-      sendFinalBtn.addEventListener("click", sendApprovedAdsToAgency); // Make sure this matches your actual function name
-    } else {
-      console.warn("❌ sendFinalBtn not found");
-    }
+  if (sendBtn) {
+    console.log("🔗 Binding Send to Agency button");
+    sendBtn.addEventListener("click", sendFinalApprovalsToAgency);
+  } else {
+    console.warn("⚠️ sendToAgencyBtn not found in DOM");
+  }
 
-    if (sendEditsBtn) {
-      console.log("✅ Binding Send Edits button");
-      sendEditsBtn.addEventListener("click", sendAdsNeedingEdits);
-    } else {
-      console.warn("❌ sendEditsBtn not found");
-    }
-  });
+  if (editsBtn) {
+    console.log("🔗 Binding Send Edits button");
+    editsBtn.addEventListener("click", sendAdsNeedingEdits);
+  } else {
+    console.error("❌ sendEditsToAdsTeam not found in DOM");
+  }
+});
+
 </script>
   <script>
   document.getElementById('paid-ads-btn')?.addEventListener('click', (e) => {
