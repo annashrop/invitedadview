@@ -723,9 +723,10 @@ async function sendApprovedAdsToClub() {
       const imageStatuses = Array.from(card.querySelectorAll(".image-approval")).map(sel => sel.value);
 
 
-  if (imageStatus === 'Needs Edit' || textStatus === 'Needs Edit' || 
-    imageStatus === 'Declined' || textStatus === 'Declined') {
-  
+  if (
+        textStatus === "Needs Edit" ||
+        imageStatuses.some(status => status === "Needs Edit")
+      ) {
   const commentBox = card.querySelector('textarea');
   const comments = commentBox?.value.trim();
 
