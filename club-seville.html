@@ -612,12 +612,12 @@ async function sendAdsNeedingEdits() {
     showToast("❌ Failed to send edits.");
   }
 }
-  if (editsBtn) {
-    console.log("📩 Binding Send Edits button");
-    editsBtn.addEventListener("click", sendAdsNeedingEdits);
-  } else {
-    console.error("❌ Send Edits button not found in DOM");
-  }
+  if (editsToAdsBtn) {
+  console.log("📩 Binding Send Edits to Ads button");
+  editsToAdsBtn.addEventListener("click", sendAdsNeedingEdits);
+} else {
+  console.error("❌ sendEditsToAdsTeam not found in DOM");
+}
 });
 
 </script>
