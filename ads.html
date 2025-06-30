@@ -432,7 +432,28 @@
   background-color: #ffe0e0;
   color: #8a1f1f;
 }
+    
+.ads-hawke-container {
+  display: flex;
+  gap: 20px;
+  margin-top: 30px;
+  align-items: flex-start;
+}
 
+.ads-attention-box,
+.hawke-status-box {
+  background-color: #f0f4ff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+  flex: 1;
+  min-width: 0;
+}
+
+/* Optional: Set a max width if one side is much larger */
+.hawke-status-box {
+  max-width: 400px;
+}
   </style>
 </head>
 <body>
