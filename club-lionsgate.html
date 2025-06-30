@@ -493,29 +493,29 @@ async function sendFinalApprovalsToAgency() {
     const imageStatuses = Array.from(card.querySelectorAll(".image-approval-select")).map(sel => sel.value);
     const textStatus = card.querySelector(".text-approval")?.value;
 
-    if (textStatus === "Approved" && imageStatuses.every(v => v === "Approved")) {
+    if (textStatus === "Needs Edit" || imageStatuses.some(status => status === "Needs Edit")) {
       const adName = card.querySelector(".ad-name")?.textContent?.replace("Ad Name:", "").trim();
-      const metaText = card.querySelector(".meta")?.innerText || "";
-      const regionMatch = metaText.match(/Region:\s*(.*)\s*Club:/);
-      const clubMatch = metaText.match(/Club:\s*(.*?)\s*Category:/);
-      const categoryMatch = metaText.match(/Category:\s*(.*)/);
-
-      const region = regionMatch?.[1]?.trim() || "N/A";
-      const club = clubMatch?.[1]?.trim() || "N/A";
-      const category = categoryMatch?.[1]?.trim() || "N/A";
+      const region = card.querySelector(".meta:nth-child(1)")?.textContent?.replace("Region:", "").trim();
+      const clubCategory = card.querySelector(".meta:nth-child(2)")?.textContent || "";
+      const [clubPart, categoryPart] = clubCategory.split("|").map(str => str.trim());
+      const club = clubPart?.replace("Club:", "").trim();
+      const category = categoryPart?.replace("Category:", "").trim();
+      const comments = card.querySelector("textarea")?.value || "";
 
       const ad = {
         Region: region || "N/A",
         Club: club || "N/A",
         Category: category || "N/A",
         "Ad Name": adName || "N/A",
-        Headline: card.querySelector(".headline-text")?.textContent || "",
-        "Primary Text": card.querySelector(".primary-text")?.textContent || "",
+        Headline: card.querySelector(".headline")?.textContent || "",
+        Body: card.querySelector(".primary-text")?.textContent || "",
         Image_URL_1: card.querySelectorAll("img")[0]?.src || "",
         Image_URL_2: card.querySelectorAll("img")[1]?.src || "",
         Image_URL_3: card.querySelectorAll("img")[2]?.src || "",
+        Comments: comments,
         Timestamp: new Date().toISOString()
       };
+
 
       approvedAds.push(ad);
       addHiddenAdName(ad["Ad Name"]);
