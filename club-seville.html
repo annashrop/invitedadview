@@ -566,12 +566,17 @@ async function sendAdsNeedingEdits() {
 
     const isEdit = textStatus !== "Approved" || imageStatuses.some(status => status !== "Approved");
 
-    if (isEdit) {
+   if (textStatus === "Needs Edit" || imageStatuses.some(status => status === "Needs Edit")) {
       const adName = card.querySelector(".ad-name")?.textContent?.replace("Ad Name:", "").trim();
-      const club = card.querySelector(".meta:nth-child(1)")?.textContent?.replace("Club:", "").trim();
-      const category = card.querySelector(".meta:nth-child(2)")?.textContent?.replace("Category:", "").trim();
+      const region = card.querySelector(".meta:nth-child(1)")?.textContent?.replace("Region:", "").trim();
+      const clubCategory = card.querySelector(".meta:nth-child(2)")?.textContent || "";
+      const [clubPart, categoryPart] = clubCategory.split("|").map(str => str.trim());
+      const club = clubPart?.replace("Club:", "").trim();
+      const category = categoryPart?.replace("Category:", "").trim();
+      const comments = card.querySelector("textarea")?.value || "";
 
       const ad = {
+        Region: region || "N/A",
         Club: club || "N/A",
         Category: category || "N/A",
         "Ad Name": adName || "N/A",
@@ -580,10 +585,10 @@ async function sendAdsNeedingEdits() {
         Image_URL_1: card.querySelectorAll("img")[0]?.src || "",
         Image_URL_2: card.querySelectorAll("img")[1]?.src || "",
         Image_URL_3: card.querySelectorAll("img")[2]?.src || "",
-        ImageApprovals: imageStatuses,
-        TextApproval: textStatus,
+        Comments: comments,
         Timestamp: new Date().toISOString()
       };
+
 
       adsNeedingEdits.push(ad);
 
