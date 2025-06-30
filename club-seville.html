@@ -634,7 +634,11 @@ async function sendAdsNeedingEdits() {
     const textStatus = card.querySelector("select.text-approval")?.value;
     const needsEdit = imageStatuses.some(v => v === "Needs Edit" || v === "Declined") ||
                       textStatus === "Needs Edit" || textStatus === "Declined";
-
+  
+    console.log("Image Statuses:", imageStatuses);
+    console.log("Text Status:", textStatus);
+    console.log("needsEdit:", needsEdit);
+    
     if (needsEdit) {
       const commentBox = card.querySelector("textarea");
       const comments = commentBox?.value.trim();
