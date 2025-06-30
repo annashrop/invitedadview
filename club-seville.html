@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -655,7 +654,7 @@ async function sendAdsNeedingEdits() {
   };
 
 
-      editAds.push(ad);
+      adsNeedingEdits.push(ad);
 
       // Fade and remove the card after submitting
       card.style.transition = "opacity 0.4s ease";
@@ -664,8 +663,8 @@ async function sendAdsNeedingEdits() {
     }
   });
 
-  if (editAds.length > 0) {
-    localStorage.setItem("adsNeedingEdits", JSON.stringify(editAds));
+  if (adsNeedingEdits.length > 0) {
+    localStorage.setItem("adsNeedingEdits", JSON.stringify(adsNeedingEdits));
     showToast("Edits sent to Ads Department.");
   } else {
     showToast("No edits to send.");
