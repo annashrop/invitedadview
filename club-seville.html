@@ -627,63 +627,6 @@ async function sendAdsNeedingEdits() {
 
 
 </script>
-<script>
-
-
-  document.getElementById("sendEditsToAdsTeam").addEventListener("click", () => {
-  const sendEditsBtn = document.getElementById("sendEdits");
-  document.querySelectorAll(".preview-card").forEach(card => {
-    const imageStatuses = Array.from(card.querySelectorAll(".image-approval-select")).map(sel => sel.value);
-    const textStatus = card.querySelector("select.text-approval")?.value;
-    const needsEdit = imageStatuses.some(v => v === "Needs Edit" || v === "Declined") ||
-                      textStatus === "Needs Edit" || textStatus === "Declined";
-  
-    console.log("Image Statuses:", imageStatuses);
-    console.log("Text Status:", textStatus);
-    console.log("needsEdit:", needsEdit);
-    
-    if (needsEdit) {
-      const commentBox = card.querySelector("textarea");
-      const comments = commentBox?.value.trim();
-
-      if (!comments) {
-        commentBox.style.border = "2px solid red";
-        commentBox.placeholder = "Comment required before submitting edits.";
-        return; // prevent sending without comment
-      }
-
-  const ad = {
-  Region: card.querySelector(".meta strong:nth-child(1)")?.nextSibling?.textContent?.trim() || "",
-  Club: card.querySelector(".meta strong:nth-child(2)")?.nextSibling?.textContent?.trim() || "",
-  Category: card.querySelector(".meta strong:nth-child(3)")?.nextSibling?.textContent?.trim() || "",
-  "Ad Name": card.querySelector(".ad-name")?.textContent?.replace("Ad Name: ", "") || "",
-  Headline: card.querySelector(".headline-text")?.textContent || "",
-  "Primary Text": card.querySelector(".primary-text")?.textContent || "",
-  Image_URL_1: card.querySelectorAll(".card-image")[0]?.src || "",
-  Image_URL_2: card.querySelectorAll(".card-image")[1]?.src || "",
-  Image_URL_3: card.querySelectorAll(".card-image")[2]?.src || "",
-  textApprovalStatus: card.querySelector(".text-approval")?.value || "",
-  imageApprovalStatuses: [...card.querySelectorAll(".image-approval-select")].map(el => el.value),
-  reviewerComments: card.querySelector("textarea")?.value || ""
-  };
-
-
-      adsNeedingEdits.push(ad);
-
-      // Fade and remove the card after submitting
-      card.style.transition = "opacity 0.4s ease";
-      card.style.opacity = 0;
-      setTimeout(() => card.remove(), 400);
-    }
-  });
-
-  if (adsNeedingEdits.length > 0) {
-    localStorage.setItem("adsNeedingEdits", JSON.stringify(adsNeedingEdits));
-    showToast("Edits sent to Ads Department.");
-  } else {
-    showToast("No edits to send.");
-    }
-  });
 
 
     checkIfNoAdsLeft();
