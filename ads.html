@@ -377,6 +377,61 @@
   overflow-y: auto;
   padding-right: 5px;
 }
+.download-status-section {
+  background-color: #f0f4ff;
+  border: 1px solid #c9d6f2;
+  border-radius: 12px;
+  padding: 20px 25px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.download-status-section h2 {
+  margin-top: 0;
+  font-size: 20px;
+  color: #1a2e66;
+  margin-bottom: 15px;
+}
+
+.status-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.status-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 10px 15px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  font-size: 14px;
+}
+
+.status-item span {
+  font-weight: 500;
+}
+
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 50px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-badge.downloaded {
+  background-color: #d1f4d4;
+  color: #155724;
+}
+
+.status-badge.not-downloaded {
+  background-color: #ffe0e0;
+  color: #8a1f1f;
+}
 
   </style>
 </head>
@@ -401,7 +456,7 @@
 
  <div class="download-status-section">
   <h2>Hawke Download Status</h2>
-  <div id="hawkeStatusBox"></div> 
+   <div id="hawkeStatusBox" class="status-list">div> 
 </div>
 </div>
    
