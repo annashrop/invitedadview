@@ -496,13 +496,13 @@ async function sendFinalApprovalsToAgency() {
     const textStatus = card.querySelector(".text-approval")?.value;
 
     if (textStatus === "Approved" && imageStatuses.every(v => v === "Approved")) {
-      const adName = card.querySelector(".ad-name")?.textContent?.replace("Ad Name:", "").trim();
-      const metaText = card.querySelector(".meta")?.innerText || "";
-      const regionMatch = metaText.match(/Region:\s*(.*)\s*Club:/);
-      const clubMatch = metaText.match(/Club:\s*(.*?)\s*Category:/);
-      const categoryMatch = metaText.match(/Category:\s*(.*)/);
+      const adName = card.querySelector(".ad-name")?.textContent.split("Ad Name:").pop().trim() || "N/A";
+      const headline = card.querySelector(".headline")?.textContent.trim() || "N/A";
+      const body = card.querySelector(".primary-text")?.textContent.trim() || "N/A";
 
-      const region = regionMatch?.[1]?.trim() || "N/A";
+      const metaText = card.querySelector(".meta")?.textContent || "";
+      const clubMatch = metaText.match(/Club:\s*([^Category]*)/);
+      const categoryMatch = metaText.match(/Category:\s*(.*)/);
       const club = clubMatch?.[1]?.trim() || "N/A";
       const category = categoryMatch?.[1]?.trim() || "N/A";
 
