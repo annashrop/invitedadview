@@ -556,9 +556,11 @@ async function sendFinalApprovalsToAgency() {
 }
 </script>
 <script>
+
+let adsNeedingEdits = [];
+  
 async function sendAdsNeedingEdits() {
   const adCards = document.querySelectorAll(".preview-card");
-  const adsNeedingEdits = [];
 
   adCards.forEach(card => {
     const imageStatuses = Array.from(card.querySelectorAll(".image-approval-select")).map(sel => sel.value);
