@@ -501,7 +501,7 @@ async function sendFinalApprovalsToAgency() {
       const body = card.querySelector(".primary-text")?.textContent.trim() || "N/A";
 
       const metaText = card.querySelector(".meta")?.textContent || "";
-      const clubMatch = metaText.match(/Club:\s*([^Category]*)/);
+      const clubMatch = metaText.match(/Club:\s*(.*?)\s+Category:/);
       const categoryMatch = metaText.match(/Category:\s*(.*)/);
       const club = clubMatch?.[1]?.trim() || "N/A";
       const category = categoryMatch?.[1]?.trim() || "N/A";
