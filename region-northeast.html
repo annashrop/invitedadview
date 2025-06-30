@@ -2,12 +2,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCLl4jDy3dfN8Ntgjnjt0IieVbPTQywPwE",
+    authDomain: "marketingapprovalportal.firebaseapp.com",
+    databaseURL: "https://marketingapprovalportal-default-rtdb.firebaseio.com/",
+    projectId: "marketingapprovalportal",
+    storageBucket: "marketingapprovalportal.appspot.com",
+    messagingSenderId: "324995086351",
+    appId: "1:324995086351:web:2e510d67bf824f2f32cb7a"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+  window.db = db; // Optional global access
+</script>
+
   <script>
-    const region = "Northeast";
+    const region = "West";
     const user = localStorage.getItem("user");
     if (!user) {
       window.location.href = "login.html";
@@ -15,7 +32,7 @@
   </script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <meta charset="UTF-8">
-  <title>Northeast Regional Marketing Ad Approval Portal</title>
+  <title>West Regional Marketing Ad Approval Portal</title>
   <style>
 
    .top-nav {
@@ -100,9 +117,6 @@ textarea {
 textarea {
   min-height: 80px;
   resize: vertical;
-}
-.preview-card {
-  color: #222222;
 }
    
 .header-wrapper {
@@ -232,7 +246,9 @@ button:hover {
     list-style: none;
     padding-left: 0;
   }
-
+.preview-card {
+  color: #000;  /* <-- ADD THIS */
+}
   .club-link-list li a {
     color: #ffffff;
     text-decoration: underline;
@@ -391,7 +407,7 @@ button:hover {
 <body>
   <div class="sidebar">
     <h2>Regional Dashboard</h2>
-    <a href="region-Northeast.html" id="paid-ads-btn">Paid Ads</a>
+    <a href="region-west.html" id="paid-ads-btn">Paid Ads</a>
     <a href="#" id="emails-btn">Emails</a>
     <a href="#" id="landing-btn">Landing Pages</a>
     <a href="#">[Coming Soon!]</a>
@@ -407,7 +423,7 @@ button:hover {
 
     <nav class="top-nav">
       <img src="https://www.invitedclubs.com/globalassets/.invited-corporate-site/_logos/invited-logo_500px-wide.png" alt="Invited Logo" class="nav-logo">
-      <span class="nav-title">Northeast Regional Marketing Ad Approval Portal</span>
+      <span class="nav-title">West Regional Marketing Ad Approval Portal</span>
     </nav>
 
     <div class="container">
@@ -444,7 +460,147 @@ button:hover {
   transition: visibility 0s, opacity 0.3s ease-in-out;
   opacity: 0;
 "></div>
+  
+<script>
+  function getHiddenAdNames() {
+  return JSON.parse(localStorage.getItem("hiddenAdNames") || "[]");
+}
+  
+ function processCSV(results, fileURL) {
+  const data = results.data;
+  const hiddenAdNames = getHiddenAdNames().map(name => name.trim());
 
+  const container = document.getElementById('preview-container');
+  const clubListContainer = document.getElementById('club-link-list');
+  container.innerHTML = '';
+  clubListContainer.innerHTML = '';
+
+  const uniqueClubs = [...new Set(data.map(row => row['Club']).filter(Boolean))];
+  const listHTML = ['<strong>Preview Links:</strong>', '<ul>'];
+  listHTML.push(`<li><a class="preview-link-button" href="?review=true">All Clubs (Regional View)</a></li>`);
+  uniqueClubs.forEach(club => {
+    const encodedClub = encodeURIComponent(club);
+    const encodedFile = encodeURIComponent(fileURL);
+    listHTML.push(`<li><a class="preview-link-button" href="?review=true&club=${encodedClub}&file=${encodedFile}">${club}</a></li>`);
+  });
+  listHTML.push('</ul>');
+  clubListContainer.innerHTML = listHTML.join('\n');
+
+  const selectedClub = new URLSearchParams(window.location.search).get("club");
+
+  data.forEach((row, index) => {
+    const rowAdName = (row['Ad Name'] || "").trim();
+    if (hiddenAdNames.includes(rowAdName)) return;
+    if (selectedClub && row['Club'] !== selectedClub) return;
+
+    const card = document.createElement('div');
+    const imageTags = ['Image_URL_1', 'Image_URL_2', 'Image_URL_3'].map((key, imgIndex) => {
+      const url = row[key];
+      if (url && url !== '/') {
+        const isCanva = url.includes('canva.com');
+        let imgSrc = '';
+
+        if (isCanva) {
+          imgSrc = url;
+        } else {
+          const isTif = url.toLowerCase().endsWith('.tif');
+          const idMatch = url.match(/I[0-9A-Za-z_.]+/) ||
+                          url.match(/img-get2\/([^/]+)/) ||
+                          url.match(/\/(I[0-9A-Za-z_.]+)\//) ||
+                          url.match(/\/(G[0-9A-Za-z_]+)\//) ||
+                          url.match(/\/(C[0-9A-Za-z_]+)\//) ||
+                          url.match(/\/(I[0-9A-Za-z_.]+)\/[^/]+$/);
+
+          const imageId = idMatch && (idMatch[1] || idMatch[0]);
+          if (!isTif && imageId) {
+            imgSrc = `https://cdn.photoshelter.com/img-get2/${imageId}/fit=1000x750`;
+          }
+        }
+
+        if (imgSrc) {
+          return `
+            <div class="image-wrapper">
+              <img class="card-image" src="${imgSrc}" alt="Ad image" />
+              <div class="view-link">
+                <a href="#" class="view-image-button" onclick="window.open('${url}', 'ImagePopup', 'width=800,height=600'); return false;">View Full Image ${imgIndex + 1}</a>
+                <div class="approval-row">
+                  <label>Image Approval Status:</label>
+                  <select class="image-approval">
+                    <option value="Pending">Pending</option>
+                    <option value="Approved">Approved</option>
+                    <option value="Needs Edit">Needs Edit</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+      }
+      return '';
+    }).join('');
+
+    card.className = 'preview-card';
+    card.innerHTML = `
+      <div class="card-body">
+        <div class="meta-section">
+          <div class="meta"><strong>Region:</strong> ${row['Region'] || 'N/A'}</div>
+          <div class="meta"><strong>Club:</strong> ${row['Club'] || 'N/A'} &nbsp; | &nbsp; <strong>Category:</strong> ${row['Category'] || 'N/A'}</div>
+          <div class="meta ad-name"><strong>Ad Name:</strong> ${row['Ad Name'] || 'N/A'}</div>
+        </div>
+        <div class="meta-divider"></div>
+        <div class="headline">${row['Headline'] || ''}</div>
+        <div class="primary-text">${row['Primary Text'] || ''}</div>
+        <div class="image-set">${imageTags}</div>
+        <div class="approval-row">
+          <label>Ad Text Approval Status:</label>
+          <select class="text-approval">
+            <option value="Pending">Pending</option>
+            <option value="Approved">Approved</option>
+            <option value="Needs Edit">Needs Edit</option>
+          </select>
+        </div>
+        <div class="approval">
+          <label>Reviewer Comments:</label>
+          <textarea placeholder="Enter comments here..."></textarea>
+        </div>
+      </div>
+    `;
+ 
+    
+    function updateCardStatus() {
+      const textStatus = card.querySelector('.text-approval')?.value;
+      const imageStatuses = Array.from(card.querySelectorAll('.image-approval')).map(sel => sel.value);
+      const commentBox = card.querySelector('textarea');
+
+      const needsEdit = textStatus === 'Needs Edit' || imageStatuses.includes('Needs Edit');
+
+      if (needsEdit) {
+        card.style.border = '2px solid #e74c3c';
+        card.style.backgroundColor = '#ffe6e6';
+        commentBox.required = true;
+        commentBox.placeholder = "Required – please explain what needs edits.";
+      } else if (textStatus === 'Approved' && imageStatuses.every(v => v === 'Approved')) {
+        card.style.border = '2px solid #2ecc71';
+        card.style.backgroundColor = '#e8f6f0';
+        commentBox.required = false;
+        commentBox.placeholder = "Optional – add comments if needed.";
+      } else {
+        card.style.border = '2px solid #000000';
+        card.style.backgroundColor = '#ffffff';
+        commentBox.required = false;
+        commentBox.placeholder = "Optional – add comments if needed.";
+      }
+    }
+
+    card.querySelectorAll('select').forEach(sel => {
+      sel.addEventListener('change', updateCardStatus);
+    });
+
+    updateCardStatus();
+    container.appendChild(card);
+  });
+}
+</script>
   
 <script>
   const latestCsvFunctionUrl = `https://us-central1-marketingapprovalportal.cloudfunctions.net/getLatestCsvUrl?region=${region}`;
@@ -452,21 +608,22 @@ button:hover {
   let fileURL = ""; // ✅ Define it up top
 
   fetch(latestCsvFunctionUrl)
-    .then(res => res.json())
-    .then(data => {
-      fileURL = data.url; // ✅ Assign it here
-      return fetch(fileURL);
-    })
-    .then(res => res.text())
-    .then(csvText => {
-      Papa.parse(csvText, {
-        header: true,
-        skipEmptyLines: true,
-        complete: function(results) {
-          processCSV(results, fileURL); // ✅ Now this works
-        }
-      });
-    })
+  .then(res => res.json())
+  .then(data => {
+    fileURL = data.url;
+    return fetch(fileURL);
+  })
+  .then(res => res.text())
+  .then(csvText => {
+    Papa.parse(csvText, {
+      header: true,
+      skipEmptyLines: true,
+      complete: function(results) {
+        processCSV(results, fileURL);  // this fails silently if function is undefined
+      }
+    });
+  })
+
     .catch(error => {
       console.error("Error loading CSV:", error);
       document.getElementById("no-ads-message").style.display = "block";
@@ -476,202 +633,100 @@ button:hover {
 
 
 <script>
-    function processCSV(results, fileURL) {
-      const data = results.data;
-      const container = document.getElementById('preview-container');
-      const clubListContainer = document.getElementById('club-link-list');
-      container.innerHTML = '';
-      clubListContainer.innerHTML = '';
 
-      const uniqueClubs = [...new Set(data.map(row => row['Club']).filter(Boolean))];
-      const listHTML = ['<strong>Preview Links:</strong>', '<ul>'];
-      listHTML.push(`<li><a class="preview-link-button" href="?review=true">All Clubs (Regional View)</a></li>`);
-      uniqueClubs.forEach(club => {
-        const encodedClub = encodeURIComponent(club);
-        const encodedFile = encodeURIComponent(fileURL);
-      listHTML.push(`<li><a class="preview-link-button" href="?review=true&club=${encodedClub}&file=${encodedFile}">${club}</a></li>`);
-      });
-      listHTML.push('</ul>');
-      clubListContainer.innerHTML = listHTML.join('\n');
-
-      const selectedClub = new URLSearchParams(window.location.search).get("club");
-
-      data.forEach((row, index) => {
-        if (selectedClub && row['Club'] !== selectedClub) return;
-
-        const card = document.createElement('div');
-        const imageTags = ['Image_URL_1', 'Image_URL_2', 'Image_URL_3'].map((key, imgIndex) => {
-  const url = row[key];
-  if (url && url !== '/') {
-    const isTif = url.toLowerCase().endsWith('.tif');
-    const isCanva = url.includes("canva.com");
-
-    let imgSrc;
-
-    if (isCanva) {
-      imgSrc = url; // Directly use Canva link (might work if it's a direct image URL)
-    } else {
-      const idMatch = url.match(/I[0-9A-Za-z_.]+/) ||
-        url.match(/img-get2\/([^/]+)/) ||
-        url.match(/\/(I[0-9A-Za-z_.]+)\//) ||
-        url.match(/\/(G[0-9A-Za-z_]+)\//) ||
-        url.match(/\/(C[0-9A-Za-z_]+)\//) ||
-        url.match(/\/(I[0-9A-Za-z_.]+)\/[^/]+$/);
-
-      const imageId = idMatch && (idMatch[1] || idMatch[0]);
-      imgSrc = (!isTif && imageId)
-        ? `https://cdn.photoshelter.com/img-get2/${imageId}/fit=1000x750`
-        : url; // fallback to raw URL even if it breaks
-    }
-
-    return `
-      <div class="image-wrapper">
-        <img class="card-image" src="${imgSrc}" alt="Ad image" />
-        <div class="view-link">
-          <a href="#" class="view-image-button" onclick="window.open('${url}', 'ImagePopup', 'width=800,height=600'); return false;">View Full Image ${imgIndex + 1}</a>
-          <div class="approval-row">
-            <label>Image Approval Status:</label>
-            <select class="image-approval">
-              <option value="Pending">Pending</option>
-              <option value="Approved">Approved</option>
-              <option value="Needs Edit">Needs Edit</option>
-            </select>
-          </div>
-        </div>
-      </div>
-    `;
-  }
-  return '';
-}).join('');
-
-
-        card.className = 'preview-card';
-
-        
-
-        card.innerHTML = `
-          <div class="card-body">
-            <div class="meta-section">
-               <div class="meta"><strong>Region:</strong> ${row['Region'] || 'N/A'}</div>
-      <div class="meta"><strong>Club:</strong> ${row['Club'] || 'N/A'} &nbsp; | &nbsp; <strong>Category:</strong> ${row['Category'] || 'N/A'}</div>
-      <div class="meta ad-name"><strong>Ad Name:</strong> ${row['Ad Name'] || 'N/A'}</div>
-    </div>
-    <div class="meta-divider"></div>
-    <div class="headline">${row['Headline'] || ''}</div>
-    <div class="primary-text">${row['Primary Text'] || ''}</div>
-            <div class="image-set">${imageTags}</div>
-            <div class="approval-row">
-                <label>Ad Text Approval Status:</label>
-                <select class="text-approval">
-                  <option value="Pending">Pending</option>
-                  <option value="Approved">Approved</option>
-                  <option value="Needs Edit">Needs Edit</option>
-                </select>
-            </div>
-
-            <div class="approval">
-              <label>Reviewer Comments:</label>
-              <textarea placeholder="Enter comments here..."></textarea>
-            </div>
-          </div>
-        `;
-function updateCardStatus() {
-  const textStatus = card.querySelector('.text-approval')?.value;
-  const imageStatuses = Array.from(card.querySelectorAll('.image-approval')).map(sel => sel.value);
-  const commentBox = card.querySelector('textarea');
-
-  const needsEdit = textStatus === 'Needs Edit' || imageStatuses.includes('Needs Edit');
-
-  if (needsEdit) {
-    card.style.border = '2px solid #e74c3c';
-    card.style.backgroundColor = '#ffe6e6';
-    commentBox.required = true;
-    commentBox.placeholder = "Required – please explain what needs edits.";
-  } else if (textStatus === 'Approved' && imageStatuses.every(v => v === 'Approved')) {
-    card.style.border = '2px solid #2ecc71';
-    card.style.backgroundColor = '#e8f6f0';
-    commentBox.required = false;
-    commentBox.placeholder = "Optional – add comments if needed.";
-  } else {
-    card.style.border = '2px solid #000000';
-    card.style.backgroundColor = '#ffffff';
-    commentBox.required = false;
-    commentBox.placeholder = "Optional – add comments if needed.";
+function addHiddenAdName(adName) {
+  const current = getHiddenAdNames();
+  const cleanName = (adName || "").trim();
+  if (cleanName && !current.includes(cleanName)) {
+    current.push(cleanName);
+    localStorage.setItem("hiddenAdNames", JSON.stringify(current));
   }
 }
-
-
-// Attach event listeners for dropdowns
-card.querySelectorAll('select').forEach(sel =>
-  sel.addEventListener('change', updateCardStatus)
-);
-
-        
-// Run immediately to apply status styling on page load
-updateCardStatus();
-
-
-        container.appendChild(card);
-      });
-    } 
-
-function sendApprovedAdsToClub() {
-  const adCards = document.querySelectorAll('.preview-card');
-  let approvedAds = [];
+                   
+async function sendApprovedAdsToClub() {
+  const adCards = document.querySelectorAll(".preview-card");
+  const approvedAds = [];
 
   adCards.forEach(card => {
-    const imageStatus = card.querySelector('.image-approval')?.value;
-    const textStatus = card.querySelector('.text-approval')?.value;
+    const imageStatuses = Array.from(card.querySelectorAll(".image-approval")).map(sel => sel.value);
+    const textStatus = card.querySelector(".text-approval")?.value;
 
-    if (imageStatus === 'Approved' && textStatus === 'Approved') {
-      approvedAds.push(card.outerHTML);
+    console.log("🔍 Card:", card.querySelector(".ad-name")?.textContent);
+    console.log("🧠 Text status:", textStatus);
+    console.log("🧠 Image statuses:", imageStatuses);
+    console.log("💡 All approvals met?", textStatus === "Approved" && imageStatuses.every(v => v === "Approved"));
 
+    if (textStatus === "Approved" && imageStatuses.every(v => v === "Approved")) {
+      const adName = card.querySelector(".ad-name")?.textContent?.replace("Ad Name:", "").trim();
+      const region = card.querySelector(".meta:nth-child(1)")?.textContent?.replace("Region:", "").trim();
+      const clubCategory = card.querySelector(".meta:nth-child(2)")?.textContent || "";
+      const [clubPart, categoryPart] = clubCategory.split("|").map(str => str.trim());
+      const club = clubPart?.replace("Club:", "").trim();
+      const category = categoryPart?.replace("Category:", "").trim();
+
+      const ad = {
+        Region: region || "N/A",
+        Club: club || "N/A",
+        Category: category || "N/A",
+        "Ad Name": adName || "N/A",
+        Headline: card.querySelector(".headline")?.textContent || "",
+        Body: card.querySelector(".primary-text")?.textContent || "",
+        Image_URL_1: card.querySelectorAll("img")[0]?.src || "",
+        Image_URL_2: card.querySelectorAll("img")[1]?.src || "",
+        Image_URL_3: card.querySelectorAll("img")[2]?.src || "",
+        Timestamp: new Date().toISOString()
+      };
+
+      approvedAds.push(ad);
+
+      // Save to local storage to hide on refresh
+      addHiddenAdName(ad["Ad Name"]);
       card.style.transition = "opacity 0.4s ease";
       card.style.opacity = 0;
       setTimeout(() => card.remove(), 400);
     }
   });
 
-  if (approvedAds.length > 0) {
-    const existing = JSON.parse(localStorage.getItem("agencyFinalApproved") || "[]");
+  console.log("📦 Final approved ads to send:", approvedAds);
 
-    const timestamp = new Date().toLocaleString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true
-    });
-
-    const clubName = new URLSearchParams(window.location.search).get("club") || "All Clubs";
-
-    existing.push({
-      clubName,
-      timestamp,
-      ads: approvedAds
-    });
-
-    localStorage.setItem("agencyFinalApproved", JSON.stringify(existing));
-    showToast("Approved ads sent to club!");
+  if (approvedAds.length === 0) {
+    showToast("⚠️ No fully approved ads found.");
+    return;
   }
-  checkIfNoAdsLeft();
+
+  const clubName = approvedAds[0].Club || "UnknownClub";
+  const payload = { ads: approvedAds, timestamp: new Date().toISOString() };
+
+  try {
+    await firebase.database().ref(`approvedAds/${clubName}`).set(payload);
+    console.log("✅ Firebase write success");
+    showToast(`✅ Approved ads sent to ${clubName}`);
+    checkIfNoAdsLeft();
+  } catch (error) {
+    console.error("🔥 Firebase write failed:", error);
+    showToast("❌ Failed to send ads. Try again.");
+  }
 }
 
 
-    
-function sendEditsToAdsTeam() {
- const adCards = document.querySelectorAll('.preview-card');
-  let editAds = [];
-
-  adCards.forEach(card => {
-    const imageStatus = card.querySelector('.image-approval')?.value;
-    const textStatus = card.querySelector('.text-approval')?.value;
-
-
-  if (imageStatus === 'Needs Edit' || textStatus === 'Needs Edit' || 
-    imageStatus === 'Declined' || textStatus === 'Declined') {
+</script>
   
+<script>
+
+    
+ async function sendAdsNeedingEdits() {
+    const adCards = document.querySelectorAll(".preview-card");
+    const edits = [];
+
+    adCards.forEach(card => {
+      const textStatus = card.querySelector(".text-approval")?.value;
+      const imageStatuses = Array.from(card.querySelectorAll(".image-approval")).map(sel => sel.value);
+
+
+  if (
+        textStatus === "Needs Edit" ||
+        imageStatuses.some(status => status === "Needs Edit")
+      ) {
   const commentBox = card.querySelector('textarea');
   const comments = commentBox?.value.trim();
 
@@ -682,7 +737,8 @@ function sendEditsToAdsTeam() {
   }
 
   editAds.push({ html: card.outerHTML, comment: comments });
-
+  const adName = card.querySelector(".ad-name")?.textContent.replace("Ad Name:", "").trim();
+  addHiddenAdName(adName);
   card.style.transition = "opacity 0.4s ease";
   card.style.opacity = 0;
   setTimeout(() => card.remove(), 400);
@@ -690,6 +746,7 @@ function sendEditsToAdsTeam() {
 
   });
 checkIfNoAdsLeft();
+
 
   if (editAds.length > 0) {
   localStorage.setItem("adsNeedingEdits", JSON.stringify(editAds));
@@ -721,18 +778,28 @@ function showToast(message) {
   document.body.appendChild(toast);
   setTimeout(() => toast.remove(), 3000);
 }
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const sendBtn = document.getElementById("sendToClubBtn");
+    const sendEditsBtn = document.getElementById("sendEdits");
 
-document.getElementById("sendToClubBtn").addEventListener("click", sendApprovedAdsToClub);
-document.getElementById("sendEdits").addEventListener("click", sendEditsToAdsTeam);
+    if (sendBtn) {
+      console.log("🔗 Binding Send Approved button");
+      sendBtn.addEventListener("click", sendApprovedAdsToClub);
+    } else {
+      console.warn("⚠️ sendToClubBtn not found in DOM");
+    }
 
-  const mainContent = document.querySelector('.main-content');
-
-// Save selected section to localStorage and update background
-function hideWelcome() {
-  const welcomeEl = document.getElementById("welcome-message");
-  if (welcomeEl) welcomeEl.style.display = "none";
+    if (sendEditsBtn) {
+      sendEditsBtn.addEventListener("click", sendAdsNeedingEdits);
+} else {
+  console.error("❌ sendEditsBtn not found in DOM");
 }
-
+  });
+</script>
+<script>
+      
 document.getElementById('paid-ads-btn')?.addEventListener('click', (e) => {
   e.preventDefault();
   localStorage.setItem("activeSection", "paid");
@@ -771,11 +838,66 @@ window.addEventListener("DOMContentLoaded", () => {
     mainContent.style.backgroundColor = '#22326e';
   }
 });
+</script>
+<script>
+async function sendAdsNeedingEdits() {
+  const adCards = document.querySelectorAll(".preview-card");
+  const adsNeedingEdits = [];
 
- 
+  adCards.forEach(card => {
+    const imageStatuses = Array.from(card.querySelectorAll(".image-approval")).map(sel => sel.value);
+    const textStatus = card.querySelector(".text-approval")?.value;
+
+    if (textStatus === "Needs Edit" || imageStatuses.some(status => status === "Needs Edit")) {
+      const adName = card.querySelector(".ad-name")?.textContent?.replace("Ad Name:", "").trim();
+      const region = card.querySelector(".meta:nth-child(1)")?.textContent?.replace("Region:", "").trim();
+      const clubCategory = card.querySelector(".meta:nth-child(2)")?.textContent || "";
+      const [clubPart, categoryPart] = clubCategory.split("|").map(str => str.trim());
+      const club = clubPart?.replace("Club:", "").trim();
+      const category = categoryPart?.replace("Category:", "").trim();
+      const comments = card.querySelector("textarea")?.value || "";
+
+      const ad = {
+        Region: region || "N/A",
+        Club: club || "N/A",
+        Category: category || "N/A",
+        "Ad Name": adName || "N/A",
+        Headline: card.querySelector(".headline")?.textContent || "",
+        Body: card.querySelector(".primary-text")?.textContent || "",
+        Image_URL_1: card.querySelectorAll("img")[0]?.src || "",
+        Image_URL_2: card.querySelectorAll("img")[1]?.src || "",
+        Image_URL_3: card.querySelectorAll("img")[2]?.src || "",
+        Comments: comments,
+        Timestamp: new Date().toISOString()
+      };
+
+      adsNeedingEdits.push(ad);
+
+      card.style.transition = "opacity 0.4s ease";
+      card.style.opacity = 0;
+      setTimeout(() => card.remove(), 400);
+    }
+  });
+
+  if (adsNeedingEdits.length === 0) {
+    showToast("⚠️ No ads marked for edits.");
+    return;
+  }
+
+  const clubName = adsNeedingEdits[0].Club || "UnknownClub";
+  const payload = { ads: adsNeedingEdits, timestamp: new Date().toISOString() };
+
+  try {
+    await firebase.database().ref(`adsNeedingEdits/${clubName}`).set(payload);
+    console.log("✅ Firebase write success for edits");
+    showToast(`✏️ Edits sent to Ads Team for ${clubName}`);
+  } catch (error) {
+    console.error("🔥 Firebase write failed for edits:", error);
+    showToast("❌ Failed to send edits. Try again.");
+  }
+}
+
 
 </script>
-  
-</div>
 </body>
 </html>
