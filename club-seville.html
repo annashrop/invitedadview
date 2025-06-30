@@ -557,9 +557,10 @@ async function sendFinalApprovalsToAgency() {
 </script>
 <script>
 
-let adsNeedingEdits = [];
+
 
 async function sendAdsNeedingEdits() {
+  let adsNeedingEdits = [];
   const adCards = document.querySelectorAll(".preview-card");
 
   adCards.forEach(card => {
