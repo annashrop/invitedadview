@@ -293,6 +293,18 @@
   background-color: #f8d7da;
   color: #721c24;
 }
+    
+.edit-batch-window {
+  max-height: 500px;
+  overflow-y: auto;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  margin-top: 30px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+    
   </style>
 </head>
 <body>
@@ -313,7 +325,8 @@
 
     <div class="container">
       <div id="attention-section">
-        <h2>Ads That Need Your Attention (<span id="editCount">0</span>)</h2>
+        <h2>Ads That Need Your Attention</h2>
+        <div id="edit-batch-window"></div>
         <div id="preview-container"></div>
         <div id="edit-controls" style="margin-top: 20px;">
           <button id="downloadEditsBtn" style="display:none;">Download CSV</button>
