@@ -560,33 +560,36 @@ async function sendFinalApprovalsToAgency() {
 
 
 async function sendAdsNeedingEdits() {
-  let adsNeedingEdits = [];
   const adCards = document.querySelectorAll(".preview-card");
+  const adsNeedingEdits = []; // declare fresh array inside the function
 
   adCards.forEach(card => {
     const imageStatuses = Array.from(card.querySelectorAll(".image-approval-select")).map(sel => sel.value);
     const textStatus = card.querySelector(".text-approval")?.value;
 
     const isEdit = (
-      textStatus === "Needs Edit" || textStatus === "Declined" ||
-      imageStatuses.some(status => status === "Needs Edit" || status === "Declined")
+      textStatus === "Needs Edits" || textStatus === "Declined" ||
+      imageStatuses.some(status => status === "Needs Edits" || status === "Declined")
     );
 
     if (isEdit) {
-      const adName = card.querySelector(".ad-name")?.textContent?.replace("Ad Name:", "").trim();
-      const region = card.querySelector(".meta:nth-child(1)")?.textContent?.replace("Region:", "").trim();
-      const clubCategory = card.querySelector(".meta:nth-child(2)")?.textContent || "";
-      const [clubPart, categoryPart] = clubCategory.split("|").map(str => str.trim());
-      const club = clubPart?.replace("Club:", "").trim();
-      const category = categoryPart?.replace("Category:", "").trim();
+      const adName = card.querySelector(".ad-name")?.textContent?.replace("Ad Name:", "").trim() || "N/A";
+      const metaText = card.querySelector(".meta")?.textContent || "";
+      const regionMatch = metaText.match(/Region:\s*(.*)\s+Club:/);
+      const clubMatch = metaText.match(/Club:\s*(.*?)\s+Category:/);
+      const categoryMatch = metaText.match(/Category:\s*(.*)/);
+
+      const region = regionMatch?.[1]?.trim() || "N/A";
+      const club = clubMatch?.[1]?.trim() || "N/A";
+      const category = categoryMatch?.[1]?.trim() || "N/A";
       const comments = card.querySelector("textarea")?.value || "";
 
       const ad = {
-        Region: region || "N/A",
-        Club: club || "N/A",
-        Category: category || "N/A",
-        "Ad Name": adName || "N/A",
-        Headline: card.querySelector(".headline")?.textContent || "",
+        Region: region,
+        Club: club,
+        Category: category,
+        "Ad Name": adName,
+        Headline: card.querySelector(".headline-text")?.textContent || "",
         Body: card.querySelector(".primary-text")?.textContent || "",
         Image_URL_1: card.querySelectorAll("img")[0]?.src || "",
         Image_URL_2: card.querySelectorAll("img")[1]?.src || "",
@@ -595,8 +598,8 @@ async function sendAdsNeedingEdits() {
         Timestamp: new Date().toISOString()
       };
 
-
       adsNeedingEdits.push(ad);
+      addHiddenAdName(ad["Ad Name"]);
 
       // Optional: visually fade card out
       card.style.transition = "opacity 0.4s ease";
@@ -605,26 +608,37 @@ async function sendAdsNeedingEdits() {
     }
   });
 
-  console.log("📝 Ads needing edits:", adsNeedingEdits);
-
   if (adsNeedingEdits.length === 0) {
     showToast("⚠️ No ads needing edits were found.");
     return;
   }
 
   try {
-    await firebase.database().ref("adsNeedingEdits").push({
+    const clubName = adsNeedingEdits[0].Club || "UnknownClub";
+    const now = new Date();
+    const batchKey = `${clubName} - ${now.toLocaleString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true
+    })}`;
+
+    await firebase.database().ref(`adsNeedingEdits/${batchKey}`).set({
       ads: adsNeedingEdits,
-      timestamp: new Date().toISOString()
+      timestamp: now.toISOString()
     });
-    console.log("✅ Sent ads needing edits to Firebase");
+
     showToast("✏️ Edits sent to Ads Department.");
+    console.log("✅ Edits pushed to Firebase:", adsNeedingEdits);
     checkIfNoAdsLeft();
   } catch (error) {
     console.error("🔥 Firebase write failed:", error);
     showToast("❌ Failed to send edits. Try again.");
   }
 }
+
 
 
 
