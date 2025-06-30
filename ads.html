@@ -503,6 +503,85 @@
 }
 
 </script>
+<script>
+function loadEditBatches() {
+  const container = document.getElementById("preview-container");
+  container.innerHTML = "<p>Loading batches...</p>";
+
+  firebase.database().ref("adsNeedingEdits").once("value").then(snapshot => {
+    const batches = [];
+
+    snapshot.forEach(batchSnap => {
+      const batchKey = batchSnap.key;
+      const batchData = batchSnap.val();
+
+      batches.push({
+        key: batchKey,
+        ads: batchData.ads || [],
+        downloaded: batchData.downloaded === true,
+        timestamp: batchData.timestamp
+      });
+    });
+
+    // Clear container and display cards
+    container.innerHTML = "";
+    batches.forEach(batch => {
+      const card = document.createElement("div");
+      card.className = "preview-card";
+      card.style.backgroundColor = batch.downloaded ? "#d4edda" : "#fff";
+
+      const csvButton = document.createElement("button");
+      csvButton.textContent = "Download CSV";
+      csvButton.onclick = () => downloadEditBatch(batch.key, batch.ads);
+
+      const markButton = document.createElement("button");
+      markButton.textContent = "Mark as Downloaded";
+      markButton.onclick = () => {
+        firebase.database().ref(`adsNeedingEdits/${batch.key}/downloaded`).set(true);
+        card.style.backgroundColor = "#d4edda";
+      };
+
+      card.innerHTML = `
+        <h3>${batch.key}</h3>
+        <p>${batch.ads.length} ad(s) flagged for edit</p>
+      `;
+      card.appendChild(csvButton);
+      card.appendChild(markButton);
+      container.appendChild(card);
+    });
+  });
+}
+
+function downloadEditBatch(batchKey, ads) {
+  const rows = [["Region", "Club", "Category", "Ad Name", "Headline", "Body", "Comments"]];
+  ads.forEach(ad => {
+    rows.push([
+      ad.Region || "",
+      ad.Club || "",
+      ad.Category || "",
+      ad["Ad Name"] || "",
+      ad.Headline || "",
+      ad.Body || "",
+      ad.Comments || ""
+    ]);
+  });
+
+  const csvContent = "data:text/csv;charset=utf-8," + rows.map(r =>
+    r.map(val => `"${(val || "").replace(/"/g, '""')}"`).join(",")
+  ).join("\n");
+
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  link.setAttribute("download", `${batchKey}_edits.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+// Auto-load on page load
+document.addEventListener("DOMContentLoaded", loadEditBatches);
+</script>
 
 </body>
 </html>
