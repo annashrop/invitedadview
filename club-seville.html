@@ -344,14 +344,19 @@ let imageTags = "";
 imageURLs.forEach((url, i) => {
   if (typeof url === "string" && url.trim().startsWith("http")) {
     imageTags += `
-      <img class="card-image" src="${url}" alt="Ad Image ${i + 1}">
-      <div class="image-approval">
-        <label>Image Approval Status:</label>
-        <select class="image-approval-select">
-          <option value="">Select</option>
-          <option value="Approved">Approved</option>
-          <option value="Needs Edits">Needs Edits</option>
-        </select>
+      <div class="image-wrapper">
+        <img class="card-image" src="${url}" alt="Ad Image ${i + 1}">
+        <div class="view-link">
+          <a href="#" class="view-image-button" onclick="window.open('${url}', 'ImagePopup', 'width=800,height=600'); return false;">View Full Image ${i + 1}</a>
+        </div>
+        <div class="image-approval">
+          <label>Image Approval Status:</label>
+          <select class="image-approval-select">
+            <option value="">Select</option>
+            <option value="Approved">Approved</option>
+            <option value="Needs Edits">Needs Edits</option>
+          </select>
+        </div>
       </div>
     `;
   }
