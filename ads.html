@@ -294,16 +294,42 @@
   color: #721c24;
 }
     
-.edit-batch-window {
+#edit-batch-window {
   max-height: 500px;
   overflow-y: auto;
-  padding: 20px;
-  background-color: #f8f9fa;
   border: 1px solid #ccc;
   border-radius: 12px;
-  margin-top: 30px;
+  padding: 15px;
+  background-color: #f8f9fa;
   box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  margin-bottom: 40px;
 }
+
+.batch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 12px 20px;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  flex-wrap: wrap;
+}
+
+.batch-row h4 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+  color: #333;
+  flex: 1 1 250px;
+}
+
+.batch-row button {
+  margin-left: 10px;
+}
+
     
   </style>
 </head>
@@ -539,10 +565,8 @@ function loadEditBatches() {
 
     batches.forEach(batch => {
   const card = document.createElement("div");
-  card.className = "preview-card";
-  card.style.backgroundColor = batch.downloaded ? "#d4edda" : "#ffffff";
-  card.style.marginBottom = "20px";
-  card.style.border = "1px solid #ccc";
+  card.className = "batch-row";
+  if (batch.downloaded) card.style.backgroundColor = "#eaf7ea"; 
 
   
 
@@ -558,8 +582,7 @@ function loadEditBatches() {
   };
 
 card.innerHTML = `
-  <h3 style="margin-bottom: 5px;">${batch.key}</h3>
-  <p style="margin-top: 0;">${batch.ads.length} ad(s) need edits</p>
+  <h4>${batch.key}</h4>
 `;
   card.appendChild(csvButton);
   card.appendChild(markButton);
