@@ -633,7 +633,7 @@ async function sendAdsNeedingEdits() {
   document.getElementById("sendEditsToAdsTeam").addEventListener("click", () => {
   const sendEditsBtn = document.getElementById("sendEdits");
   document.querySelectorAll(".preview-card").forEach(card => {
-    const imageStatuses = Array.fromcard.querySelectorAll(".image-approval")).map(sel => sel.value);
+    const imageStatuses = Array.fromcard.querySelectorAll(".image-approval").map(sel => sel.value);
     const textStatus = card.querySelector("select.text-approval")?.value;
     const needsEdit = imageStatuses.some(v => v === "Needs Edit" || v === "Declined") ||
                       textStatus === "Needs Edit" || textStatus === "Declined";
