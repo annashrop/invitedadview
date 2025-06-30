@@ -601,18 +601,21 @@ function loadEditBatches() {
 
 
 function downloadEditBatch(batchKey, ads) {
-  const rows = [["Region", "Club", "Category", "Ad Name", "Headline", "Body", "Comments"]];
-  ads.forEach(ad => {
-    rows.push([
-      ad.Region || "",
-      ad.Club || "",
-      ad.Category || "",
-      ad["Ad Name"] || "",
-      ad.Headline || "",
-      ad.Body || "",
-      ad.Comments || ""
-    ]);
-  });
+  const rows = [["Region", "Club", "Category", "Ad Name", "Headline", "Body", "Comments", "Image_URL_1", "Image_URL_2", "Image_URL_3"]];
+ ads.forEach(ad => {
+  rows.push([
+    ad.Region || "",
+    ad.Club || "",
+    ad.Category || "",
+    ad["Ad Name"] || "",
+    ad.Headline || "",
+    ad.Body || "",
+    ad.Comments || "",
+    ad.Image_URL_1 || "",
+    ad.Image_URL_2 || "",
+    ad.Image_URL_3 || ""
+  ]);
+});
 
   const csvContent = "data:text/csv;charset=utf-8," + rows.map(r =>
     r.map(val => `"${(val || "").replace(/"/g, '""')}"`).join(",")
