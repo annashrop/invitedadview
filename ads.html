@@ -514,7 +514,7 @@
 </script>
 <script>
 function loadEditBatches() {
-  const container = document.getElementById("preview-container");
+  const container = document.getElementById("edit-batch-window");
   container.innerHTML = "<p>Loading batches...</p>";
 
   firebase.database().ref("adsNeedingEdits").once("value").then(snapshot => {
@@ -528,16 +528,21 @@ function loadEditBatches() {
         key: batchKey,
         ads: batchData.ads || [],
         downloaded: batchData.downloaded === true,
-        timestamp: batchData.timestamp
+        timestamp: new Date(batchData.timestamp || Date.now())
       });
     });
 
-    // Clear container and display cards
-    container.innerHTML = "";
+    // Sort newest to oldest
+    batches.sort((a, b) => b.timestamp - a.timestamp);
+
+    container.innerHTML = ""; // Clear loader
+
     batches.forEach(batch => {
       const card = document.createElement("div");
       card.className = "preview-card";
-      card.style.backgroundColor = batch.downloaded ? "#d4edda" : "#fff";
+      card.style.backgroundColor = batch.downloaded ? "#d4edda" : "#ffffff";
+      card.style.marginBottom = "20px";
+      card.style.border = "1px solid #ccc";
 
       const csvButton = document.createElement("button");
       csvButton.textContent = "Download CSV";
@@ -551,8 +556,8 @@ function loadEditBatches() {
       };
 
       card.innerHTML = `
-        <h3>${batch.key}</h3>
-        <p>${batch.ads.length} ad(s) flagged for edit</p>
+        <h3 style="margin-bottom: 5px;">${batch.key}</h3>
+        <p style="margin-top: 0;">${batch.ads.length} ad(s) need edits</p>
       `;
       card.appendChild(csvButton);
       card.appendChild(markButton);
@@ -560,6 +565,7 @@ function loadEditBatches() {
     });
   });
 }
+
 
 function downloadEditBatch(batchKey, ads) {
   const rows = [["Region", "Club", "Category", "Ad Name", "Headline", "Body", "Comments"]];
