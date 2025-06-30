@@ -572,7 +572,7 @@ async function sendAdsNeedingEdits() {
       const category = card.querySelector(".meta:nth-child(2)")?.textContent?.replace("Category:", "").trim();
 
       const ad = {
-        Club: Club || "N/A",
+        Club: club || "N/A",
         Category: Category || "N/A",
         "Ad Name": adName || "N/A",
         Headline: card.querySelector(".headline")?.textContent || "",
