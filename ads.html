@@ -344,7 +344,40 @@
   font-size: 22px;
   color: #1a2e66;
 }
-    
+
+    .dashboard-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-top: 40px;
+}
+
+.edit-alert-section,
+.download-status-section {
+  flex: 1 1 48%;
+  background-color: #f0f4ff;
+  border: 1px solid #c9d6f2;
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+  min-width: 350px;
+}
+
+.edit-alert-section h2,
+.download-status-section h2 {
+  margin-top: 0;
+  font-size: 20px;
+  color: #1a2e66;
+}
+
+#edit-batch-window {
+  max-height: 500px;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+
   </style>
 </head>
 <body>
@@ -360,28 +393,26 @@
 <button onclick="uploadCSV()">Upload CSV to Portal</button>
 
 
+<div class="dashboard-flex">
+  <div class="edit-alert-section">
+    <h2>Ads That Need Your Attention</h2>
+    <div id="edit-batch-window"></div>
+  </div>
 
+  <div class="download-status-section">
+    <h2>Hawke Download Status</h2>
+    <div id="download-status-list"></div>
+  </div>
+</div>
    
 
-    <div class="container">
-      <div id="attention-section">
-       <div class="edit-alert-section">
-  <h2>Ads That Need Your Attention</h2>
-  <div id="edit-batch-window"></div>
-</div>
+   
         <div id="preview-container"></div>
       
-       
-
-      </div>
-    </div>
-  </div>
+      
 <div id="ads-needing-edits" class="ads-needing-edit">
 </div>
-<div class="status-container">
-  <h3>Hawke Download Status</h3>
-  <div id="hawkeStatusBox" class="status-box"></div>
-</div>
+
   <script>
     const user = localStorage.getItem("user");
     if (!user) {
