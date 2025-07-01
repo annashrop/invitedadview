@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -327,6 +326,8 @@ textarea:focus, select:focus {
 </div>
 
 <script>
+ 
+    
 async function renderApprovedAds(adList) {
   const container = document.getElementById('preview-container');
   container.innerHTML = '';
@@ -343,14 +344,19 @@ let imageTags = "";
 imageURLs.forEach((url, i) => {
   if (typeof url === "string" && url.trim().startsWith("http")) {
     imageTags += `
-      <img class="card-image" src="${url}" alt="Ad Image ${i + 1}">
-      <div class="image-approval">
-        <label>Image Approval Status:</label>
-        <select class="image-approval-select">
-          <option value="">Select</option>
-          <option value="Approved">Approved</option>
-          <option value="Needs Edits">Needs Edits</option>
-        </select>
+      <div class="image-wrapper">
+        <img class="card-image" src="${url}" alt="Ad Image ${i + 1}">
+        <div class="view-link">
+          <a href="#" class="view-image-button" onclick="window.open('${url}', 'ImagePopup', 'width=800,height=600'); return false;">View Full Image ${i + 1}</a>
+        </div>
+        <div class="image-approval">
+          <label>Image Approval Status:</label>
+          <select class="image-approval-select">
+            <option value="">Select</option>
+            <option value="Approved">Approved</option>
+            <option value="Needs Edits">Needs Edits</option>
+          </select>
+        </div>
       </div>
     `;
   }
@@ -391,7 +397,7 @@ card.innerHTML = `
     // --- Card logic for color + validation
   function updateCardStatus(card) {
     const textStatus = card.querySelector('.text-approval')?.value;
-    const imageStatuses = [...card.querySelectorAll("select.image-approval-select")].map(sel => sel.value);
+    const imageStatuses = [...card.querySelectorAll(".image-approval-select")].map(sel => sel.value);
     const commentBox = card.querySelector('textarea');
 
   const allApproved =
@@ -485,6 +491,7 @@ function addHiddenAdName(adName) {
     setTimeout(() => toast.remove(), 3000);
   };
 
+
 async function sendFinalApprovalsToAgency() {
   const adCards = document.querySelectorAll(".preview-card");
   const approvedAds = [];
@@ -493,29 +500,29 @@ async function sendFinalApprovalsToAgency() {
     const imageStatuses = Array.from(card.querySelectorAll(".image-approval-select")).map(sel => sel.value);
     const textStatus = card.querySelector(".text-approval")?.value;
 
-    if (textStatus === "Needs Edit" || imageStatuses.some(status => status === "Needs Edit")) {
-      const adName = card.querySelector(".ad-name")?.textContent?.replace("Ad Name:", "").trim();
-      const region = card.querySelector(".meta:nth-child(1)")?.textContent?.replace("Region:", "").trim();
-      const clubCategory = card.querySelector(".meta:nth-child(2)")?.textContent || "";
-      const [clubPart, categoryPart] = clubCategory.split("|").map(str => str.trim());
-      const club = clubPart?.replace("Club:", "").trim();
-      const category = categoryPart?.replace("Category:", "").trim();
-      const comments = card.querySelector("textarea")?.value || "";
+    if (textStatus === "Approved" && imageStatuses.every(v => v === "Approved")) {
+      const adName = card.querySelector(".ad-name")?.textContent.split("Ad Name:").pop().trim() || "N/A";
+      const headline = card.querySelector(".headline")?.textContent.trim() || "N/A";
+      const body = card.querySelector(".primary-text")?.textContent.trim() || "N/A";
+
+      const metaText = card.querySelector(".meta")?.textContent || "";
+      const clubMatch = metaText.match(/Club:\s*(.*?)\s+Category:/);
+      const categoryMatch = metaText.match(/Category:\s*(.*)/);
+      const club = clubMatch?.[1]?.trim() || "N/A";
+      const category = categoryMatch?.[1]?.trim() || "N/A";
 
       const ad = {
         Region: region || "N/A",
         Club: club || "N/A",
         Category: category || "N/A",
         "Ad Name": adName || "N/A",
-        Headline: card.querySelector(".headline")?.textContent || "",
-        Body: card.querySelector(".primary-text")?.textContent || "",
+        Headline: card.querySelector(".headline-text")?.textContent || "",
+        "Primary Text": card.querySelector(".primary-text")?.textContent || "",
         Image_URL_1: card.querySelectorAll("img")[0]?.src || "",
         Image_URL_2: card.querySelectorAll("img")[1]?.src || "",
         Image_URL_3: card.querySelectorAll("img")[2]?.src || "",
-        Comments: comments,
         Timestamp: new Date().toISOString()
       };
-
 
       approvedAds.push(ad);
       addHiddenAdName(ad["Ad Name"]);
@@ -552,63 +559,93 @@ async function sendFinalApprovalsToAgency() {
     showToast("❌ Failed to send ads. Try again.");
   }
 }
-
 </script>
-
-
 <script>
 
 
-  document.getElementById("sendEditsToAdsTeam").addEventListener("click", () => {
-  const editAds = [];
-  document.querySelectorAll(".preview-card").forEach(card => {
-    const imageStatuses = Array.from(card.querySelectorAll('select.image-approval-select')).map(sel => sel.value);
-    const textStatus = card.querySelector("select.text-approval")?.value;
-    const needsEdit = imageStatuses.some(v => v === "Needs Edit" || v === "Declined") ||
-                      textStatus === "Needs Edit" || textStatus === "Declined";
 
-    if (needsEdit) {
-      const commentBox = card.querySelector("textarea");
-      const comments = commentBox?.value.trim();
+async function sendAdsNeedingEdits() {
+  const adCards = document.querySelectorAll(".preview-card");
+  const adsNeedingEdits = []; // declare fresh array inside the function
 
-      if (!comments) {
-        commentBox.style.border = "2px solid red";
-        commentBox.placeholder = "Comment required before submitting edits.";
-        return; // prevent sending without comment
-      }
+  adCards.forEach(card => {
+    const imageStatuses = Array.from(card.querySelectorAll(".image-approval-select")).map(sel => sel.value);
+    const textStatus = card.querySelector(".text-approval")?.value;
 
-  const ad = {
-  Region: card.querySelector(".meta strong:nth-child(1)")?.nextSibling?.textContent?.trim() || "",
-  Club: card.querySelector(".meta strong:nth-child(2)")?.nextSibling?.textContent?.trim() || "",
-  Category: card.querySelector(".meta strong:nth-child(3)")?.nextSibling?.textContent?.trim() || "",
-  "Ad Name": card.querySelector(".ad-name")?.textContent?.replace("Ad Name: ", "") || "",
-  Headline: card.querySelector(".headline-text")?.textContent || "",
-  "Primary Text": card.querySelector(".primary-text")?.textContent || "",
-  Image_URL_1: card.querySelectorAll(".card-image")[0]?.src || "",
-  Image_URL_2: card.querySelectorAll(".card-image")[1]?.src || "",
-  Image_URL_3: card.querySelectorAll(".card-image")[2]?.src || "",
-  textApprovalStatus: card.querySelector(".text-approval")?.value || "",
-  imageApprovalStatuses: [...card.querySelectorAll(".image-approval")].map(el => el.value),
-  reviewerComments: card.querySelector("textarea")?.value || ""
-  };
+    const isEdit = (
+      textStatus === "Needs Edits" || textStatus === "Declined" ||
+      imageStatuses.some(status => status === "Needs Edits" || status === "Declined")
+    );
 
+    if (isEdit) {
+      const adName = card.querySelector(".ad-name")?.textContent?.replace("Ad Name:", "").trim() || "N/A";
+      const metaText = card.querySelector(".meta")?.textContent || "";
+      const regionMatch = metaText.match(/Region:\s*(.*)\s+Club:/);
+      const clubMatch = metaText.match(/Club:\s*(.*?)\s+Category:/);
+      const categoryMatch = metaText.match(/Category:\s*(.*)/);
 
-      editAds.push(ad);
+      const region = regionMatch?.[1]?.trim() || "N/A";
+      const club = clubMatch?.[1]?.trim() || "N/A";
+      const category = categoryMatch?.[1]?.trim() || "N/A";
+      const comments = card.querySelector("textarea")?.value || "";
 
-      // Fade and remove the card after submitting
+      const ad = {
+        Region: region,
+        Club: club,
+        Category: category,
+        "Ad Name": adName,
+        Headline: card.querySelector(".headline-text")?.textContent || "",
+        Body: card.querySelector(".primary-text")?.textContent || "",
+        Image_URL_1: card.querySelectorAll("img")[0]?.src || "",
+        Image_URL_2: card.querySelectorAll("img")[1]?.src || "",
+        Image_URL_3: card.querySelectorAll("img")[2]?.src || "",
+        Comments: comments,
+        Timestamp: new Date().toISOString()
+      };
+
+      adsNeedingEdits.push(ad);
+      addHiddenAdName(ad["Ad Name"]);
+
+      // Optional: visually fade card out
       card.style.transition = "opacity 0.4s ease";
       card.style.opacity = 0;
       setTimeout(() => card.remove(), 400);
     }
   });
 
-  if (editAds.length > 0) {
-    localStorage.setItem("adsNeedingEdits", JSON.stringify(editAds));
-    showToast("Edits sent to Ads Department.");
-  } else {
-    showToast("No edits to send.");
-    }
-  });
+  if (adsNeedingEdits.length === 0) {
+    showToast("⚠️ No ads needing edits were found.");
+    return;
+  }
+
+  try {
+    const clubName = adsNeedingEdits[0].Club || "UnknownClub";
+    const now = new Date();
+    const batchKey = `${clubName} - ${now.toLocaleString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true
+    })}`;
+
+    await firebase.database().ref(`adsNeedingEdits/${batchKey}`).set({
+      ads: adsNeedingEdits,
+      timestamp: now.toISOString()
+    });
+
+    showToast("✏️ Edits sent to Ads Department.");
+    console.log("✅ Edits pushed to Firebase:", adsNeedingEdits);
+    checkIfNoAdsLeft();
+  } catch (error) {
+    console.error("🔥 Firebase write failed:", error);
+    showToast("❌ Failed to send edits. Try again.");
+  }
+}
+
+
+
 
 
     checkIfNoAdsLeft();
@@ -621,7 +658,7 @@ async function sendFinalApprovalsToAgency() {
     }
   }
 
-  
+
 
 
   const mainContent = document.querySelector('.main-content');
@@ -633,24 +670,23 @@ async function sendFinalApprovalsToAgency() {
 
 </script>
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const sendBtn = document.getElementById("sendToAgencyBtn");
-    const editsBtn = document.getElementById("sendEditsToAdsTeam");
+document.addEventListener("DOMContentLoaded", function () {
+  const sendBtn = document.getElementById("sendToAgencyBtn");
+  const editsBtn = document.getElementById("sendEditsToAdsTeam");
 
-    if (sendBtn) {
-      console.log("🔗 Binding Send to Agency button");
-      sendBtn.addEventListener("click", sendFinalApprovalsToAgency); // must match the name of your function
-    } else {
-      console.warn("⚠️ sendToAgencyBtn not found in DOM");
-    }
-
-    if (editsBtn) {
-      console.log("🔗 Binding Send Edits button");
-      editsBtn.addEventListener("click", sendEditsToAdsTeam);
-    } else {
-      console.warn("⚠️ sendEdits not found in DOM");
-    }
-  });
+  if (sendBtn) {
+    console.log("🔗 Binding Send to Agency button");
+    sendBtn.addEventListener("click", sendFinalApprovalsToAgency);
+  } else {
+    console.warn("⚠️ sendToAgencyBtn not found in DOM");
+  }
+ 
+  if (editsBtn) {
+    editsBtn.addEventListener("click", sendAdsNeedingEdits);
+  } else {
+    console.warn("⚠️ sendEditsToAdsTeam button not found in DOM");
+  }
+});
 
 </script>
   <script>
