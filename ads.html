@@ -538,9 +538,6 @@
       const editSection = document.getElementById("ads-needing-edits");
       const storedEdits = JSON.parse(localStorage.getItem("adsNeedingEdits") || "[]");
 
-        document.getElementById("downloadEditsBtn").style.display = "inline-block";
-        document.getElementById("clearEditCountBtn").style.display = "inline-block";
-        document.getElementById("clearEditCSVBtn").style.display = "inline-block";
 
         document.getElementById("downloadEditsBtn").addEventListener("click", () => {
           const rows = [["Region", "Club", "Ad Name", "Headline", "Primary Text", "Reviewer Comments"]];
