@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<!-- ✅ Firebase Core SDK -->
+<!-- Firebase v9 compatibility build (works in browsers without bundlers) -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+
+
+
+<!-- ✅ PapaParse (already included, but for clarity) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
+<!-- ✅ Firebase Configuration -->
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCLl4jDy3dfN8Ntgjnjt0IieVbPTQywPwE",
+    authDomain: "marketingapprovalportal.firebaseapp.com",
+    projectId: "marketingapprovalportal",
+    storageBucket: "marketingapprovalportal.appspot.com",
+    messagingSenderId: "324995086351",
+    appId: "1:324995086351:web:2e510d67bf824f2f32cb7a",
+    measurementId: "G-5TTFYS66EH"
+  };
+
+  // ✅ Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  const database = firebase.database();
+</script>
+
+  <meta charset="UTF-8">
+  <title>Ad Department Homepage</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    /* Container */
+.ads-needing-edit {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+/* Card Styling */
+.ad-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  padding: 16px;
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Image Preview */
+.ad-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+  background-color: #f2f2f2;
+}
+
+/* Status Badge */
+.status-badge {
+  background-color: #ff4d4f;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+  display: inline-block;
+  margin-bottom: 10px;
+}
+
+/* Comments Box */
+.comment-box {
+  background: #fff8f0;
+  border-left: 4px solid #ff9f43;
+  padding: 10px;
+  margin-top: 10px;
+  font-style: italic;
+  font-size: 14px;
+}
+
+/* Action Buttons */
+.action-buttons {
+  margin-top: 12px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.action-buttons button {
+  background-color: #eee;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.action-buttons button:hover {
+  background-color: #ddd;
+}
+
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .sidebar {
+      width: 240px;
+      background-color: #22326e;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+    }
+
+    .sidebar h2 {
+      font-size: 22px;
+      margin-bottom: 30px;
+    }
+
+  .sidebar a {
+  display: block;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 12px 16px;
+  border-radius: 999px;
+  margin-bottom: 14px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.sidebar a:nth-of-type(1) { background-color: #83b573; color: white; }       /* Paid Ads */
+.sidebar a:nth-of-type(2) { background-color: #00a3cf; color: white; }       /* Emails */
+.sidebar a:nth-of-type(3) { background-color: #933b45; color: white; }       /* Landing Page */
+.sidebar a:nth-of-type(4) { background-color: #e35205; color: white; }       /* Coming Soon */
+.sidebar a:nth-of-type(5) { background-color: #ffffff; color: #22326e; }     /* Coming Soon (white) */
+
+.sidebar a:hover {
+  transform: scale(1.03);
+  opacity: 0.9;
+}
+
+
+    .logout-button {
+      margin-top: auto;
+      background-color: #ff6f3c;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .logout-button:hover {
+      background-color: #e35205;
+    }
+
+    .main-content {
+      margin-left: 240px;
+      flex-grow: 1;
+      background-color: #f4f6fb;
+      padding: 40px;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    textarea {
+      width: 100%;
+      height: 200px;
+      padding: 10px;
+      font-family: monospace;
+      font-size: 14px;
+    }
+    button {
+      padding: 10px 20px;
+      margin-top: 15px;
+      background-color: #22326e;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    #result {
+      margin-top: 25px;
+      background: #fff;
+      padding: 15px;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+      white-space: pre-wrap;
+      font-family: monospace;
+      font-size: 14px;
+    }
+    .preview-card {
+      border: 2px solid #e74c3c;
+      border-radius: 8px;
+      padding: 20px;
+      margin-top: 20px;
+      background-color: #fff;
+    }
+    .card-image {
+      width: 100%;
+      max-height: 300px;
+      object-fit: cover;
+      border-radius: 6px;
+      margin-bottom: 10px;
+    }
+    #attention-section {
+      margin-top: 60px;
+    }
+    .status-window {
+  background-color: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 16px;
+  max-height: 300px;
+  overflow-y: auto;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  margin-top: 20px;
+  width: 100%;
+  max-width: 600px;
+}
+
+.status-window h3 {
+  margin-top: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.status-list {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.status-list li {
+  padding: 8px 0;
+  border-bottom: 1px solid #e2e2e2;
+}
+
+.status-list li:last-child {
+  border-bottom: none;
+}
+    .status-window {
+  margin-left: auto;
+  margin-right: auto;
+}
+    .status-container {
+  margin-top: 20px;
+  padding: 16px;
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  max-height: 300px;
+  overflow-y: auto;
+  font-family: sans-serif;
+}
+
+.status-box div {
+  padding: 6px 10px;
+  margin-bottom: 4px;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.downloaded-true {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.downloaded-false {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+    
+#edit-batch-window {
+  max-height: 500px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  padding: 15px;
+  background-color: #f8f9fa;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  margin-bottom: 40px;
+}
+
+.batch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 12px 20px;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  flex-wrap: wrap;
+}
+
+.batch-row h4 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+  color: #333;
+  flex: 1 1 250px;
+}
+
+.batch-row button {
+  margin-left: 10px;
+}
+.edit-alert-section {
+  background-color: #95b0f5;
+  border: 1px solid #c9d6f2;
+  border-radius: 12px;
+  padding: 30px;
+  margin-top: 40px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+}
+
+.edit-alert-section h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 22px;
+  color: #1a2e66;
+}
+
+    .dashboard-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-top: 40px;
+}
+
+.edit-alert-section,
+.download-status-section {
+  flex: 1 1 48%;
+  background-color: #f0f4ff;
+  border: 1px solid #c9d6f2;
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+  min-width: 350px;
+}
+
+.edit-alert-section h2,
+.download-status-section h2 {
+  margin-top: 0;
+  font-size: 20px;
+  color: #1a2e66;
+}
+
+#edit-batch-window {
+  max-height: 500px;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+.download-status-section {
+  background-color: #f0f4ff;
+  border: 1px solid #c9d6f2;
+  border-radius: 12px;
+  padding: 20px 25px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.download-status-section h2 {
+  margin-top: 0;
+  font-size: 20px;
+  color: #1a2e66;
+  margin-bottom: 15px;
+}
+
+.status-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.status-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 10px 15px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  font-size: 14px;
+}
+
+.status-item span {
+  font-weight: 500;
+}
+
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 50px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-badge.downloaded {
+  background-color: #d1f4d4;
+  color: #155724;
+}
+
+.status-badge.not-downloaded {
+  background-color: #ffe0e0;
+  color: #8a1f1f;
+}
+    
+.ads-hawke-container {
+  display: flex;
+  gap: 20px;
+  margin-top: 30px;
+  align-items: flex-start;
+}
+
+.ads-attention-box,
+.hawke-status-box {
+  background-color: #f0f4ff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+  flex: 1;
+  min-width: 0;
+}
+
+/* Optional: Set a max width if one side is much larger */
+.hawke-status-box {
+  max-width: 400px;
+}
+ .upload-container {
+  background-color: #f5b3b3;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 30px;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.05);
+  max-width: 600px;
+}
+  </style>
+</head>
+<body>
+  <div class="sidebar" id="sidebar"></div>
+
+  <div class="main-content">
+    <h1>Welcome to the Ad Department Homepage</h1>
+
+<div class="upload-container">
+  <h2>Upload a CSV File</h2>
+  <input type="file" id="csvFileInput" accept=".csv" />
+  <button onclick="uploadCSV()">Upload CSV to Portal</button>
+</div>
+
+
+<div class="dashboard-flex">
+  <div class="edit-alert-section">
+    <h2>Ads That Need Your Attention</h2>
+    <div id="edit-batch-window"></div>
+  </div>
+
+ <div class="download-status-section">
+  <h2>Hawke Download Status</h2>
+   <div id="hawkeStatusBox" class="status-list">div> 
+</div>
+</div>
+   
+
+   
+        <div id="preview-container"></div>
+      
+      
+<div id="ads-needing-edits" class="ads-needing-edit">
+</div>
+
+  <script>
+    const user = localStorage.getItem("user");
+    if (!user) {
+      window.location.href = "login.html";
+    }
+
+    const sidebar = document.getElementById("sidebar");
+    const sidebars = {
+      "ads-team": `
+        <h2>Invited Portal</h2>
+        <a href="#">Paid Ads</a>
+        <a href="#">Emails</a>
+        <a href="#">Landing Pages</a>
+        <a href="#">[Coming Soon!]</a>
+        <a href="#">[Coming Soon!]</a>
+        <button class="logout-button" onclick="logout()">Logout</button>
+      `
+    };
+    sidebar.innerHTML = sidebars[user] || "<p>Unauthorized</p>";
+
+    function logout() {
+      localStorage.removeItem("user");
+      window.location.href = "login.html";
+    }
+
+    
+    document.addEventListener("DOMContentLoaded", () => {
+      const editSection = document.getElementById("ads-needing-edits");
+      const storedEdits = JSON.parse(localStorage.getItem("adsNeedingEdits") || "[]");
+
+        document.getElementById("downloadEditsBtn").style.display = "inline-block";
+        document.getElementById("clearEditCountBtn").style.display = "inline-block";
+        document.getElementById("clearEditCSVBtn").style.display = "inline-block";
+
+        document.getElementById("downloadEditsBtn").addEventListener("click", () => {
+          const rows = [["Region", "Club", "Ad Name", "Headline", "Primary Text", "Reviewer Comments"]];
+
+          storedEdits.forEach(({ html }) => {
+            const tempDiv = document.createElement("div");
+            tempDiv.innerHTML = html;
+
+            const region = tempDiv.querySelector(".meta-section")?.innerText.match(/Region:\s*(.*)/)?.[1] || "";
+            const club = tempDiv.querySelector(".meta-section")?.innerText.match(/Club:\s*(.*)\s+\|/)?.[1] || "";
+            const adName = tempDiv.querySelector(".ad-name")?.innerText.replace("Ad Name:", "").trim() || "";
+            const headline = tempDiv.querySelector(".headline")?.innerText || "";
+            const primaryText = tempDiv.querySelector(".primary-text")?.innerText || "";
+            const comment = tempDiv.querySelector("textarea")?.value || "";
+
+            rows.push([region, club, adName, headline, primaryText, comment]);
+          });
+
+          const csvContent = "data:text/csv;charset=utf-8," + rows.map(r => r.map(val => `"${val.replace(/"/g, '""')}"`).join(",")).join("\n");
+          const encodedUri = encodeURI(csvContent);
+          const link = document.createElement("a");
+          link.setAttribute("href", encodedUri);
+          link.setAttribute("download", "ads_needing_edits.csv");
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        });
+
+        document.getElementById("clearEditCountBtn").addEventListener("click", () => {
+          localStorage.removeItem("adsNeedingEdits");
+          document.getElementById("ads-needing-edits").innerHTML = '';
+          document.getElementById("downloadEditsBtn").style.display = "none";
+          document.getElementById("clearEditCountBtn").style.display = "none";
+          document.getElementById("clearEditCSVBtn").style.display = "none";
+        });
+
+        document.getElementById("clearEditCSVBtn").addEventListener("click", () => {
+          localStorage.removeItem("adsNeedingEdits");
+          document.getElementById("ads-needing-edits").innerHTML = '';
+          document.getElementById("downloadEditsBtn").style.display = "none";
+          document.getElementById("clearEditCountBtn").style.display = "none";
+          document.getElementById("clearEditCSVBtn").style.display = "none";
+        });
+      
+    });
+    document.addEventListener("DOMContentLoaded", () => {
+    loadHawkeDownloadStatus();
+});
+  </script>
+  <!-- Place this right before the closing </body> -->
+
+
+
+
+
+
+
+
+<script>
+  async function uploadCSV() {
+    const fileInput = document.getElementById('csvFile');
+    const file = fileInput.files[0];
+
+    if (!file) {
+      alert('Please select a CSV file first!');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = async function () {
+      const fileContentBase64 = btoa(reader.result);
+      const fileName = file.name;
+      const region = "West"; // You can make this dynamic if needed
+
+      try {
+        const response = await fetch('https://us-central1-marketingapprovalportal.cloudfunctions.net/uploadCsvToStorage', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            fileName,
+            fileContentBase64,
+            region
+          }),
+        });
+
+        const result = await response.json();
+        alert(result.message || 'Upload completed');
+        console.log('Upload result:', result);
+      } catch (error) {
+        console.error('Error uploading:', error);
+        alert('Upload failed');
+      }
+    };
+
+    reader.readAsBinaryString(file);
+  }
+
+</script>
+<script>
+ function loadHawkeDownloadStatus() {
+  const statusBox = document.getElementById("hawkeStatusBox");
+  statusBox.innerHTML = "Loading...";
+
+  firebase.database().ref("finalApprovedAds").once("value").then(snapshot => {
+    const batches = [];
+
+    snapshot.forEach(batchSnap => {
+      const batchKey = batchSnap.key;
+      const batchData = batchSnap.val();
+
+      const timestamp = batchData.timestamp || batchData.ads?.timestamp || "";
+      const downloaded = batchData.downloaded || batchData.ads?.downloaded || false;
+
+      if (timestamp) {
+        batches.push({
+          name: batchKey,
+          timestamp: new Date(timestamp),
+          downloaded: downloaded === true
+        });
+      }
+    });
+
+    // Sort by timestamp DESCENDING (newest first)
+    batches.sort((a, b) => b.timestamp - a.timestamp);
+
+    // Clear old status and render sorted batches
+    statusBox.innerHTML = "";
+    batches.forEach(batch => {
+      const div = document.createElement("div");
+      div.className = batch.downloaded ? "downloaded-true" : "downloaded-false";
+      div.textContent = `${batch.name} — ${batch.downloaded ? "Downloaded" : "Not Downloaded"}`;
+      statusBox.appendChild(div);
+    });
+  });
+}
+
+</script>
+<script>
+function loadEditBatches() {
+  const container = document.getElementById("edit-batch-window");
+  container.innerHTML = "<p>Loading batches...</p>";
+
+  firebase.database().ref("adsNeedingEdits").once("value").then(snapshot => {
+    const batches = [];
+
+    snapshot.forEach(batchSnap => {
+      const batchKey = batchSnap.key;
+      const batchData = batchSnap.val();
+
+      batches.push({
+        key: batchKey,
+        ads: batchData.ads || [],
+        downloaded: batchData.downloaded === true,
+        timestamp: new Date(batchData.timestamp || Date.now())
+      });
+    });
+
+    // Sort newest to oldest
+    batches.sort((a, b) => b.timestamp - a.timestamp);
+
+    container.innerHTML = ""; // Clear loader
+
+    batches.forEach(batch => {
+  const card = document.createElement("div");
+  card.className = "batch-row";
+  if (batch.downloaded) card.style.backgroundColor = "#eaf7ea"; 
+
+  
+
+  const csvButton = document.createElement("button");
+  csvButton.textContent = "Download CSV";
+  csvButton.onclick = () => downloadEditBatch(batch.key, batch.ads);
+
+  const markButton = document.createElement("button");
+  markButton.textContent = "Mark as Downloaded";
+  markButton.onclick = () => {
+    firebase.database().ref(`adsNeedingEdits/${batch.key}/downloaded`).set(true);
+    card.style.backgroundColor = "#d4edda";
+  };
+
+card.innerHTML = `
+  <h4>${batch.key}</h4>
+`;
+  card.appendChild(csvButton);
+  card.appendChild(markButton);
+  container.appendChild(card);
+});
+
+  });
+}
+
+
+function downloadEditBatch(batchKey, ads) {
+  const rows = [["Region", "Club", "Category", "Ad Name", "Headline", "Body", "Comments", "Image_URL_1", "Image_URL_2", "Image_URL_3"]];
+ ads.forEach(ad => {
+  rows.push([
+    ad.Region || "",
+    ad.Club || "",
+    ad.Category || "",
+    ad["Ad Name"] || "",
+    ad.Headline || "",
+    ad.Body || "",
+    ad.Comments || "",
+    ad.Image_URL_1 || "",
+    ad.Image_URL_2 || "",
+    ad.Image_URL_3 || ""
+  ]);
+});
+
+  const csvContent = "data:text/csv;charset=utf-8," + rows.map(r =>
+    r.map(val => `"${(val || "").replace(/"/g, '""')}"`).join(",")
+  ).join("\n");
+
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  link.setAttribute("download", `${batchKey}_edits.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+// Auto-load on page load
+document.addEventListener("DOMContentLoaded", loadEditBatches);
+</script>
+
+</body>
+</html>
