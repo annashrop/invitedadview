@@ -575,12 +575,11 @@ async function sendFinalApprovalsToAgency() {
 <script>
 
 
-
 async function sendAdsNeedingEdits() {
   const adCards = document.querySelectorAll(".preview-card");
-  const adsNeedingEdits = []; // declare fresh array inside the function
+  const adsNeedingEdits = [];
 
-  adCards.forEach(card => {
+  for (const card of adCards) {
     const imageStatuses = Array.from(card.querySelectorAll(".image-approval-select")).map(sel => sel.value);
     const textStatus = card.querySelector(".text-approval")?.value;
 
@@ -590,6 +589,12 @@ async function sendAdsNeedingEdits() {
     );
 
     if (isEdit) {
+      const comments = card.querySelector("textarea")?.value.trim();
+      if (!comments) {
+        alert("⚠️ Please enter a note for each ad marked 'Needs Edits' or 'Declined'.");
+        return;
+      }
+
       const adName = card.querySelector(".ad-name")?.textContent?.replace("Ad Name:", "").trim() || "N/A";
       const metaText = card.querySelector(".meta")?.textContent || "";
       const regionMatch = metaText.match(/Region:\s*(.*)\s+Club:/);
@@ -599,7 +604,6 @@ async function sendAdsNeedingEdits() {
       const region = regionMatch?.[1]?.trim() || "N/A";
       const club = clubMatch?.[1]?.trim() || "N/A";
       const category = categoryMatch?.[1]?.trim() || "N/A";
-      const comments = card.querySelector("textarea")?.value || "";
 
       const ad = {
         Region: region,
@@ -623,7 +627,7 @@ async function sendAdsNeedingEdits() {
       card.style.opacity = 0;
       setTimeout(() => card.remove(), 400);
     }
-  });
+  }
 
   if (adsNeedingEdits.length === 0) {
     showToast("⚠️ No ads needing edits were found.");
@@ -642,43 +646,19 @@ async function sendAdsNeedingEdits() {
       hour12: true
     })}`;
 
-    await firebase.database().ref(`adsNeedingEdits/${batchKey}`).set({
+    await firebase.database().ref(`clubEditRequests/${clubName}/${batchKey}`).set({
       ads: adsNeedingEdits,
       timestamp: now.toISOString()
     });
 
-    showToast("✏️ Edits sent to Ads Department.");
-    console.log("✅ Edits pushed to Firebase:", adsNeedingEdits);
+    showToast("📝 Edits sent to Regional for approval.");
+    console.log("✅ Club edit requests sent to region:", adsNeedingEdits);
     checkIfNoAdsLeft();
   } catch (error) {
     console.error("🔥 Firebase write failed:", error);
     showToast("❌ Failed to send edits. Try again.");
   }
 }
-
-
-
-
-
-    checkIfNoAdsLeft();
-
-
-
-  function checkIfNoAdsLeft() {
-    if (document.querySelectorAll('.preview-card').length === 0) {
-      document.getElementById('no-ads-message').style.display = 'block';
-    }
-  }
-
-
-
-
-  const mainContent = document.querySelector('.main-content');
-
-  function hideWelcome() {
-    const welcomeEl = document.getElementById("welcome-message");
-    if (welcomeEl) welcomeEl.style.display = "none";
-  }
 
 </script>
 <script>
