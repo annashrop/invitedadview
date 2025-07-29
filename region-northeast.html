@@ -694,7 +694,7 @@ async function sendApprovedAdsToClub() {
     return;
   }
 
- const clubName = approvedAds[0].Club || "UnknownClub";
+const clubName = approvedAds[0].Club || "UnknownClub";
 const now = new Date();
 const batchKey = `${clubName} - ${now.toLocaleString("en-US", {
   month: "short",
@@ -714,6 +714,7 @@ try {
 } catch (error) {
   console.error("🔥 Firebase write failed:", error);
   showToast("❌ Failed to send ads. Try again.");
+  }
 }
 
 
