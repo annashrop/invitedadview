@@ -429,33 +429,33 @@ card.innerHTML = `
   });
 }
         
-  
- document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", () => {
   const clubName = "Belmont";
-  const savedKeys = JSON.parse(localStorage.getItem("removedAds") || "[]");
   const dbRef = firebase.database().ref(`approvedAds/${clubName}`);
+  const savedKeys = JSON.parse(localStorage.getItem("hiddenAdNames") || "[]");
 
   dbRef.once("value")
-  .then(snapshot => {
-    const clubData = snapshot.val();
-    const clubDataArray = clubData?.ads || [];
+    .then(snapshot => {
+      let allAds = [];
 
-    // 🧠 Get list of ads previously hidden (approved or sent for edits)
-    const savedKeys = JSON.parse(localStorage.getItem("hiddenAdNames")) || [];
+      snapshot.forEach(batchSnap => {
+        const adsInBatch = batchSnap.val()?.ads || [];
+        allAds = allAds.concat(adsInBatch);
+      });
 
-    console.log("📦 ClubData from Firebase:", clubData);
-    console.log("🧠 Saved ad names:", savedKeys);
+      console.log("📦 All batched ads from Firebase:", allAds);
+      console.log("🧠 Saved (hidden) ad names:", savedKeys);
 
-    // 🧼 Filter out ads that were already handled
-    const filteredAds = clubDataArray.filter(ad => !savedKeys.includes(ad["Ad Name"]));
-
-    console.log("🎯 Filtered ads to render:", filteredAds);
-    renderApprovedAds(filteredAds);
-  })
-  .catch(error => {
-    console.error("❌ Error fetching data from Firebase:", error);
-  });
+      const filteredAds = allAds.filter(ad => !savedKeys.includes(ad["Ad Name"]));
+      console.log("🎯 Filtered ads to render:", filteredAds);
+      renderApprovedAds(filteredAds);
+    })
+    .catch(error => {
+      console.error("❌ Error fetching data from Firebase:", error);
+    });
 });
+  
+
 
 </script>
 
