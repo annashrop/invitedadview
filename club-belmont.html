@@ -123,14 +123,14 @@ body {
   margin-bottom: 12px;
 }
 
- .preview-card {
-  width: 340px;
-  background-color: white;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  transition: transform 0.2s ease;
+.preview-card {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
   padding: 16px;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .preview-card img.card-image {
@@ -298,6 +298,11 @@ textarea:focus, select:focus {
   margin-top: 30px;
   padding: 0 20px;
 }
+  #preview-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
   </style>
 </head>
 <body>
