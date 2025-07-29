@@ -657,10 +657,10 @@ async function sendAdsNeedingEdits() {
   } catch (error) {
     console.error("🔥 Firebase write failed:", error);
     showToast("❌ Failed to send edits to Regional. Try again."");
+   }
   }
-}
-
 </script>
+  
 <script>
 document.addEventListener("DOMContentLoaded", function () {
   const sendBtn = document.getElementById("sendToAgencyBtn");
