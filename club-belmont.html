@@ -327,7 +327,7 @@ textarea:focus, select:focus {
     <h1>Belmont Ad Approvals</h1>
     <div class="top-buttons">
       <button id="sendToAgencyBtn">Send Final Approvals</button>
-      <button id="sendEditsToAdsTeam">Send Feedback to Ads Department</button>
+      <button id="sendEditsToAdsTeam">Send Feedback to Regional</button>
     </div>
     <div id="preview-container">
       <div id="no-ads-message" style="display:none; text-align:center; font-size:18px; color:#888; margin-top:40px;">
@@ -651,8 +651,8 @@ async function sendAdsNeedingEdits() {
       timestamp: now.toISOString()
     });
 
-    showToast("📝 Edits sent to Regional for approval.");
-    console.log("✅ Club edit requests sent to your Regional Marketing Director:", adsNeedingEdits);
+    showToast("📝 Edits sent to Regional Marketing Director");
+    console.log("✅ Club edit requests sent to region page", adsNeedingEdits);
     checkIfNoAdsLeft();
   } catch (error) {
     console.error("🔥 Firebase write failed:", error);
