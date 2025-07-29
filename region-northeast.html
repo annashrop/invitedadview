@@ -694,18 +694,26 @@ async function sendApprovedAdsToClub() {
     return;
   }
 
-  const clubName = approvedAds[0].Club || "UnknownClub";
-  const payload = { ads: approvedAds, timestamp: new Date().toISOString() };
+ const clubName = approvedAds[0].Club || "UnknownClub";
+const now = new Date();
+const batchKey = `${clubName} - ${now.toLocaleString("en-US", {
+  month: "short",
+  day: "numeric",
+  year: "numeric",
+  hour: "numeric",
+  minute: "2-digit",
+  hour12: true
+})}`;
+const payload = { ads: approvedAds, timestamp: now.toISOString() };
 
-  try {
-    await firebase.database().ref(`approvedAds/${clubName}`).set(payload);
-    console.log("✅ Firebase write success");
-    showToast(`✅ Approved ads sent to ${clubName}`);
-    checkIfNoAdsLeft();
-  } catch (error) {
-    console.error("🔥 Firebase write failed:", error);
-    showToast("❌ Failed to send ads. Try again.");
-  }
+try {
+  await firebase.database().ref(`approvedAds/${clubName}/${batchKey}`).set(payload);
+  console.log("✅ Firebase write success");
+  showToast(`✅ Approved ads sent to ${clubName}`);
+  checkIfNoAdsLeft();
+} catch (error) {
+  console.error("🔥 Firebase write failed:", error);
+  showToast("❌ Failed to send ads. Try again.");
 }
 
 
