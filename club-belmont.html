@@ -327,7 +327,8 @@ textarea:focus, select:focus {
     <h1>Belmont Ad Approvals</h1>
     <div class="top-buttons">
       <button id="sendToAgencyBtn">Send Final Approvals</button>
-      <button id="sendEditsToAdsTeam">Send Feedback to Regional</button>
+      <button id="sendEditsToRegionBtn" class="btn btn-warning">Send Feedback to Regional</button>
+
     </div>
     <div id="preview-container">
       <div id="no-ads-message" style="display:none; text-align:center; font-size:18px; color:#888; margin-top:40px;">
@@ -664,7 +665,7 @@ async function sendAdsNeedingEdits() {
 <script>
 document.addEventListener("DOMContentLoaded", function () {
   const sendBtn = document.getElementById("sendToAgencyBtn");
-  const editsBtn = document.getElementById("sendEditsToAdsTeam");
+  const editsToRegionBtn = document.getElementById("sendEditsToRegionBtn");
 
   if (sendBtn) {
     console.log("🔗 Binding Send to Agency button");
@@ -673,11 +674,13 @@ document.addEventListener("DOMContentLoaded", function () {
     console.warn("⚠️ sendToAgencyBtn not found in DOM");
   }
  
-  if (editsBtn) {
-    editsBtn.addEventListener("click", sendAdsNeedingEdits);
-  } else {
-    console.warn("⚠️ sendEditsToAdsTeam button not found in DOM");
-  }
+ 
+if (editsToRegionBtn) {
+  editsToRegionBtn.addEventListener("click", sendAdsNeedingEdits);
+} else {
+  console.warn("⚠️ sendEditsToRegionBtn button not found in DOM");
+}
+
 });
 
 </script>
