@@ -652,11 +652,11 @@ async function sendAdsNeedingEdits() {
     });
 
     showToast("📝 Edits sent to Regional for approval.");
-    console.log("✅ Club edit requests sent to region:", adsNeedingEdits);
+    console.log("✅ Club edit requests sent to your Regional Marketing Director:", adsNeedingEdits);
     checkIfNoAdsLeft();
   } catch (error) {
     console.error("🔥 Firebase write failed:", error);
-    showToast("❌ Failed to send edits. Try again.");
+    showToast("❌ Failed to send edits to Regional. Try again."");
   }
 }
 
