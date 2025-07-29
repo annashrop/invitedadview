@@ -425,6 +425,8 @@ button:hover {
       <img src="https://www.invitedclubs.com/globalassets/.invited-corporate-site/_logos/invited-logo_500px-wide.png" alt="Invited Logo" class="nav-logo">
       <span class="nav-title">Northeast Regional Marketing Ad Approval Portal</span>
     </nav>
+    <h2>Club Edit Requests</h2>
+    <div id="edit-review-container" class="preview-container"></div>
 
     <div class="container">
       <div id="club-link-list" style="margin-bottom: 30px;"></div>
@@ -903,6 +905,110 @@ async function sendAdsNeedingEdits() {
   } catch (error) {
     console.error("🔥 Firebase write failed for edits:", error);
     showToast("❌ Failed to send edits. Try again.");
+  }
+}
+async function loadClubEditRequests() {
+  const container = document.getElementById("edit-review-container");
+  container.innerHTML = "";
+
+  try {
+    const snapshot = await firebase.database().ref("clubEditRequests").once("value");
+    const data = snapshot.val();
+
+    if (!data) {
+      container.innerHTML = "<p>No club edit requests at this time.</p>";
+      return;
+    }
+
+    Object.entries(data).forEach(([club, batches]) => {
+      Object.entries(batches).forEach(([batchKey, batchData]) => {
+        const ads = batchData.ads || [];
+
+        ads.forEach(ad => {
+          const card = document.createElement("div");
+          card.className = "preview-card";
+
+          card.innerHTML = `
+            <div class="meta">Region: ${ad.Region} | Club: ${ad.Club} | Category: ${ad.Category}</div>
+            <div class="ad-name"><strong>Ad Name:</strong> ${ad["Ad Name"]}</div>
+            <div class="headline"><strong>Headline:</strong> <span class="headline-text">${ad.Headline}</span></div>
+            <div class="primary-text"><strong>Body:</strong> <span>${ad.Body}</span></div>
+            <div class="images">
+              ${[ad.Image_URL_1, ad.Image_URL_2, ad.Image_URL_3].filter(Boolean).map(url => `<img src="${url}" style="max-width: 100px;">`).join("")}
+            </div>
+            <textarea disabled style="width: 100%; margin-top: 10px;">${ad.Comments}</textarea>
+            <div class="actions" style="margin-top: 10px;">
+              <button class="approve-btn">Approve Edits</button>
+              <button class="deny-btn">Deny Edits</button>
+            </div>
+          `;
+
+          // Button handlers
+          card.querySelector(".approve-btn").onclick = () => handleEditApproval(ad, club, batchKey, "approve", card);
+          card.querySelector(".deny-btn").onclick = () => handleEditApproval(ad, club, batchKey, "deny", card);
+
+          container.appendChild(card);
+        });
+      });
+    });
+  } catch (error) {
+    console.error("❌ Failed to load club edit requests:", error);
+    container.innerHTML = "<p>Error loading edit requests.</p>";
+  }
+}
+async function handleEditApproval(ad, clubName, batchKey, action, cardEl) {
+  try {
+    if (action === "approve") {
+      // Send to Ads Department
+      const now = new Date();
+      const approvalPath = `adsNeedingEdits/${clubName} - ${now.toLocaleString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true
+      })}`;
+
+      await firebase.database().ref(`${approvalPath}`).push(ad);
+      showToast("✅ Edit approved and sent to Ads Dept");
+    } else if (action === "deny") {
+      // Send back to approvedAds for Club to re-review
+      const now = new Date();
+      const denyPath = `approvedAds/${clubName}/Returned - ${now.toLocaleString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true
+      })}`;
+
+      await firebase.database().ref(`${denyPath}`).push(ad);
+      showToast("↩️ Edit denied and sent back to Club");
+    }
+
+    // Remove ad from UI
+    cardEl.style.transition = "opacity 0.4s ease";
+    cardEl.style.opacity = 0;
+    setTimeout(() => cardEl.remove(), 400);
+
+    // Clean up that ad from clubEditRequests
+    const ref = firebase.database().ref(`clubEditRequests/${clubName}/${batchKey}`);
+    const snapshot = await ref.once("value");
+    const batch = snapshot.val();
+
+    const remaining = (batch.ads || []).filter(a => a["Ad Name"] !== ad["Ad Name"]);
+
+    if (remaining.length === 0) {
+      await ref.remove(); // no ads left in batch
+    } else {
+      await ref.update({ ads: remaining });
+    }
+
+  } catch (error) {
+    console.error("🔥 Failed to handle edit approval:", error);
+    showToast("❌ Error handling edit.");
   }
 }
 
