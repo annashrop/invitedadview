@@ -1011,7 +1011,13 @@ async function handleEditApproval(ad, clubName, batchKey, action, cardEl) {
     showToast("❌ Error handling edit.");
   }
 }
-
+  document.addEventListener("DOMContentLoaded", () => {
+    if (typeof loadClubEditRequests === "function") {
+      loadClubEditRequests();
+    } else {
+      console.error("❌ loadClubEditRequests is not defined");
+    }
+  });
 
 </script>
 </body>
