@@ -399,6 +399,47 @@ button:hover {
 #toast.show {
   opacity: 1;
 }
+    .section-wrapper {
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  margin: 20px;
+  overflow: hidden;
+  background: #f9f9f9;
+}
+
+.section-header {
+  background: #004080;
+  color: white;
+  padding: 10px 20px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+}
+
+.section-header:hover {
+  background: #003366;
+}
+
+.section-content {
+  padding: 20px;
+  display: block; /* default state is open */
+}
+
+.section-content.collapsed {
+  display: none;
+}
+
+#accordion-arrow {
+  font-size: 20px;
+  transition: transform 0.3s ease;
+}
+
+.section-header.collapsed #accordion-arrow {
+  transform: rotate(-90deg);
+}
+
 
 
 </style>
@@ -425,9 +466,16 @@ button:hover {
       <img src="https://www.invitedclubs.com/globalassets/.invited-corporate-site/_logos/invited-logo_500px-wide.png" alt="Invited Logo" class="nav-logo">
       <span class="nav-title">Northeast Regional Marketing Ad Approval Portal</span>
     </nav>
-    <h2>Club Edit Requests</h2>
-    <div id="edit-review-container" class="preview-container"></div>
 
+    <div class="section-wrapper">
+ <div class="section-header collapsed" onclick="toggleAccordion('edit-review-container')">
+    <h2>Club Edit Requests</h2>
+    <span id="accordion-arrow">▼</span>
+  </div>
+   <div id="edit-review-container" class="section-content collapsed">
+
+
+     
     <div class="container">
       <div id="club-link-list" style="margin-bottom: 30px;"></div>
       <div class="header-wrapper">
@@ -462,7 +510,25 @@ button:hover {
   transition: visibility 0s, opacity 0.3s ease-in-out;
   opacity: 0;
 "></div>
-  
+      
+  <script>
+  function toggleAccordion(id) {
+    const container = document.getElementById(id);
+    const header = container.previousElementSibling;
+    const arrow = document.getElementById("accordion-arrow");
+
+    container.classList.toggle("collapsed");
+    header.classList.toggle("collapsed");
+
+    // Flip arrow icon
+    if (container.classList.contains("collapsed")) {
+      arrow.textContent = "►";
+    } else {
+      arrow.textContent = "▼";
+    }
+  }
+</script>
+
 <script>
   function getHiddenAdNames() {
   return JSON.parse(localStorage.getItem("hiddenAdNames") || "[]");
