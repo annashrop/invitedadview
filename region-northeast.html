@@ -512,6 +512,17 @@ button:hover {
 "></div>
       
   <script>
+const mainContent = document.querySelector('.main-content');
+function hideWelcome() {
+  const w = document.getElementById('welcome-message');
+  if (w) w.style.display = 'none';
+}
+function logout() {
+  localStorage.removeItem("user");
+  window.location.href = "login.html";
+}
+</script>    
+  <script>
   function toggleAccordion(id) {
     const container = document.getElementById(id);
     const header = container.previousElementSibling;
@@ -1055,19 +1066,6 @@ async function handleEditApproval(ad, clubName, batchKey, action, cardEl) {
     showToast("❌ Error handling edit.");
   }
 }
-  document.addEventListener("DOMContentLoaded", () => {
-  if (typeof loadClubEditRequests === "function") {
-    loadClubEditRequests();
-  } else {
-    console.error("❌ loadClubEditRequests is not defined");
-  }
-
-  if (typeof processCSV === "function") {
-    processCSV(results, fileURL); 
-  } else {
-    console.error("❌ processCSV is not defined");
-  }
-});
 
 </script>
 </body>
