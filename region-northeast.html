@@ -533,8 +533,7 @@ button:hover {
   function getHiddenAdNames() {
   return JSON.parse(localStorage.getItem("hiddenAdNames") || "[]");
 }
-  
-function processCSV(results, fileURL) {
+  function processCSV(results, fileURL) {
   const data = results.data;
   const hiddenAdNames = getHiddenAdNames().map(name => name.trim());
 
@@ -676,6 +675,7 @@ function processCSV(results, fileURL) {
     container.appendChild(card);
   });
 }
+
 
 </script>
   
