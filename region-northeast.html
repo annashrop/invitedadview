@@ -906,49 +906,67 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 <script>
+<script>
 async function sendAdsNeedingEdits() {
-  const adCards = document.querySelectorAll(".preview-card");
+  const adCards = document.querySelectorAll('.preview-card');
   const adsNeedingEdits = [];
 
   adCards.forEach(card => {
-    const imageStatuses = Array.from(card.querySelectorAll(".image-approval")).map(sel => sel.value);
-    const textStatus = card.querySelector(".text-approval")?.value;
+    const imageStatuses = [...card.querySelectorAll('.image-approval')].map(s => s.value);
+    const textStatus = card.querySelector('.text-approval')?.value || 'Pending';
+    const needsEdit = textStatus === 'Needs Edit' || imageStatuses.some(s => s === 'Needs Edit');
+    if (!needsEdit) return;
 
-    if (textStatus === "Needs Edit" || imageStatuses.some(status => status === "Needs Edit")) {
-      const adName = card.querySelector(".ad-name")?.textContent?.replace("Ad Name:", "").trim();
-      const region = card.querySelector(".meta:nth-child(1)")?.textContent?.replace("Region:", "").trim();
-      const clubCategory = card.querySelector(".meta:nth-child(2)")?.textContent || "";
-      const [clubPart, categoryPart] = clubCategory.split("|").map(str => str.trim());
-      const club = clubPart?.replace("Club:", "").trim();
-      const category = categoryPart?.replace("Category:", "").trim();
-      const comments = card.querySelector("textarea")?.value || "";
-
-      const ad = {
-        Region: region || "N/A",
-        Club: club || "N/A",
-        Category: category || "N/A",
-        "Ad Name": adName || "N/A",
-        Headline: card.querySelector(".headline")?.textContent || "",
-        Body: card.querySelector(".primary-text")?.textContent || "",
-        Image_URL_1: card.querySelectorAll("img")[0]?.src || "",
-        Image_URL_2: card.querySelectorAll("img")[1]?.src || "",
-        Image_URL_3: card.querySelectorAll("img")[2]?.src || "",
-        Comments: comments,
-        Timestamp: new Date().toISOString()
-      };
-
-      adsNeedingEdits.push(ad);
-
-      card.style.transition = "opacity 0.4s ease";
-      card.style.opacity = 0;
-      setTimeout(() => card.remove(), 400);
+    const commentBox = card.querySelector('textarea');
+    const comments = (commentBox?.value || '').trim();
+    if (!comments) {
+      if (commentBox) {
+        commentBox.style.border = '2px solid red';
+        commentBox.placeholder = 'Comment required before submitting edits.';
+      }
+      return; // block submission until comment provided
     }
+
+    const ad = {
+      Region: card.dataset.region || 'N/A',
+      Club: card.dataset.club || 'N/A',
+      Category: card.dataset.category || 'N/A',
+      "Ad Name": card.dataset.adName || 'N/A',
+      Headline: card.querySelector('.headline')?.textContent || '',
+      Body: card.querySelector('.primary-text')?.textContent || '',
+      Image_URL_1: card.querySelectorAll('img')[0]?.src || '',
+      Image_URL_2: card.querySelectorAll('img')[1]?.src || '',
+      Image_URL_3: card.querySelectorAll('img')[2]?.src || '',
+      Comments: comments,
+      Timestamp: new Date().toISOString()
+    };
+
+    adsNeedingEdits.push(ad);
+    card.style.transition = 'opacity .4s ease';
+    card.style.opacity = 0;
+    setTimeout(() => card.remove(), 400);
   });
 
   if (adsNeedingEdits.length === 0) {
-    showToast("⚠️ No ads marked for edits.");
+    showToast('⚠️ No ads marked for edits.');
     return;
   }
+
+  const clubName = adsNeedingEdits[0].Club || 'UnknownClub';
+  const now = new Date();
+  const batchKey = `${clubName} - ${now.toLocaleString('en-US', {
+    month:'short', day:'numeric', year:'numeric', hour:'numeric', minute:'2-digit', hour12:true
+  })}`;
+
+  // Write edits in a consistent place the “Club Edit Requests” reader expects
+  await firebase.database().ref(`clubEditRequests/${clubName}/${batchKey}`).set({
+    ads: adsNeedingEdits,
+    timestamp: now.toISOString()
+  });
+
+  showToast(`✏️ Edits sent for ${clubName}`);
+}
+
 
   const clubName = adsNeedingEdits[0].Club || "UnknownClub";
   const payload = { ads: adsNeedingEdits, timestamp: new Date().toISOString() };
