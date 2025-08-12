@@ -789,49 +789,6 @@ try {
 </script>
   
 <script>
-
-    
- async function sendAdsNeedingEdits() {
-    const adCards = document.querySelectorAll(".preview-card");
-    const edits = [];
-
-    adCards.forEach(card => {
-      const textStatus = card.querySelector(".text-approval")?.value;
-      const imageStatuses = Array.from(card.querySelectorAll(".image-approval")).map(sel => sel.value);
-
-
-  if (
-        textStatus === "Needs Edit" ||
-        imageStatuses.some(status => status === "Needs Edit")
-      ) {
-  const commentBox = card.querySelector('textarea');
-  const comments = commentBox?.value.trim();
-
-  if (!comments) {
-    commentBox.style.border = "2px solid red";
-    commentBox.placeholder = "Comment required before submitting edits.";
-    return; // ⛔️ prevent submission if no comment
-  }
-
-  editAds.push({ html: card.outerHTML, comment: comments });
-  const adName = card.querySelector(".ad-name")?.textContent.replace("Ad Name:", "").trim();
-  addHiddenAdName(adName);
-  card.style.transition = "opacity 0.4s ease";
-  card.style.opacity = 0;
-  setTimeout(() => card.remove(), 400);
-}
-
-  });
-checkIfNoAdsLeft();
-
-
-  if (editAds.length > 0) {
-  localStorage.setItem("adsNeedingEdits", JSON.stringify(editAds));
-  showToast("Ads sent to Ads Team for edits.");
-} else {
-  showToast("No ads marked for edits.");
-  }
-}
 function checkIfNoAdsLeft() {
   const remaining = document.querySelectorAll('.preview-card');
   const message = document.getElementById('no-ads-message');
