@@ -1084,7 +1084,7 @@ async function handleEditApproval(ad, clubName, batchKey, action, cardEl) {
     console.error("❌ loadClubEditRequests is not defined");
   }
 
-  if (typeof processCSVResults === "function") {
+  if (typeof processCSV === "function") {
     processCSV(results, fileURL); 
   } else {
     console.error("❌ processCSV is not defined");
