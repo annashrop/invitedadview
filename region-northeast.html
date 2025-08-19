@@ -626,16 +626,27 @@ async function handleEditApproval(ad, clubName, batchKey, action, cardEl) {
     });
 
     if (action === "approve") {
-      // ✅ Approved the club's edit request → send to Ads Dept for revision
+      // ✅ Regional agrees the club's edit is valid → send to Ads Dept to make the change
       const approvalPath = `adsNeedingEdits/${clubName} - ${stamp}`;
       await firebase.database().ref(approvalPath).push(ad);
       showToast("✅ Edit approved and sent to Ads Dept");
     } else {
-      // ✅ Denied the club's edit request → send straight to Agency page
-      // NOTE: If your Agency page reads a different node name, change 'agencySubmissions' below.
-      const agencyPath = `agencySubmissions/${clubName} - ${stamp}`;
-      await firebase.database().ref(agencyPath).push(ad);
-      showToast("📤 Edit denied — sent to Agency");
+      // ✅ Regional declines the club's edit → treat ad as final approved for Agency
+      // We will upsert into finalApprovedAds/{clubName}/{batchKeyLikeAbove} with { ads: [...], timestamp }
+      const finalPath = `finalApprovedAds/${clubName}/${clubName} - ${stamp}`;
+      const ref = firebase.database().ref(finalPath);
+
+      // append this one ad to the batch's ads array (create if missing)
+      const snap = await ref.once("value");
+      const existing = snap.val();
+      const newAds = Array.isArray(existing?.ads) ? [...existing.ads, ad] : [ad];
+
+      await ref.set({
+        ads: newAds,
+        timestamp: now.toISOString()
+      });
+
+      showToast("📤 Edit denied — sent to Agency (Final Approved)");
     }
 
     // Fade out this card
