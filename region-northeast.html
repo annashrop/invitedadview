@@ -875,18 +875,29 @@ function processCSV(results, fileURL) {
 
 
 <script>
+// Read the list of previously hidden ad names from localStorage
+function getHiddenAdNames() {
+  try {
+    const raw = localStorage.getItem("hiddenAdNames") || "[]";
+    const arr = JSON.parse(raw);
+    return Array.isArray(arr) ? arr : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+// Add an ad name to that list (used when you send/approve so the card hides)
 function addHiddenAdName(name) {
   const n = (name || "").trim();
   if (!n) return;
-  let cur = [];
-  try { cur = JSON.parse(localStorage.getItem("hiddenAdNames") || "[]"); } catch(e) {}
-  if (!Array.isArray(cur)) cur = [];
+  const cur = getHiddenAdNames();
   if (!cur.includes(n)) {
     cur.push(n);
     localStorage.setItem("hiddenAdNames", JSON.stringify(cur));
   }
 }
 </script>
+
       
 <script>
                    
