@@ -22,7 +22,10 @@
   const db = firebase.database();
   window.db = db; // Optional global access
 </script>
-
+<script>
+  // Track ads that are in Club Edit Requests so they don't show again in CSV grid
+  let clubEditAdNames = new Set();
+</script>
   <script>
     const region = "Northeast";
     const user = localStorage.getItem("user");
@@ -996,9 +999,14 @@ async function sendAdsNeedingEdits() {
   showToast(`✏️ Edits sent for ${clubName}`);
 }
 
+
 async function loadClubEditRequests() {
-  const container = document.getElementById("edit-review-container");
+  const container = document.getElementById("club-edit-requests-list"); // <- changed target
+  if (!container) return;
   container.innerHTML = "";
+
+  // reset the set each load
+  clubEditAdNames = new Set();
 
   try {
     const snapshot = await firebase.database().ref("clubEditRequests").once("value");
@@ -1011,30 +1019,36 @@ async function loadClubEditRequests() {
 
     Object.entries(data).forEach(([club, batches]) => {
       Object.entries(batches).forEach(([batchKey, batchData]) => {
-        const ads = batchData.ads || [];
+        const ads = batchData?.ads || [];
 
         ads.forEach(ad => {
+          const adName = (ad["Ad Name"] || "").trim();
+          if (adName) clubEditAdNames.add(adName); // <- populate the set
+
           const card = document.createElement("div");
           card.className = "preview-card";
+          card.style.marginBottom = "12px";
 
           card.innerHTML = `
-            <div class="meta">Region: ${ad.Region} | Club: ${ad.Club} | Category: ${ad.Category}</div>
-            <div class="ad-name"><strong>Ad Name:</strong> ${ad["Ad Name"]}</div>
-            <div class="headline"><strong>Headline:</strong> <span class="headline-text">${ad.Headline}</span></div>
-            <div class="primary-text"><strong>Body:</strong> <span>${ad.Body}</span></div>
-            <div class="images">
-              ${[ad.Image_URL_1, ad.Image_URL_2, ad.Image_URL_3].filter(Boolean).map(url => `<img src="${url}" style="max-width: 100px;">`).join("")}
+            <div class="meta"><strong>Region:</strong> ${ad.Region || "N/A"} &nbsp;|&nbsp; <strong>Club:</strong> ${ad.Club || "N/A"} &nbsp;|&nbsp; <strong>Category:</strong> ${ad.Category || "N/A"}</div>
+            <div class="ad-name"><strong>Ad Name:</strong> ${adName || "N/A"}</div>
+            <div class="headline"><strong>Headline:</strong> <span class="headline-text">${ad.Headline || ""}</span></div>
+            <div class="primary-text"><strong>Body:</strong> <span>${ad.Body || ""}</span></div>
+            <div class="images" style="margin-top:6px;">
+              ${[ad.Image_URL_1, ad.Image_URL_2, ad.Image_URL_3].filter(Boolean).map(url => `<img src="${url}" style="max-width: 90px; margin-right:6px;">`).join("")}
             </div>
-            <textarea disabled style="width: 100%; margin-top: 10px;">${ad.Comments}</textarea>
+            <label style="font-weight:600; display:block; margin-top:8px;">Club Comment:</label>
+            <textarea disabled style="width: 100%; margin-top: 4px;">${ad.Comments || ""}</textarea>
             <div class="actions" style="margin-top: 10px;">
               <button class="approve-btn">Approve Edits</button>
               <button class="deny-btn">Deny Edits</button>
             </div>
           `;
 
-          // Button handlers
-          card.querySelector(".approve-btn").onclick = () => handleEditApproval(ad, club, batchKey, "approve", card);
-          card.querySelector(".deny-btn").onclick = () => handleEditApproval(ad, club, batchKey, "deny", card);
+          card.querySelector(".approve-btn").onclick =
+            () => handleEditApproval(ad, club, batchKey, "approve", card);
+          card.querySelector(".deny-btn").onclick =
+            () => handleEditApproval(ad, club, batchKey, "deny", card);
 
           container.appendChild(card);
         });
@@ -1045,62 +1059,49 @@ async function loadClubEditRequests() {
     container.innerHTML = "<p>Error loading edit requests.</p>";
   }
 }
+
 async function handleEditApproval(ad, clubName, batchKey, action, cardEl) {
   try {
+    const now = new Date();
     if (action === "approve") {
-      // Send to Ads Department
-      const now = new Date();
+      // Approved for edits -> send to Ads Dept queue
       const approvalPath = `adsNeedingEdits/${clubName} - ${now.toLocaleString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-        hour: "numeric",
-        minute: "2-digit",
-        hour12: true
+        month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit", hour12: true
       })}`;
-
-      await firebase.database().ref(`${approvalPath}`).push(ad);
+      await firebase.database().ref(approvalPath).push(ad);
       showToast("✅ Edit approved and sent to Ads Dept");
-    } else if (action === "deny") {
-      // Send back to approvedAds for Club to re-review
-      const now = new Date();
+    } else {
+      // Denied -> send back to club in approvedAds/Returned batch
       const denyPath = `approvedAds/${clubName}/Returned - ${now.toLocaleString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-        hour: "numeric",
-        minute: "2-digit",
-        hour12: true
+        month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit", hour12: true
       })}`;
-
-      await firebase.database().ref(`${denyPath}`).push(ad);
+      await firebase.database().ref(denyPath).push(ad);
       showToast("↩️ Edit denied and sent back to Club");
     }
 
-    // Remove ad from UI
+    // Fade out this card
     cardEl.style.transition = "opacity 0.4s ease";
     cardEl.style.opacity = 0;
     setTimeout(() => cardEl.remove(), 400);
 
-    // Clean up that ad from clubEditRequests
+    // Remove this ad from its clubEditRequests batch
     const ref = firebase.database().ref(`clubEditRequests/${clubName}/${batchKey}`);
-    const snapshot = await ref.once("value");
-    const batch = snapshot.val();
-
+    const snap = await ref.once("value");
+    const batch = snap.val() || { ads: [] };
     const remaining = (batch.ads || []).filter(a => a["Ad Name"] !== ad["Ad Name"]);
+    if (remaining.length === 0) await ref.remove();
+    else await ref.update({ ads: remaining });
 
-    if (remaining.length === 0) {
-      await ref.remove(); // no ads left in batch
-    } else {
-      await ref.update({ ads: remaining });
-    }
+    // Keep the set in sync (so CSV stays hidden if needed)
+    const adName = (ad["Ad Name"] || "").trim();
+    if (adName && clubEditAdNames.has(adName)) clubEditAdNames.delete(adName);
 
   } catch (error) {
     console.error("🔥 Failed to handle edit approval:", error);
     showToast("❌ Error handling edit.");
   }
 }
-
 </script>
+
 </body>
 </html>
