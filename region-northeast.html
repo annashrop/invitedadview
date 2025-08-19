@@ -983,19 +983,6 @@ async function sendAdsNeedingEdits() {
   showToast(`✏️ Edits sent for ${clubName}`);
 }
 
-
-  const clubName = adsNeedingEdits[0].Club || "UnknownClub";
-  const payload = { ads: adsNeedingEdits, timestamp: new Date().toISOString() };
-
-  try {
-    await firebase.database().ref(`adsNeedingEdits/${clubName}`).set(payload);
-    console.log("✅ Firebase write success for edits");
-    showToast(`✏️ Edits sent to Ads Team for ${clubName}`);
-  } catch (error) {
-    console.error("🔥 Firebase write failed for edits:", error);
-    showToast("❌ Failed to send edits. Try again.");
-  }
-}
 async function loadClubEditRequests() {
   const container = document.getElementById("edit-review-container");
   container.innerHTML = "";
