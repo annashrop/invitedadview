@@ -983,10 +983,27 @@ function showToast(message) {
 }
 </script>
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const sendBtn = document.getElementById("sendToClubBtn");
-    const sendEditsBtn = document.getElementById("sendEdits");
+  document.addEventListener("DOMContentLoaded", async () => {
+    try {
+      // 1) Load the small accordion first (fills clubEditAdNames)
+      if (typeof loadClubEditRequests === "function") {
+        await loadClubEditRequests();
+      } else {
+        console.warn("⚠️ loadClubEditRequests is not defined");
+      }
 
+      // 2) Then load the main CSV ads grid (processCSV will now be able to skip edit-request ads)
+      if (typeof loadLatestCsvAndRender === "function") {
+        await loadLatestCsvAndRender();
+      } else {
+        console.warn("⚠️ loadLatestCsvAndRender is not defined");
+      }
+    } catch (err) {
+      console.error("Error during initial load:", err);
+    }
+
+    // 3) Bind the action buttons (now that the page is fully set)
+    const sendBtn = document.getElementById("sendToClubBtn");
     if (sendBtn) {
       console.log("🔗 Binding Send Approved button");
       sendBtn.addEventListener("click", sendApprovedAdsToClub);
@@ -994,13 +1011,16 @@ function showToast(message) {
       console.warn("⚠️ sendToClubBtn not found in DOM");
     }
 
+    const sendEditsBtn = document.getElementById("sendEdits");
     if (sendEditsBtn) {
+      console.log("🔗 Binding Send Edits button");
       sendEditsBtn.addEventListener("click", sendAdsNeedingEdits);
-} else {
-  console.error("❌ sendEditsBtn not found in DOM");
-}
+    } else {
+      console.warn("⚠️ sendEditsBtn not found in DOM");
+    }
   });
 </script>
+
 <script>
       
 document.getElementById('paid-ads-btn')?.addEventListener('click', (e) => {
