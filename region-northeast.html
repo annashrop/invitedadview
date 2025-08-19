@@ -679,45 +679,69 @@ function processCSV(results, fileURL) {
 }
 </script>
 
-  
-<script>
-  const latestCsvFunctionUrl = `https://us-central1-marketingapprovalportal.cloudfunctions.net/getLatestCsvUrl?region=${region}`;
+ <script>
+  // REQUIRE: define `const region = "Northeast"` (or similar) before this block.
+  // Also ensure Papa Parse is loaded before this block.
 
-  let fileURL = ""; // ✅ Keep it defined globally
-  let parsedResults = null; // Store results for later use
+  let fileURL = "";            // keep globally accessible
+  let parsedResults = null;    // store Papa results for later use (filters, re-render, etc.)
 
-  fetch(latestCsvFunctionUrl)
-    .then(res => res.json())
-    .then(data => {
-      fileURL = data.url;
-      return fetch(fileURL);
-    })
-    .then(res => res.text())
-    .then(csvText => {
+  (async function loadLatestCsvAndRender() {
+    try {
+      const latestCsvFunctionUrl =
+        `https://us-central1-marketingapprovalportal.cloudfunctions.net/getLatestCsvUrl?region=${encodeURIComponent(region)}`;
+
+      // 1) Get latest CSV URL
+      const metaRes = await fetch(latestCsvFunctionUrl, { cache: "no-store" });
+      if (!metaRes.ok) throw new Error(`getLatestCsvUrl HTTP ${metaRes.status}`);
+      const meta = await metaRes.json();
+
+      if (!meta || !meta.url) {
+        console.error("❌ Cloud Function returned no url:", meta);
+        const m = document.getElementById("no-ads-message");
+        if (m) m.style.display = "block";
+        return;
+      }
+      fileURL = meta.url;
+
+      // 2) Fetch CSV text
+      const csvRes = await fetch(fileURL, { cache: "no-store" });
+      if (!csvRes.ok) throw new Error(`CSV HTTP ${csvRes.status}`);
+      const csvText = await csvRes.text();
+
+      // 3) Parse CSV and render
       Papa.parse(csvText, {
         header: true,
         skipEmptyLines: true,
-        complete: function(results) {
+        complete: function (results) {
           parsedResults = results;
+
           if (typeof processCSV === "function") {
             processCSV(results, fileURL);
           } else {
             console.error("❌ processCSV is not defined");
+            const m = document.getElementById("no-ads-message");
+            if (m) m.style.display = "block";
           }
-          if (typeof sendAdsNeedingEdits === "function") {
-            sendAdsNeedingEdits(results);
-          } else {
-            console.error("❌ sendAdsNeedingEdits is not defined");
-          }
+
+          // IMPORTANT: do NOT call sendAdsNeedingEdits() here.
+          // That function should only run on user click and takes no arguments.
+        },
+        error: function (err) {
+          console.error("❌ Papa.parse error:", err);
+          const m = document.getElementById("no-ads-message");
+          if (m) m.style.display = "block";
         }
       });
-    })
-    .catch(error => {
+    } catch (error) {
       console.error("Error loading CSV:", error);
-      const noAdsMessage = document.getElementById("no-ads-message");
-      if (noAdsMessage) noAdsMessage.style.display = "block";
-    });
+      const m = document.getElementById("no-ads-message");
+      if (m) m.style.display = "block";
+    }
+  })();
 </script>
+ 
+
 
 
 
