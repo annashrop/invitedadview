@@ -620,20 +620,22 @@ async function loadClubEditRequests() {
 async function handleEditApproval(ad, clubName, batchKey, action, cardEl) {
   try {
     const now = new Date();
+    const stamp = now.toLocaleString("en-US", {
+      month: "short", day: "numeric", year: "numeric",
+      hour: "numeric", minute: "2-digit", hour12: true
+    });
+
     if (action === "approve") {
-      // Approved for edits -> send to Ads Dept queue
-      const approvalPath = `adsNeedingEdits/${clubName} - ${now.toLocaleString("en-US", {
-        month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit", hour12: true
-      })}`;
+      // ✅ Approved the club's edit request → send to Ads Dept for revision
+      const approvalPath = `adsNeedingEdits/${clubName} - ${stamp}`;
       await firebase.database().ref(approvalPath).push(ad);
       showToast("✅ Edit approved and sent to Ads Dept");
     } else {
-      // Denied -> send back to club in approvedAds/Returned batch
-      const denyPath = `approvedAds/${clubName}/Returned - ${now.toLocaleString("en-US", {
-        month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit", hour12: true
-      })}`;
-      await firebase.database().ref(denyPath).push(ad);
-      showToast("↩️ Edit denied and sent back to Club");
+      // ✅ Denied the club's edit request → send straight to Agency page
+      // NOTE: If your Agency page reads a different node name, change 'agencySubmissions' below.
+      const agencyPath = `agencySubmissions/${clubName} - ${stamp}`;
+      await firebase.database().ref(agencyPath).push(ad);
+      showToast("📤 Edit denied — sent to Agency");
     }
 
     // Fade out this card
