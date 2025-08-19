@@ -468,29 +468,42 @@ button:hover {
     </nav>
 
     <div class="section-wrapper">
- <div class="section-header collapsed" onclick="toggleAccordion('edit-review-container')">
+  <!-- Accordion: Club Edit Requests ONLY -->
+  <div class="section-header collapsed" onclick="toggleAccordion('edit-review-container')">
     <h2>Club Edit Requests</h2>
     <span id="accordion-arrow">▼</span>
   </div>
-   <div id="edit-review-container" class="section-content collapsed">
-
-
-     
-    <div class="container">
-      <div id="club-link-list" style="margin-bottom: 30px;"></div>
-      <div class="header-wrapper">
-        <div class="top-buttons">
-          <button id="sendToClubBtn" style="background-color: #7baa65; color: white; padding: 10px; border: none; border-radius: 6px;">Send Approved Ads to Club</button>
-          <button id="sendEdits" style="background-color: #e35205; color: white; padding: 10px; border: none; border-radius: 6px;">Send Feedback to Ads Team</button>
-        </div>
-      </div>
-      <div id="preview-container"></div>
-      
-      <div id="no-ads-message" style="display:none; text-align:center; font-size:18px; color:#888; margin-top:40px;">
-  🎉 All ads have been reviewed!
+  <div id="edit-review-container" class="section-content collapsed">
+    <!-- loadClubEditRequests() should render cards into this list -->
+    <div id="club-edit-requests-list"></div>
+  </div>
 </div>
+
+<!-- BELOW the accordion: CSV review controls + preview grid -->
+<div class="container" style="margin-top: 20px;">
+  <div id="club-link-list" style="margin-bottom: 30px;"></div>
+
+  <div class="header-wrapper">
+    <div class="top-buttons">
+      <button id="sendToClubBtn"
+        style="background-color: #7baa65; color: white; padding: 10px; border: none; border-radius: 6px;">
+        Send Approved Ads to Club
+      </button>
+      <button id="sendEdits"
+        style="background-color: #e35205; color: white; padding: 10px; border: none; border-radius: 6px;">
+        Send Feedback to Ads Team
+      </button>
     </div>
   </div>
+
+  <div id="preview-container"></div>
+
+  <div id="no-ads-message"
+       style="display:none; text-align:center; font-size:18px; color:#888; margin-top:40px;">
+    🎉 All ads have been reviewed!
+  </div>
+</div>
+
 
   <div id="toast" style="
   visibility: hidden;
