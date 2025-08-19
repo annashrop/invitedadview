@@ -860,20 +860,17 @@ function processCSV(results, fileURL) {
   }
 </script>
 
- 
-
-
-
-
 
 <script>
-function getHiddenAdNames() {
-  try {
-    const raw = localStorage.getItem("hiddenAdNames");
-    const arr = JSON.parse(raw || "[]");
-    return Array.isArray(arr) ? arr : [];
-  } catch (e) {
-    return [];
+function addHiddenAdName(name) {
+  const n = (name || "").trim();
+  if (!n) return;
+  let cur = [];
+  try { cur = JSON.parse(localStorage.getItem("hiddenAdNames") || "[]"); } catch(e) {}
+  if (!Array.isArray(cur)) cur = [];
+  if (!cur.includes(n)) {
+    cur.push(n);
+    localStorage.setItem("hiddenAdNames", JSON.stringify(cur));
   }
 }
 </script>
