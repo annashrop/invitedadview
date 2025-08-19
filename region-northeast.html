@@ -878,7 +878,7 @@ function addHiddenAdName(name) {
 <script>
                    
 async function sendApprovedAdsToClub() {
-  const adCards = document.querySelectorAll(".preview-card");
+  const adCards = document.querySelectorAll("#preview-container .preview-card");
   const approvedAds = [];
 
   adCards.forEach(card => {
@@ -1062,7 +1062,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
 <script>
 async function sendAdsNeedingEdits() {
-  const adCards = document.querySelectorAll(".preview-card");
+  const adCards = document.querySelectorAll("#preview-container .preview-card");
   const adsNeedingEdits = [];
 
   adCards.forEach(card => {
