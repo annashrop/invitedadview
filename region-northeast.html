@@ -684,40 +684,38 @@ function processCSV(results, fileURL) {
   listHTML.push('</ul>');
   clubListContainer.innerHTML = listHTML.join('\n');
 
+  // Read club filter once
   const selectedClub = new URLSearchParams(window.location.search).get("club");
 
+  // Render each CSV row
   data.forEach((row) => {
-  const adName = (row['Ad Name'] || "").trim();
-  if (!adName) return;
+    const adName = (row['Ad Name'] || "").trim();
+    if (!adName) return;
 
-  // NEW: skip any ad that is already in Club Edit Requests
-  if (clubEditAdNames && clubEditAdNames.has(adName)) return;
+    // Skip any ad that is already in Club Edit Requests
+    if (window.clubEditAdNames && clubEditAdNames.has(adName)) return;
 
-  // existing hidden / filter checks…
-  if (hiddenAdNames.includes(adName)) return;
-  const selectedClub = new URLSearchParams(window.location.search).get("club");
-  if (selectedClub && row['Club'] !== selectedClub) return;
+    // Existing hidden/filter checks
+    if (hiddenAdNames.includes(adName)) return;
+    if (selectedClub && row['Club'] !== selectedClub) return;
 
-  // …render card
-});
-
+    // Build the card (INSIDE the forEach)
     const card = document.createElement('div');
     card.className = 'preview-card';
 
-    // ✅ Stamp structured data for downstream functions (no more brittle text scraping)
+    // Stamp structured data for downstream functions (no brittle text scraping)
     card.dataset.region   = row['Region']   || 'N/A';
     card.dataset.club     = row['Club']     || 'N/A';
     card.dataset.category = row['Category'] || 'N/A';
     card.dataset.adName   = adName;
 
-    // Build up to 3 image blocks (PhotoShelter/Canva)
+    // Up to 3 image blocks (PhotoShelter/Canva)
     const imageTags = ['Image_URL_1', 'Image_URL_2', 'Image_URL_3'].map((key, idx) => {
       const url = row[key];
       if (!url || url === '/') return '';
 
       let imgSrc = '';
       if (url.includes('canva.com')) {
-        // Canva: we can’t thumb reliably; still show link/thumb as the same url
         imgSrc = url;
       } else {
         const lower = url.toLowerCase();
@@ -808,6 +806,7 @@ function processCSV(results, fileURL) {
   });
 }
 </script>
+
 
  <script>
   let fileURL = "";
