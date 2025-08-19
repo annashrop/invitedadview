@@ -747,15 +747,18 @@ function processCSV(results, fileURL) {
 
 
 <script>
-
-function addHiddenAdName(adName) {
-  const current = getHiddenAdNames();
-  const cleanName = (adName || "").trim();
-  if (cleanName && !current.includes(cleanName)) {
-    current.push(cleanName);
-    localStorage.setItem("hiddenAdNames", JSON.stringify(current));
+function getHiddenAdNames() {
+  try {
+    const raw = localStorage.getItem("hiddenAdNames");
+    const arr = JSON.parse(raw || "[]");
+    return Array.isArray(arr) ? arr : [];
+  } catch (e) {
+    return [];
   }
 }
+</script>
+      
+<script>
                    
 async function sendApprovedAdsToClub() {
   const adCards = document.querySelectorAll(".preview-card");
