@@ -687,9 +687,19 @@ function processCSV(results, fileURL) {
   const selectedClub = new URLSearchParams(window.location.search).get("club");
 
   data.forEach((row) => {
-    const adName = (row['Ad Name'] || "").trim();
-    if (!adName || hiddenAdNames.includes(adName)) return;
-    if (selectedClub && row['Club'] !== selectedClub) return;
+  const adName = (row['Ad Name'] || "").trim();
+  if (!adName) return;
+
+  // NEW: skip any ad that is already in Club Edit Requests
+  if (clubEditAdNames && clubEditAdNames.has(adName)) return;
+
+  // existing hidden / filter checks…
+  if (hiddenAdNames.includes(adName)) return;
+  const selectedClub = new URLSearchParams(window.location.search).get("club");
+  if (selectedClub && row['Club'] !== selectedClub) return;
+
+  // …render card
+});
 
     const card = document.createElement('div');
     card.className = 'preview-card';
