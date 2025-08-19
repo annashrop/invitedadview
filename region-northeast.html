@@ -541,98 +541,96 @@ function logout() {
 </script>
 
 <script>
-  function getHiddenAdNames() {
-  return JSON.parse(localStorage.getItem("hiddenAdNames") || "[]");
-}
-  function processCSV(results, fileURL) {
+function processCSV(results, fileURL) {
   const data = results.data;
   const hiddenAdNames = getHiddenAdNames().map(name => name.trim());
 
   const container = document.getElementById('preview-container');
   const clubListContainer = document.getElementById('club-link-list');
-
-  // ✅ Safety check for required elements
-  if (!container || !clubListContainer) {
-    console.warn("⚠ Missing required DOM elements for CSV preview rendering");
-    return;
-  }
+  if (!container || !clubListContainer) return;
 
   container.innerHTML = '';
   clubListContainer.innerHTML = '';
 
+  // Build club filter list
   const uniqueClubs = [...new Set(data.map(row => row['Club']).filter(Boolean))];
   const listHTML = ['<strong>Preview Links:</strong>', '<ul>'];
   listHTML.push(`<li><a class="preview-link-button" href="?review=true">All Clubs (Regional View)</a></li>`);
-
   uniqueClubs.forEach(club => {
     const encodedClub = encodeURIComponent(club);
-    const encodedFile = encodeURIComponent(fileURL);
+    const encodedFile = encodeURIComponent(fileURL || '');
     listHTML.push(`<li><a class="preview-link-button" href="?review=true&club=${encodedClub}&file=${encodedFile}">${club}</a></li>`);
   });
-
   listHTML.push('</ul>');
   clubListContainer.innerHTML = listHTML.join('\n');
 
   const selectedClub = new URLSearchParams(window.location.search).get("club");
 
   data.forEach((row) => {
-    const rowAdName = (row['Ad Name'] || "").trim();
-    if (hiddenAdNames.includes(rowAdName)) return;
+    const adName = (row['Ad Name'] || "").trim();
+    if (!adName || hiddenAdNames.includes(adName)) return;
     if (selectedClub && row['Club'] !== selectedClub) return;
 
     const card = document.createElement('div');
-    const imageTags = ['Image_URL_1', 'Image_URL_2', 'Image_URL_3'].map((key, imgIndex) => {
+    card.className = 'preview-card';
+
+    // ✅ Stamp structured data for downstream functions (no more brittle text scraping)
+    card.dataset.region   = row['Region']   || 'N/A';
+    card.dataset.club     = row['Club']     || 'N/A';
+    card.dataset.category = row['Category'] || 'N/A';
+    card.dataset.adName   = adName;
+
+    // Build up to 3 image blocks (PhotoShelter/Canva)
+    const imageTags = ['Image_URL_1', 'Image_URL_2', 'Image_URL_3'].map((key, idx) => {
       const url = row[key];
-      if (url && url !== '/') {
-        const isCanva = url.includes('canva.com');
-        let imgSrc = '';
+      if (!url || url === '/') return '';
 
-        if (isCanva) {
-          imgSrc = url;
-        } else {
-          const isTif = url.toLowerCase().endsWith('.tif');
-          const idMatch = url.match(/I[0-9A-Za-z_.]+/) ||
-                          url.match(/img-get2\/([^/]+)/) ||
-                          url.match(/\/(I[0-9A-Za-z_.]+)\//) ||
-                          url.match(/\/(G[0-9A-Za-z_]+)\//) ||
-                          url.match(/\/(C[0-9A-Za-z_]+)\//) ||
-                          url.match(/\/(I[0-9A-Za-z_.]+)\/[^/]+$/);
-
-          const imageId = idMatch && (idMatch[1] || idMatch[0]);
-          if (!isTif && imageId) {
-            imgSrc = `https://cdn.photoshelter.com/img-get2/${imageId}/fit=1000x750`;
-          }
-        }
-
-        if (imgSrc) {
-          return `
-            <div class="image-wrapper">
-              <img class="card-image" src="${imgSrc}" alt="Ad image" />
-              <div class="view-link">
-                <a href="#" class="view-image-button" onclick="window.open('${url}', 'ImagePopup', 'width=800,height=600'); return false;">View Full Image ${imgIndex + 1}</a>
-                <div class="approval-row">
-                  <label>Image Approval Status:</label>
-                  <select class="image-approval">
-                    <option value="Pending">Pending</option>
-                    <option value="Approved">Approved</option>
-                    <option value="Needs Edit">Needs Edit</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-          `;
+      let imgSrc = '';
+      if (url.includes('canva.com')) {
+        // Canva: we can’t thumb reliably; still show link/thumb as the same url
+        imgSrc = url;
+      } else {
+        const lower = url.toLowerCase();
+        const isTif = lower.endsWith('.tif');
+        const idMatch = url.match(/I[0-9A-Za-z_.]+/)
+          || url.match(/img-get2\/([^/]+)/)
+          || url.match(/\/(I[0-9A-Za-z_.]+)\//)
+          || url.match(/\/(G[0-9A-Za-z_]+)\//)
+          || url.match(/\/(C[0-9A-Za-z_]+)\//)
+          || url.match(/\/(I[0-9A-Za-z_.]+)\/[^/]+$/);
+        const imageId = idMatch && (idMatch[1] || idMatch[0]);
+        if (!isTif && imageId) {
+          imgSrc = `https://cdn.photoshelter.com/img-get2/${imageId}/fit=1000x750`;
         }
       }
-      return '';
+
+      if (!imgSrc) return '';
+      return `
+        <div class="image-wrapper">
+          <img class="card-image" src="${imgSrc}" alt="Ad image" />
+          <div class="view-link">
+            <a href="#" class="view-image-button"
+               onclick="window.open('${url}', 'ImagePopup', 'width=800,height=600'); return false;">
+               View Full Image ${idx + 1}
+            </a>
+            <div class="approval-row">
+              <label>Image Approval Status:</label>
+              <select class="image-approval">
+                <option value="Pending">Pending</option>
+                <option value="Approved">Approved</option>
+                <option value="Needs Edit">Needs Edit</option>
+              </select>
+            </div>
+          </div>
+        </div>`;
     }).join('');
 
-    card.className = 'preview-card';
     card.innerHTML = `
       <div class="card-body">
         <div class="meta-section">
-          <div class="meta"><strong>Region:</strong> ${row['Region'] || 'N/A'}</div>
-          <div class="meta"><strong>Club:</strong> ${row['Club'] || 'N/A'} &nbsp; | &nbsp; <strong>Category:</strong> ${row['Category'] || 'N/A'}</div>
-          <div class="meta ad-name"><strong>Ad Name:</strong> ${row['Ad Name'] || 'N/A'}</div>
+          <div class="meta"><strong>Region:</strong> ${card.dataset.region}</div>
+          <div class="meta"><strong>Club:</strong> ${card.dataset.club} &nbsp; | &nbsp; <strong>Category:</strong> ${card.dataset.category}</div>
+          <div class="meta ad-name"><strong>Ad Name:</strong> ${card.dataset.adName}</div>
         </div>
         <div class="meta-divider"></div>
         <div class="headline">${row['Headline'] || ''}</div>
@@ -657,38 +655,30 @@ function logout() {
       const textStatus = card.querySelector('.text-approval')?.value;
       const imageStatuses = Array.from(card.querySelectorAll('.image-approval')).map(sel => sel.value);
       const commentBox = card.querySelector('textarea');
-
       const needsEdit = textStatus === 'Needs Edit' || imageStatuses.includes('Needs Edit');
 
       if (needsEdit) {
         card.style.border = '2px solid #e74c3c';
         card.style.backgroundColor = '#ffe6e6';
-        commentBox.required = true;
-        commentBox.placeholder = "Required – please explain what needs edits.";
+        if (commentBox) { commentBox.required = true; commentBox.placeholder = "Required – please explain what needs edits."; }
       } else if (textStatus === 'Approved' && imageStatuses.every(v => v === 'Approved')) {
         card.style.border = '2px solid #2ecc71';
         card.style.backgroundColor = '#e8f6f0';
-        commentBox.required = false;
-        commentBox.placeholder = "Optional – add comments if needed.";
+        if (commentBox) { commentBox.required = false; commentBox.placeholder = "Optional – add comments if needed."; }
       } else {
         card.style.border = '2px solid #000000';
         card.style.backgroundColor = '#ffffff';
-        commentBox.required = false;
-        commentBox.placeholder = "Optional – add comments if needed.";
+        if (commentBox) { commentBox.required = false; commentBox.placeholder = "Optional – add comments if needed."; }
       }
     }
 
-    card.querySelectorAll('select').forEach(sel => {
-      sel.addEventListener('change', updateCardStatus);
-    });
-
+    card.querySelectorAll('select').forEach(sel => sel.addEventListener('change', updateCardStatus));
     updateCardStatus();
     container.appendChild(card);
   });
 }
-
-
 </script>
+
   
 <script>
   const latestCsvFunctionUrl = `https://us-central1-marketingapprovalportal.cloudfunctions.net/getLatestCsvUrl?region=${region}`;
